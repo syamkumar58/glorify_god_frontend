@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "13510448361",
+    "project_id": "glorifygod-57842",
+    "storage_bucket": "glorifygod-57842.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:13510448361:android:2750fe4a37f70352b88c78",
+        "android_client_info": {
+          "package_name": "com.example.glorify_god"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZ-XnU5xYy_En4Qismn5sCA7arWtFwIt4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
