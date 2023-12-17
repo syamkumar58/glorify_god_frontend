@@ -8,7 +8,11 @@ import 'package:glorify_god/utils/asset_images.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:glorify_god/utils/hive_keys.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -29,6 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     appState = context.read<AppState>();
+    hiveBox = Hive.box(HiveKeys.openBox);
     super.initState();
   }
 
@@ -257,11 +262,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Box? hiveBox;
+
   Widget logoutButton() {
     return Padding(
       padding: const EdgeInsets.only(top: 40, left: 20),
       child: CupertinoButton(
-        onPressed: () {},
+        onPressed: () async {
+          await GoogleSignIn().signOut();
+          await hiveBox!.clear();
+          await onLogOutPushScreen();
+        },
         child: Row(
           children: [
             Icon(
@@ -285,5 +296,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  Future onLogOutPushScreen() async {
+    await GoRouter.of(context).pushReplacement('/loginPage');
   }
 }

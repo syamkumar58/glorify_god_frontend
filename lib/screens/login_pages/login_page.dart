@@ -46,6 +46,9 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: AppColors.dullBlack,
       body: ModalProgressHUD(
         inAsyncCall: loading,
+        progressIndicator: CupertinoActivityIndicator(
+          color: AppColors.white,
+        ),
         child: Container(
           height: double.infinity,
           width: double.infinity,

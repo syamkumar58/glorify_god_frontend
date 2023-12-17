@@ -90,7 +90,6 @@ class ApiCalls {
           'is_physical_device': true,
         },
       };
-
       const loginEndpoint = '$loginUrl?gender=MALE';
 
       final loginResponse = await http.post(
@@ -100,7 +99,6 @@ class ApiCalls {
       );
 
       if (loginResponse.statusCode == 200) {
-        log(loginResponse.body, name: 'login call res');
         final response = userLoginResponseModelFromJson(loginResponse.body);
         return response;
       } else {
@@ -120,6 +118,7 @@ class ApiCalls {
   Future<http.Response?> getUserById({required int userId}) async {
     final url = '$getUserByIDUrl/$userId';
     final token = await getToken();
+    log(token, name: 'token to getUserById');
     try {
       final user =
           await http.get(Uri.parse(url), headers: {'Authorization': token});

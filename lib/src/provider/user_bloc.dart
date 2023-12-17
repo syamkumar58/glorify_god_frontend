@@ -57,6 +57,8 @@ Future<UserCredential> signInWithGoogle() async {
 Future<UserLoginResponseModel?> googleLogin() async {
   final userCredentials = await signInWithGoogle();
 
+  log('it reached here what happening');
+
   try {
     final userLogin = await ApiCalls().logIn(
       email: userCredentials.user!.email!,

@@ -1,4 +1,3 @@
-
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
@@ -67,7 +66,22 @@ class _LikedScreenState extends State<LikedScreen> {
       body: Column(
         children: [
           const BannerCard(),
-          if (!isLoading) playAllButton(),
+          if (!isLoading && appState.likedSongsList.isNotEmpty)
+            playAllButton()
+          else if (appState.likedSongsList.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 50),
+              child: Center(
+                child: AppText(
+                  styles: GoogleFonts.manrope(
+                    fontSize: 18,
+                    color: AppColors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  text: AppStrings.noFavourites,
+                ),
+              ),
+            ),
           Expanded(child: songs()),
         ],
       ),
@@ -76,7 +90,7 @@ class _LikedScreenState extends State<LikedScreen> {
 
   Widget playAllButton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.only(top: 20, bottom: 20),
       child: Container(
         width: 200,
         height: 30,

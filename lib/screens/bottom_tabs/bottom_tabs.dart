@@ -65,15 +65,23 @@ class _BottomTabsState extends State<BottomTabs> {
       HiveKeys.logInKey,
     );
 
+    log('$userLogInData', name: 'cached userLoginData');
+
     if (userLogInData != null) {
       final toJson = jsonEncode(userLogInData);
       final logIn = userLoginResponseModelFromJson(toJson);
 
       final user = await ApiCalls().getUserById(userId: logIn.userId);
 
+      log('$user', name: 'cached userLoginData 2');
+
       if (user != null) {
         final userDetails = userLoginResponseModelFromJson(user.body);
+        log('$userDetails', name: 'cached userLoginData 3');
         appState.userData = userDetails;
+        log('${appState.userData}', name: 'cached userLoginData 4');
+      } else {
+        log('${user!.statusCode}', name: 'cached userLoginData 5');
       }
 
       setState(() {

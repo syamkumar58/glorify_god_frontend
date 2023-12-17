@@ -2,14 +2,11 @@
 
 import 'dart:developer';
 
-import 'package:flutter/foundation.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/song_card_component.dart';
 import 'package:glorify_god/components/title_tile_component.dart';
-import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart' as app;
 import 'package:glorify_god/provider/app_state.dart';
@@ -77,19 +74,19 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (kDebugMode)
-                  CupertinoButton(
-                    onPressed: () async {
-                      Fluttertoast.showToast(msg: 'something went wrong on logIn');
-                      // toastMessage(message: 'something went wrong on logIn');
-                    },
-                    child: const AppText(
-                      text: 'Test',
-                      styles: TextStyle(
-                        fontSize: 24,
-                      ),
-                    ),
-                  ),
+                // if (kDebugMode)
+                //   CupertinoButton(
+                //     onPressed: () async {
+                //       Fluttertoast.showToast(msg: 'something went wrong on logIn');
+                //       // toastMessage(message: 'something went wrong on logIn');
+                //     },
+                //     child: const AppText(
+                //       text: 'Test',
+                //       styles: TextStyle(
+                //         fontSize: 24,
+                //       ),
+                //     ),
+                //   ),
                 const BannerCard(),
                 const AdsCard(),
                 ...appState.getArtistsWithSongsList.map((e) {

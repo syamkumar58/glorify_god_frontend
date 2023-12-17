@@ -310,6 +310,7 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                       ? IconButton(
                           onPressed: () async {
                             final favourite = await onFav();
+                            await appState.likedSongs();
                             log('$favourite', name: 'from onTap fav');
                             setState(() {
                               isFav = favourite;

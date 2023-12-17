@@ -1,5 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:glorify_god/config/remote_config.dart';
+import 'package:glorify_god/models/remote_config/remote_config_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/screens/bottom_tabs/bottom_tabs.dart';
 import 'package:glorify_god/utils/app_colors.dart';
@@ -29,6 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     glorifyGodBox = Hive.box(HiveKeys.openBox);
     super.initState();
+    setConfigData();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Future.delayed(const Duration(seconds: 4), navigations);
     });
@@ -48,6 +55,24 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       await GoRouter.of(context).push('/loginPage');
     }
+  }
+
+  Future setConfigData() async {
+    var remoteConfig = FirebaseRemoteConfig.instance;
+    await remoteConfig.setConfigSettings(
+      RemoteConfigSettings(
+        fetchTimeout: const Duration(seconds: 10),
+        minimumFetchInterval: const Duration(seconds: 30),
+      ),
+    );
+    final data = await remoteConfig.fetchAndActivate();
+    final configData = remoteConfig.getString('glorify_god_config');
+    remoteConfigData = remoteConfigFromJson(configData);
+    log(
+        '$data\n'
+        '${json.decode(configData)}\n'
+        '${remoteConfigData.bannerMessages}',
+        name: 'Config data');
   }
 
   @override
