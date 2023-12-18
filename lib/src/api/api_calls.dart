@@ -232,9 +232,12 @@ class ApiCalls {
     }
   }
 
-  Future<http.Response> checkSongIdAddedOrNot({required int songId}) async {
+  Future<http.Response> checkSongIdAddedOrNot({
+    required int songId,
+    required int userId,
+  }) async {
     final token = await getToken();
-    final url = '$checkFavUrl?songId=$songId';
+    final url = '$checkFavUrl?userId=$userId&songId=$songId';
     try {
       final response = await http.get(
         Uri.parse(url),
@@ -250,6 +253,7 @@ class ApiCalls {
   Future<http.Response> getFavourites({required int userId}) async {
     final token = await getToken();
     final uri = '$getFavouritesUrl?userId=$userId';
+    log(uri, name: 'getFavourites request sending');
     try {
       final response =
           await http.get(Uri.parse(uri), headers: {authorization: token});

@@ -110,7 +110,10 @@ class AppState with ChangeNotifier {
   Future<bool> checkFavourites({
     required int songId,
   }) async {
-    final data = await ApiCalls().checkSongIdAddedOrNot(songId: songId);
+    final data = await ApiCalls().checkSongIdAddedOrNot(
+      songId: songId,
+      userId: userData.userId,
+    );
     if (data.statusCode == 200) {
       log(data.body, name: 'the res body');
       if (data.body.contains('false')) {

@@ -4,14 +4,17 @@ import 'dart:async';
 
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/go_back_button.dart';
+import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/screens/home_screens/home_screen.dart';
+import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -62,8 +65,40 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Column(
                 children: [
                   const AdsCard(),
+                  const SizedBox(
+                    height: 12,
+                  ),
                   searchField(),
-                  if (searchController.text.isNotEmpty) searchedSongs(),
+                  if (appState.searchList.isNotEmpty)
+                    searchedSongs()
+                  else if (appState.searchList.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 50),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.search,
+                              color: AppColors.dullBlack,
+                              size: 40,
+                            ),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            AppText(
+                              text: searchController.text.isEmpty
+                                  ? AppStrings.searchForYourFavouriteMusic
+                                  : AppStrings.searchingForYourFavouriteMusic,
+                              styles: GoogleFonts.manrope(
+                                fontSize: 16,
+                                color: AppColors.dullWhite,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -111,7 +146,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget searchedSongs() {
     return Expanded(
       child: ListView.separated(
-        padding: const EdgeInsets.only(bottom: 60, top: 15),
+        padding: const EdgeInsets.only(bottom: 60, top: 15,left: 12,right: 12),
         itemCount: appState.searchList.length,
         itemBuilder: (context, index) {
           final songDetails = appState.searchList[index];

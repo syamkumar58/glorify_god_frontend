@@ -29,6 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   double get height => MediaQuery.of(context).size.height;
   AppState appState = AppState();
   bool helpAndSupportValue = true;
+  Box? hiveBox;
 
   @override
   void initState() {
@@ -89,7 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: Colors.yellow,
+                  color: AppColors.dullBlack,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: Colors.white,
@@ -139,13 +140,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: AppColors.white,
               ),
             ),
-            trailing: Icon(
-              helpAndSupportValue
-                  ? Icons.keyboard_arrow_down
-                  : Icons.keyboard_arrow_right,
-              color: AppColors.white,
-              size: 18,
-            ),
+            // trailing: Icon(
+            //   helpAndSupportValue
+            //       ? Icons.keyboard_arrow_down
+            //       : Icons.keyboard_arrow_right,
+            //   color: AppColors.white,
+            //   size: 18,
+            // ),
             // onTap: () {
             //   setState(() {
             //     helpAndSupportValue = !helpAndSupportValue;
@@ -261,8 +262,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-
-  Box? hiveBox;
 
   Widget logoutButton() {
     return Padding(

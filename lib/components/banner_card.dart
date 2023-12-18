@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:glorify_god/components/noisey_text.dart';
@@ -26,7 +25,7 @@ class _BannerCardState extends State<BannerCard> {
             autoPlay: true,
             enableInfiniteScroll: true,
             enlargeCenterPage: true,
-            aspectRatio: 16/9,
+            aspectRatio: 16 / 9,
             viewportFraction: 1,
             onPageChanged: (index, reason) {
               setState(() {
@@ -44,12 +43,12 @@ class _BannerCardState extends State<BannerCard> {
                 ),
                 child: Center(
                   child: Container(
-                    margin: const EdgeInsets.only(bottom: 5),
+                    margin: const EdgeInsets.only(bottom: 0),
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     width: width,
                     height: 160,
                     decoration: BoxDecoration(
-                      color: Colors.blueGrey,
+                      color: AppColors.dullWhite,
                       borderRadius: BorderRadius.circular(15),
                       image: const DecorationImage(
                         image: NetworkImage(
@@ -100,7 +99,7 @@ class _BannerCardState extends State<BannerCard> {
                     color: pageIndex == index
                         ? AppColors.redAccent
                         : AppColors.dullBlack,
-                    size: 15,
+                    size: 10,
                   ),
                 ),
               );

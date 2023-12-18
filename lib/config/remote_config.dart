@@ -1,7 +1,9 @@
 import 'package:glorify_god/models/remote_config/remote_config_model.dart';
 
-
-RemoteConfig remoteConfigData = RemoteConfig(bannerMessages: []);
+RemoteConfig remoteConfigData = RemoteConfig(
+  bannerMessages: [],
+  adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+);
 
 //<--
 // SHA1: 14:1F:3B:AF:F1:4D:5D:7A:4E:6E:58:9C:9B:80:F3:BB:E7:8D:D0:6E

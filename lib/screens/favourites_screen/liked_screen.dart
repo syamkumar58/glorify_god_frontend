@@ -22,13 +22,10 @@ class LikedScreen extends StatefulWidget {
 
 class _LikedScreenState extends State<LikedScreen> {
   AppState appState = AppState();
-  bool isLoading = false;
+  bool isLoading = true;
   List<Song> collectedSongs = [];
 
   Future<void> getLikedSongs() async {
-    setState(() {
-      isLoading = true;
-    });
     await appState.likedSongs();
     Future.delayed(const Duration(seconds: 5), () async {
       if (mounted) {
@@ -68,7 +65,7 @@ class _LikedScreenState extends State<LikedScreen> {
           const BannerCard(),
           if (!isLoading && appState.likedSongsList.isNotEmpty)
             playAllButton()
-          else if (appState.likedSongsList.isEmpty)
+          else if (!isLoading && appState.likedSongsList.isEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 50),
               child: Center(

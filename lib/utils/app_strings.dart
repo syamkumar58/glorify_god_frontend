@@ -16,4 +16,8 @@ class AppStrings {
   static const profileScreen = 'Profile screen';
   static const helpAndSupport = 'Help & Support';
   static const noFavourites = 'No favourites';
+  static const noSearchDetails = 'No search found';
+  static const searchForYourFavouriteMusic = 'Search for your favourite music';
+  static const searchingForYourFavouriteMusic =
+      'Searching for your favourite music';
 }
