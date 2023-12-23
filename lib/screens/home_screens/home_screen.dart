@@ -10,15 +10,17 @@ import 'package:glorify_god/components/title_tile_component.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart' as app;
 import 'package:glorify_god/provider/app_state.dart';
+import 'package:glorify_god/screens/search_screens/search_screen.dart';
+import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
-import 'package:go_router/go_router.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,20 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future getAllSongs() async {
     await appState.getAllArtistsWithSongs();
-    for (final x in appState.getArtistsWithSongsList) {
-      log(x.artistName, name: 'appState.getArtistsWithSongsList');
-
-      for (final song in x.songs) {
-        log(
-            'Song Details:'
-            '\n  Song ID: ${song.songId}'
-            '\n  Title: ${song.title}'
-            '\n  Artist: ${song.artist}'
-            '\n  Art URI: ${song.artUri}'
-            '\n  Song URL: ${song.songUrl}',
-            name: 'appState.getArtistsWithSongsList');
-      }
-    }
   }
 
   @override
@@ -70,6 +58,9 @@ class _HomeScreenState extends State<HomeScreen> {
         height: height,
         child: SafeArea(
           child: SingleChildScrollView(
+            physics: appState.getArtistsWithSongsList.isNotEmpty
+                ? const AlwaysScrollableScrollPhysics()
+                : const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.only(bottom: 50),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,8 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 // if (kDebugMode)
                 //   CupertinoButton(
                 //     onPressed: () async {
-                //       Fluttertoast.showToast(msg: 'something went wrong on logIn');
-                //       // toastMessage(message: 'something went wrong on logIn');
+                //       // Fluttertoast.showToast(
+                //       //     msg: 'something went wrong on logIn');
+                //       toastMessage(message: 'something went wrong on logIn');
                 //     },
                 //     child: const AppText(
                 //       text: 'Test',
@@ -89,20 +81,102 @@ class _HomeScreenState extends State<HomeScreen> {
                 //   ),
                 const BannerCard(),
                 const AdsCard(),
-                ...appState.getArtistsWithSongsList.map((e) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (e.songs.isNotEmpty)
-                        TitleTile(
-                          title: e.artistName,
-                          showViewAll: false,
-                          onPressViewAll: () {},
-                        ),
-                      if (e.songs.isNotEmpty) songCard(e.songs),
-                    ],
-                  );
-                }),
+                if (appState.getArtistsWithSongsList.isNotEmpty)
+                  ...appState.getArtistsWithSongsList.map((e) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (e.songs.isNotEmpty)
+                          TitleTile(
+                            title: e.artistName,
+                            showViewAll: false,
+                            onPressViewAll: () {},
+                          ),
+                        if (e.songs.isNotEmpty) songCard(e.songs),
+                      ],
+                    );
+                  })
+                else
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20, top: 12, bottom: 12),
+                    child: Shimmer.fromColors(
+                        baseColor: AppColors.dullWhite.withOpacity(0.2),
+                        highlightColor: AppColors.dullBlack.withOpacity(0.2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ...List.generate(
+                                3,
+                                (index) => Padding(
+                                      padding: const EdgeInsets.only(top: 20),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width: 160,
+                                            height: 15,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.dullBlack,
+                                              borderRadius:
+                                                  BorderRadius.circular(2),
+                                            ),
+                                          ),
+                                          // const SizedBox(
+                                          //   height: 4,
+                                          // ),
+                                          // Container(
+                                          //   width: 200,
+                                          //   height: 10,
+                                          //   decoration: BoxDecoration(
+                                          //     color: AppColors.dullBlack,
+                                          //     borderRadius:
+                                          //         BorderRadius.circular(2),
+                                          //   ),
+                                          // ),
+                                          const SizedBox(
+                                            height: 8,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Container(
+                                                width: 120,
+                                                height: 120,
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.dullBlack,
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                              Container(
+                                                width: 120,
+                                                height: 120,
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.dullBlack,
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                              Container(
+                                                width: 120,
+                                                height: 120,
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.dullBlack,
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    )).toList(),
+                          ],
+                        )),
+                  ),
                 // TitleTile(
                 //   title: 'Most played',
                 //   onPressViewAll: () {},
@@ -116,6 +190,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  List<int> showShimmers = [1, 2, 3, 4];
 
   PreferredSizeWidget appBar(AppState appState) {
     return AppBar(
@@ -137,17 +213,29 @@ class _HomeScreenState extends State<HomeScreen> {
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 22),
-          child: CupertinoButton(
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              // GoRouter.of(context).push('/profileScreen');
-              GoRouter.of(context).push('/searchScreen');
-            },
-            child: const Icon(
-              Icons.search,
-              size: 28,
-              color: Colors.white,
-            ),
+          child: Row(
+            children: [
+              CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  Navigator.of(context).push(
+                      CupertinoPageRoute(builder: (_) => const SearchScreen()));
+                },
+                child: Icon(
+                  Icons.search,
+                  size: 28,
+                  color: AppColors.white,
+                ),
+              ),
+              // IconButton(
+              //   onPressed: () {},
+              //   icon: Icon(
+              //     Icons.account_circle_outlined,
+              //     size: 28,
+              //     color: AppColors.white,
+              //   ),
+              // )
+            ],
           ),
         ),
       ],
@@ -175,15 +263,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   await startAudio(
                     appState: appState,
                     audioSource: songs,
-                    //<-- This condition is because
-                    // For ios it is taking by the index value 0 and
-                    // Android is working from 1 also -->/
                     initialId: e.songId - 1,
-                  )
-                      //     .then((value) {}).catchError((dynamic onError){
-                      //   log('$onError',name:'On start audio error what is it');
-                      // })
-                      ;
+                  );
                 },
                 child: SongCard(
                   image: e.artUri,
@@ -221,11 +302,15 @@ Future startAudio({
         final audioSource = AudioSource.uri(
           Uri.parse(e.songUrl),
           tag: MediaItem(
-            id: e.songId.toString(),
-            title: e.title,
-            artist: e.artist,
-            artUri: Uri.parse(e.artUri),
-          ),
+              id: e.songId.toString(),
+              title: e.title,
+              artist: e.artist,
+              artUri: Uri.parse(e.artUri),
+              extras: {
+                'ytTitle': e.ytTitle,
+                'ytImage': e.ytImage,
+                'ytUrl': e.ytUrl,
+              }),
         );
         log('${audioSource.headers}', name: 'The audio source loaded');
         return audioSource;

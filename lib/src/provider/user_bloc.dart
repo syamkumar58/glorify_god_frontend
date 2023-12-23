@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/user_models/user_login_response_model.dart';
 import 'package:glorify_god/src/api/api_calls.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
@@ -10,6 +11,8 @@ import 'package:hive/hive.dart';
 GoogleSignIn googleSignIn = GoogleSignIn();
 
 Future<UserCredential> signInWithGoogle() async {
+  //<--If using Firebase, you might want to reinitialize Firebase -->/
+  // await Firebase.initializeApp();
   //<-- Sign In with google -->/
   final googleSigning = await googleSignIn.signIn();
 
@@ -70,11 +73,15 @@ Future<UserLoginResponseModel?> googleLogin() async {
     return userLogin;
   } catch (er) {
     log('$er', name: 'loginError from user bloc');
-    rethrow;
+    if (er.toString().contains('Connection refused')) {
+      toastMessage(message: 'Login failed, please try again some time later');
+    }
+    return null;
   }
 }
 
-Future<dynamic> storeLogInDetailsInHive(UserLoginResponseModel userLoginResponse) async {
+Future<dynamic> storeLogInDetailsInHive(
+    UserLoginResponseModel userLoginResponse) async {
   final glorifyGodBox = Hive.box<dynamic>(HiveKeys.openBox);
 
   final userLogInData = await glorifyGodBox.get(

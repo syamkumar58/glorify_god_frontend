@@ -1,8 +1,20 @@
+import 'dart:developer';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:flutter/material.dart';
+import 'package:glorify_god/utils/app_colors.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class YoutubeLinkButton extends StatelessWidget {
-  const YoutubeLinkButton({Key? key}) : super(key: key);
+  const YoutubeLinkButton(
+      {Key? key,
+      required this.ytTitle,
+      required this.ytImage,
+      required this.ytUrl})
+      : super(key: key);
+
+  final String ytTitle;
+  final String ytImage;
+  final String ytUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +40,16 @@ class YoutubeLinkButton extends StatelessWidget {
           ListTile(
             tileColor: Colors.blueGrey.withOpacity(0.3),
             dense: true,
-            leading: const CircleAvatar(),
-            title: const AppText(
-              text: 'Title',
+            leading: CircleAvatar(
+              backgroundColor: AppColors.dullBlack.withOpacity(0.3),
+              backgroundImage: NetworkImage(
+                ytImage,
+              ),
+            ),
+            title: AppText(
+              text: ytTitle,
               textAlign: TextAlign.left,
-              styles: TextStyle(
+              styles: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
@@ -50,6 +67,18 @@ class YoutubeLinkButton extends StatelessWidget {
               color: Colors.white,
               size: 18,
             ),
+            onTap: () async {
+              log(ytUrl, name: 'The url');
+              // await browser.open(url: Uri.parse(ytUrl)).catchError((onError) {
+              //   log(onError.toString(), name: 'Error On opening the browser ');
+              // });
+
+              if (await canLaunchUrlString(ytUrl)) {
+                await launchUrlString(ytUrl);
+              } else {
+                log('',name: 'Error On opening the browser ');
+              }
+            },
           ),
         ],
       ),

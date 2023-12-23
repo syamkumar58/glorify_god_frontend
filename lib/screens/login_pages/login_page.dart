@@ -4,7 +4,6 @@ import 'dart:developer';
 import 'dart:ui';
 import 'package:glorify_god/components/login_button.dart';
 import 'package:glorify_god/components/noisey_text.dart';
-import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/screens/bottom_tabs/bottom_tabs.dart';
 import 'package:glorify_god/src/provider/user_bloc.dart';
 import 'package:glorify_god/utils/app_colors.dart';
@@ -112,8 +111,8 @@ class _LoginPageState extends State<LoginPage> {
       child: loginButton(
         title: 'Sign in with Google',
         height: 50,
-        width: width * 0.7,
-        fontSize: 22,
+        width: width * 0.6,
+        fontSize: 20,
         boxColor: Colors.white,
         textColor: Colors.black,
         backgroundImage: AppImages.googleImage,
@@ -142,23 +141,29 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<dynamic> login() async {
-    final userLogin = await googleLogin();
-    if (userLogin != null) {
+    try {
+      final userLogin = await googleLogin();
+      if (userLogin != null) {
+        setState(() {
+          loading = false;
+        });
+        await Navigator.push(
+          context,
+          CupertinoPageRoute<BottomTabs>(
+            builder: (_) => const BottomTabs(),
+          ),
+        );
+      } else {
+        setState(() {
+          loading = false;
+        });
+        log('something went wrong on logIn');
+      }
+    } catch (er) {
       setState(() {
         loading = false;
       });
-      await Navigator.push(
-        context,
-        CupertinoPageRoute<BottomTabs>(
-          builder: (_) => const BottomTabs(),
-        ),
-      );
-    } else {
-      setState(() {
-        loading = false;
-      });
-      log('something went wrong on logIn');
-      toastMessage(message: 'something went wrong on logIn');
+      log('$er', name: 'login failed with');
     }
   }
 }

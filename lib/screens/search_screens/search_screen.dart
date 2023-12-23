@@ -13,7 +13,6 @@ import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -48,7 +47,7 @@ class _SearchScreenState extends State<SearchScreen> {
         leading: IconButton(
           onPressed: () {
             cancelTimer();
-            GoRouter.of(context).pop();
+            Navigator.pop(context);
           },
           icon: const GoBackButton(),
         ),

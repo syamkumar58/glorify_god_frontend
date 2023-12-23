@@ -3,19 +3,21 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:auto_route/annotations.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/models/remote_config/remote_config_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/screens/bottom_tabs/bottom_tabs.dart';
+import 'package:glorify_god/screens/login_pages/login_page.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
 
+@RoutePage()
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -46,14 +48,15 @@ class _SplashScreenState extends State<SplashScreen> {
       HiveKeys.logInKey,
     );
     if (userLogInData != null) {
-      await Navigator.push(
-        context,
-        CupertinoPageRoute<BottomTabs>(
-          builder: (_) => const BottomTabs(),
-        ),
-      );
+      await Navigator.of(context).pushAndRemoveUntil(
+          CupertinoPageRoute<BottomTabs>(
+            builder: (_) => const BottomTabs(),
+          ),
+          (route) => false);
     } else {
-      await GoRouter.of(context).push('/loginPage');
+      Navigator.of(context).pushAndRemoveUntil(
+          CupertinoPageRoute(builder: (_) => const LoginPage()),
+          (route) => false);
     }
   }
 

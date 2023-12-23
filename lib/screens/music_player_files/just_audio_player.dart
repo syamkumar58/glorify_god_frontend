@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 import 'package:audio_service/audio_service.dart';
+import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/youtube_link_button.dart';
 import 'package:glorify_god/config/helpers.dart';
@@ -97,6 +98,9 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
 
             final trackData = state?.currentSource!.tag as MediaItem;
 
+            log('${trackData.extras!['ytUrl']}',
+                name: 'The yt url is it there ah ');
+
             return StreamBuilder(
               stream: appState.audioPlayer.playerStateStream,
               builder: (context, snapShot) {
@@ -126,7 +130,16 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                         processingState:
                             processingState ?? ProcessingState.buffering,
                       ),
-                      const YoutubeLinkButton(),
+                      if (trackData.extras!['ytUrl'].toString().isNotEmpty)
+                        YoutubeLinkButton(
+                          ytImage: trackData.extras!['ytImage'].toString(),
+                          ytTitle: trackData.extras!['ytTitle'].toString(),
+                          ytUrl: trackData.extras!['ytUrl'].toString(),
+                        ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 30),
+                        child: AdsCard(),
+                      ),
                     ],
                   ),
                 );

@@ -28,7 +28,7 @@ CupertinoButton loginButton({
         child: Row(
           children: [
             CircleAvatar(
-              radius: 26,
+              radius: 25,
               backgroundColor: Colors.transparent,
               backgroundImage: AssetImage(
                 backgroundImage,
