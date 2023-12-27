@@ -31,7 +31,7 @@ class _TitleTileState extends State<TitleTile> {
         styles: const TextStyle(
           color: Colors.white,
           fontSize: 17,
-          letterSpacing: 1.6,
+          letterSpacing: 1,
           fontWeight: FontWeight.w500,
         ),
       ),

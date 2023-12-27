@@ -22,7 +22,7 @@ class _BannerCardState extends State<BannerCard> {
       children: [
         CarouselSlider(
           options: CarouselOptions(
-            autoPlay: false,
+            autoPlay: true,
             enableInfiniteScroll: true,
             enlargeCenterPage: true,
             aspectRatio: 16 / 9,

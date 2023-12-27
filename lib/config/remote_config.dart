@@ -3,6 +3,7 @@ import 'package:glorify_god/models/remote_config/remote_config_model.dart';
 RemoteConfig remoteConfigData = RemoteConfig(
   bannerMessages: [],
   adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+  showUpdateBanner: false,
 );
 
 //<--

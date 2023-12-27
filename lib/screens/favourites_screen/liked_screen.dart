@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
@@ -95,7 +97,7 @@ class _LikedScreenState extends State<LikedScreen> {
         child: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () async {
-            await onPlay(appState.likedSongsList[0].songId);
+            await onPlay(0);
           },
           child: AppText(
             text: 'Play all',
@@ -141,7 +143,10 @@ class _LikedScreenState extends State<LikedScreen> {
           return Bounce(
             duration: const Duration(milliseconds: 200),
             onPressed: () async {
-              await onPlay(songDetails.songId);
+              final initialId = appState.likedSongsList
+                  .indexOf(appState.likedSongsList[index]);
+              log('$initialId', name: 'initial id in liked');
+              await onPlay(initialId);
             },
             child: SongsLikesTile(
               index: index + 1,
@@ -155,7 +160,7 @@ class _LikedScreenState extends State<LikedScreen> {
     );
   }
 
-  Future<void> onPlay(int songId) async {
+  Future<void> onPlay(int initialId) async {
     for (final song in appState.likedSongsList) {
       final eachSong = Song(
         songId: song.songId,
@@ -174,7 +179,7 @@ class _LikedScreenState extends State<LikedScreen> {
     await startAudio(
       appState: appState,
       audioSource: collectedSongs,
-      initialId: songId - 1,
+      initialId: initialId,
     );
   }
 }

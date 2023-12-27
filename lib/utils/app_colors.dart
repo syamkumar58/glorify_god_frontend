@@ -11,5 +11,6 @@ class AppColors {
   static Color purple = Colors.purple;
   static Color blue = Colors.blue;
   static Color blueAccent = Colors.blueAccent;
+  static Color violet = Colors.purple;
   static Color dullBlack = const Color(0xFF424242);
 }

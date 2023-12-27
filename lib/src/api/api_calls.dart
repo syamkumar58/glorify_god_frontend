@@ -148,7 +148,7 @@ class ApiCalls {
       return response;
     } catch (e) {
       log('$e', name: 'getAllArtistsWithSongs error');
-      rethrow;
+      return null;
     }
   }
 
@@ -232,7 +232,7 @@ class ApiCalls {
     }
   }
 
-  Future<http.Response> searchApi({
+  Future<http.Response?> searchApi({
     required String text,
   }) async {
     log(text, name: 'searched text is');
@@ -245,7 +245,7 @@ class ApiCalls {
       return response;
     } catch (e) {
       log('$e', name: 'checkSongIdAddedOrNot error');
-      rethrow;
+      return null;
     }
   }
 
@@ -293,7 +293,7 @@ class ApiCalls {
     }
   }
 
-  Future<http.Response> getRating({
+  Future<http.Response?> getRating({
     required int userId,
   }) async {
     final token = await getToken();
@@ -304,7 +304,7 @@ class ApiCalls {
       return res;
     } catch (e) {
       log('$e', name: 'getRating error');
-      rethrow;
+      return null;
     }
   }
 

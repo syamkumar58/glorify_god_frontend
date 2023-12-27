@@ -12,20 +12,24 @@ String remoteConfigToJson(RemoteConfig data) => json.encode(data.toJson());
 class RemoteConfig {
   final String adUnitId;
   final List<BannerMessage> bannerMessages;
+  final bool showUpdateBanner;
 
   RemoteConfig({
     required this.adUnitId,
     required this.bannerMessages,
+    required this.showUpdateBanner,
   });
 
   factory RemoteConfig.fromJson(Map<String, dynamic> json) => RemoteConfig(
         adUnitId: json["adUnitId"].toString(),
+        showUpdateBanner: json["showUpdateBanner"] ?? false,
         bannerMessages: List<BannerMessage>.from(
             json["bannerMessages"].map((x) => BannerMessage.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "adUnitId": adUnitId,
+        "showUpdateBanner": showUpdateBanner,
         "bannerMessages":
             List<dynamic>.from(bannerMessages.map((x) => x.toJson())),
       };

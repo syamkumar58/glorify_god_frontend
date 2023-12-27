@@ -235,7 +235,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: Colors.amber,
                   ),
               onRatingUpdate: (rating) async {
-                await appState.updateRatings(rating: rating.toInt());
+                await appState
+                    .updateRatings(rating: rating.toInt())
+                    .then((value) {})
+                    .catchError((dynamic onError) {
+                  if (onError.toString().contains('Connection error')) {
+                    toastMessage(
+                        message:
+                            'Connection error. Server is under maintenance. Try again later in some time');
+                  }
+                });
               }),
           AppText(
             text: AppStrings.rateUsQuote,
@@ -265,7 +274,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.all(12),
             child: Icon(
               icon,
-              color: AppColors.dullWhite.withOpacity(0.6),
+              color: AppColors.dullWhite.withOpacity(0.8),
               size: 25,
             ),
           ),
@@ -274,7 +283,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           styles: GoogleFonts.manrope(
             fontWeight: FontWeight.bold,
             fontSize: 16,
-            color: AppColors.dullWhite.withOpacity(0.6),
+            color: AppColors.dullWhite.withOpacity(0.8),
           ),
           text: text,
           textAlign: TextAlign.left,

@@ -6,11 +6,11 @@ import 'dart:ui';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/song_image_box.dart';
 import 'package:glorify_god/provider/app_state.dart';
-import 'package:glorify_god/screens/explorer_screens/explore_screen.dart';
 import 'package:glorify_god/screens/favourites_screen/liked_screen.dart';
 import 'package:glorify_god/screens/home_screens/home_screen.dart';
 import 'package:glorify_god/screens/music_player_files/just_audio_player.dart';
 import 'package:glorify_god/screens/profile_screens/profile_screen.dart';
+import 'package:glorify_god/screens/search_screens/search_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
@@ -43,8 +43,8 @@ class _BottomTabsState extends State<BottomTabs> {
   late Box box;
   List<Widget> screens = const [
     HomeScreen(),
+    SearchScreen(),
     LikedScreen(),
-    ExploreScreen(),
     ProfileScreen(),
   ];
 
@@ -223,7 +223,7 @@ class _BottomTabsState extends State<BottomTabs> {
     return SafeArea(
       child: GNav(
         gap: 8,
-        haptic: true,
+        // haptic: true,
         activeColor: Colors.white,
         tabBackgroundColor: Colors.blueGrey.shade800,
         padding: const EdgeInsets.all(10),
@@ -236,15 +236,15 @@ class _BottomTabsState extends State<BottomTabs> {
             tabName: AppStrings.tabSongs,
           ),
           navBar(
-            tabName: AppStrings.tabLiked,
-            activeIcon: Icons.favorite,
-            inactiveIcon: Icons.favorite_border_outlined,
+            tabName: AppStrings.tabSearch,
+            activeIcon: Icons.search,
+            inactiveIcon: Icons.search,
             index: 1,
           ),
           navBar(
-            tabName: AppStrings.tabExplore,
-            activeIcon: Icons.language,
-            inactiveIcon: Icons.language_outlined,
+            tabName: AppStrings.tabLiked,
+            activeIcon: Icons.favorite,
+            inactiveIcon: Icons.favorite_border_outlined,
             index: 2,
           ),
           navBar(

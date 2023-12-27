@@ -89,6 +89,7 @@ class _ReportAProblemState extends State<ReportAProblem> {
                                     message: reportedIssue.trim());
 
                                 if (res) {
+                                  issueController.clear();
                                   setState(() {
                                     isLoading = false;
                                   });

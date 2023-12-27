@@ -89,7 +89,7 @@ class AppState with ChangeNotifier {
       }
     } catch (er) {
       log('$er', name: 'The error while loading data');
-      toastMessage(message: 'Connection error. Server is under maintanance');
+      toastMessage(message: 'Connection error. Server is under maintenance');
     }
   }
 
@@ -195,14 +195,17 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> search({required String text}) async {
+  Future<List<SearchModel>> search({required String text}) async {
     final res = await ApiCalls().searchApi(text: text);
 
-    if (res.statusCode == 200) {
+    if (res != null && res.statusCode == 200) {
       final searchedList = searchModelFromJson(res.body);
       searchList = searchedList;
+      return searchedList;
     } else {
       searchList = <SearchModel>[];
+      log('from app state it reached to else case');
+      return searchList;
     }
   }
 
@@ -258,10 +261,14 @@ class AppState with ChangeNotifier {
   Future getRatings() async {
     final userId = userData.userId;
     final res = await ApiCalls().getRating(userId: userId);
-    final data = json.decode(res.body);
-    userGivenRating = int.parse(data['ratings'].toString());
-    log('$userGivenRating', name: 'The res for get Rating');
-    return res;
+    if (res != null) {
+      final data = json.decode(res.body);
+      userGivenRating = int.parse(data['ratings'].toString());
+      log('$userGivenRating', name: 'The res for get Rating');
+      return res;
+    } else {
+      // toastMessage(message: 'Connection error.');
+    }
   }
 
   Future<bool> updateFeedback({required String message}) async {

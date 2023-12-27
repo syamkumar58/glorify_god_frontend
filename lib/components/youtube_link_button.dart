@@ -40,6 +40,9 @@ class YoutubeLinkButton extends StatelessWidget {
           ListTile(
             tileColor: Colors.blueGrey.withOpacity(0.3),
             dense: true,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)
+            ),
             leading: CircleAvatar(
               backgroundColor: AppColors.dullBlack.withOpacity(0.3),
               backgroundImage: NetworkImage(

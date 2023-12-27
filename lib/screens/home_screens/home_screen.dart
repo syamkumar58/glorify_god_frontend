@@ -4,23 +4,24 @@ import 'dart:developer';
 
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/banner_card.dart';
-import 'package:glorify_god/components/noisey_text.dart';
+import 'package:glorify_god/components/home_components/home_loading_shimmer_effect.dart';
 import 'package:glorify_god/components/song_card_component.dart';
 import 'package:glorify_god/components/title_tile_component.dart';
+import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart' as app;
 import 'package:glorify_god/provider/app_state.dart';
-import 'package:glorify_god/screens/search_screens/search_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
+import 'package:glorify_god/utils/asset_images.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,29 +31,73 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   app.AppState appState = app.AppState();
 
   double get width => MediaQuery.of(context).size.width;
 
   double get height => MediaQuery.of(context).size.height;
+  bool connectionError = false;
+  List<int> showShimmers = [1, 2, 3, 4];
+  late AnimationController lottieController;
 
   @override
   void initState() {
+    lottieController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    lottieController.repeat();
     appState = context.read<app.AppState>();
     super.initState();
     getAllSongs();
   }
 
   Future getAllSongs() async {
-    await appState.getAllArtistsWithSongs();
+    try {
+      await appState.getAllArtistsWithSongs();
+    } catch (er) {
+      log('$er', name: 'The home screen error');
+      if (er.toString().contains('Null check operator used on a null value')) {
+        setState(() {
+          connectionError = true;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<app.AppState>(context);
     return Scaffold(
-      appBar: appBar(appState),
+      appBar: PreferredSize(
+        preferredSize:
+            Size.fromHeight(remoteConfigData.showUpdateBanner ? 160 : 60),
+        child: SafeArea(
+          child: Column(
+            children: [
+              if (remoteConfigData.showUpdateBanner)
+                ListTile(
+                  tileColor: Colors.blue,
+                  title: Text(
+                    "Exciting news! A new version of our app is now available. Elevate your experience by updating through the Play/App Store today!",
+                    style: GoogleFonts.manrope(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.start,
+                  ),
+                  trailing: IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.close,
+                        size: 22,
+                        color: AppColors.white,
+                      )),
+                ),
+              appBar(appState),
+            ],
+          ),
+        ),
+      ),
       body: SizedBox(
         width: width,
         height: height,
@@ -65,6 +110,45 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (connectionError)
+                  Container(
+                    width: width,
+                    decoration: const BoxDecoration(color: Colors.blue),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        "**Service Update: Servers Currently Unavailable**\n",
+                                    style: GoogleFonts.manrope(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        "We apologize for the inconvenience, but our servers are currently down for maintenance. Please try accessing the app again later. Thank you for your understanding.",
+                                    style: GoogleFonts.manrope(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
                 // if (kDebugMode)
                 //   CupertinoButton(
                 //     onPressed: () async {
@@ -97,86 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   })
                 else
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20, top: 12, bottom: 12),
-                    child: Shimmer.fromColors(
-                        baseColor: AppColors.dullWhite.withOpacity(0.2),
-                        highlightColor: AppColors.dullBlack.withOpacity(0.2),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ...List.generate(
-                                3,
-                                (index) => Padding(
-                                      padding: const EdgeInsets.only(top: 20),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            width: 160,
-                                            height: 15,
-                                            decoration: BoxDecoration(
-                                              color: AppColors.dullBlack,
-                                              borderRadius:
-                                                  BorderRadius.circular(2),
-                                            ),
-                                          ),
-                                          // const SizedBox(
-                                          //   height: 4,
-                                          // ),
-                                          // Container(
-                                          //   width: 200,
-                                          //   height: 10,
-                                          //   decoration: BoxDecoration(
-                                          //     color: AppColors.dullBlack,
-                                          //     borderRadius:
-                                          //         BorderRadius.circular(2),
-                                          //   ),
-                                          // ),
-                                          const SizedBox(
-                                            height: 8,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Container(
-                                                width: 120,
-                                                height: 120,
-                                                decoration: BoxDecoration(
-                                                  color: AppColors.dullBlack,
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                ),
-                                              ),
-                                              Container(
-                                                width: 120,
-                                                height: 120,
-                                                decoration: BoxDecoration(
-                                                  color: AppColors.dullBlack,
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                ),
-                                              ),
-                                              Container(
-                                                width: 120,
-                                                height: 120,
-                                                decoration: BoxDecoration(
-                                                  color: AppColors.dullBlack,
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    )).toList(),
-                          ],
-                        )),
-                  ),
+                  const HomeShimmerEffect(),
                 // TitleTile(
                 //   title: 'Most played',
                 //   onPressViewAll: () {},
@@ -191,54 +196,40 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  List<int> showShimmers = [1, 2, 3, 4];
-
-  PreferredSizeWidget appBar(AppState appState) {
-    return AppBar(
-      backgroundColor: Colors.grey.shade900,
-      centerTitle: false,
-      elevation: 2,
-      automaticallyImplyLeading: false,
-      title: const AppText(
-        text: AppStrings.appName,
-        styles: TextStyle(
+  Widget appBar(AppState appState) {
+    return ListTile(
+      title: Text(
+        AppStrings.appName + ' ✞',
+        textAlign: TextAlign.start,
+        style: TextStyle(
           fontSize: 26,
           fontFamily: 'AppTitle',
           letterSpacing: 4,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          // color: Colors.white,
           fontStyle: FontStyle.italic,
+          foreground: Paint()
+            ..shader = LinearGradient(
+              colors: [
+                AppColors.redAccent,
+                AppColors.blueAccent,
+                // AppColors.purple,
+              ],
+              begin: Alignment.bottomLeft,
+              end: Alignment.topRight,
+            ).createShader(
+              const Rect.fromLTWH(10, 20, 8, 18),
+            ),
         ),
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 22),
-          child: Row(
-            children: [
-              CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: () {
-                  Navigator.of(context).push(
-                      CupertinoPageRoute(builder: (_) => const SearchScreen()));
-                },
-                child: Icon(
-                  Icons.search,
-                  size: 28,
-                  color: AppColors.white,
-                ),
-              ),
-              // IconButton(
-              //   onPressed: () {},
-              //   icon: Icon(
-              //     Icons.account_circle_outlined,
-              //     size: 28,
-              //     color: AppColors.white,
-              //   ),
-              // )
-            ],
-          ),
+      trailing: Padding(
+        padding: const EdgeInsets.only(right: 12),
+        child: Lottie.asset(
+          LottieAnimations.musicSymbolAnimation,
+          controller: lottieController,
+          repeat: true,
         ),
-      ],
+      ),
     );
   }
 
@@ -257,13 +248,15 @@ class _HomeScreenState extends State<HomeScreen> {
               (e) => Bounce(
                 duration: const Duration(milliseconds: 50),
                 onPressed: () async {
+                  final initialId = songs.indexOf(e);
+                  log('${e.songId} , $initialId', name: 'on tap songId');
                   if (appState.audioPlayer.playing) {
                     await appState.audioPlayer.pause();
                   }
                   await startAudio(
                     appState: appState,
                     audioSource: songs,
-                    initialId: e.songId - 1,
+                    initialId: initialId,
                   );
                 },
                 child: SongCard(
@@ -275,6 +268,12 @@ class _HomeScreenState extends State<HomeScreen> {
             .toList(),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    lottieController.dispose();
+    super.dispose();
   }
 }
 
