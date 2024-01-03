@@ -139,6 +139,7 @@ class ApiCalls {
   }
 
   Future<http.Response?> getAllArtistsWithSongs() async {
+    log('$getArtistWithSongsUrl',name: 'getArtistWithSongsUrl url');
     final token = await getToken();
     try {
       final response = await http.get(

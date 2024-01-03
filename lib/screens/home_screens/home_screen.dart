@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/home_components/home_loading_shimmer_effect.dart';
+import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/song_card_component.dart';
 import 'package:glorify_god/components/title_tile_component.dart';
 import 'package:glorify_god/config/remote_config.dart';
@@ -198,36 +199,67 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget appBar(AppState appState) {
     return ListTile(
-      title: Text(
-        AppStrings.appName + ' ✞',
-        textAlign: TextAlign.start,
-        style: TextStyle(
-          fontSize: 26,
-          fontFamily: 'AppTitle',
-          letterSpacing: 4,
-          fontWeight: FontWeight.bold,
-          // color: Colors.white,
-          fontStyle: FontStyle.italic,
-          foreground: Paint()
-            ..shader = LinearGradient(
-              colors: [
-                AppColors.redAccent,
-                AppColors.blueAccent,
-                // AppColors.purple,
-              ],
-              begin: Alignment.bottomLeft,
-              end: Alignment.topRight,
-            ).createShader(
-              const Rect.fromLTWH(10, 20, 8, 18),
+      title: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: AppStrings.appName,
+              style: TextStyle(
+                fontSize: 26,
+                fontFamily: 'AppTitle',
+                letterSpacing: 4,
+                fontWeight: FontWeight.bold,
+                // color: Colors.white,
+                fontStyle: FontStyle.italic,
+                foreground: Paint()
+                  ..shader = LinearGradient(
+                    colors: [
+                      AppColors.redAccent,
+                      AppColors.blueAccent,
+                      // AppColors.purple,
+                    ],
+                    begin: Alignment.bottomLeft,
+                    end: Alignment.topRight,
+                  ).createShader(
+                    const Rect.fromLTWH(10, 20, 8, 18),
+                  ),
+              ),
             ),
+            const TextSpan(
+              text: ' with Songs',
+              style: TextStyle(
+                fontSize: 8,
+                fontFamily: 'Memphis-Light',
+                letterSpacing: 0.8,
+              ),
+            ),
+          ],
         ),
       ),
       trailing: Padding(
         padding: const EdgeInsets.only(right: 12),
-        child: Lottie.asset(
-          LottieAnimations.musicSymbolAnimation,
-          controller: lottieController,
-          repeat: true,
+        child: Text(
+          ' ✞',
+          style: TextStyle(
+            fontSize: 26,
+            fontFamily: 'AppTitle',
+            letterSpacing: 4,
+            fontWeight: FontWeight.bold,
+            // color: Colors.white,
+            fontStyle: FontStyle.italic,
+            foreground: Paint()
+              ..shader = LinearGradient(
+                colors: [
+                  AppColors.redAccent,
+                  AppColors.blueAccent,
+                  // AppColors.purple,
+                ],
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+              ).createShader(
+                const Rect.fromLTWH(2, 0, 2, 15),
+              ),
+          ),
         ),
       ),
     );

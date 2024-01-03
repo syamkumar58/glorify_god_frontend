@@ -1,5 +1,6 @@
 class AppStrings {
   static const appName = 'Glorify God';
+  static const appName2 = 'Glorify\nGod';
   static const jyothirajSongs = 'Jyothi Raj Songs';
   static const favoritesTitle = 'Liked';
   static const homeBannerText =

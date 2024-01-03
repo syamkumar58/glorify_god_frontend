@@ -150,8 +150,8 @@ class _SearchScreenState extends State<SearchScreen>
                 FocusScope.of(context).unfocus();
               }
               searchController.clear();
-              cancelTimer();
               searchedList.clear();
+              cancelTimer();
             },
             icon: Icon(
               Icons.close,

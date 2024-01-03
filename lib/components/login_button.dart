@@ -38,7 +38,7 @@ CupertinoButton loginButton({
               width: 10,
             ),
             AppText(
-              text:  title,
+              text: title,
               styles: TextStyle(
                 fontSize: fontSize,
                 fontWeight: fontWeight,
