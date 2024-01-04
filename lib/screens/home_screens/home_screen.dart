@@ -5,7 +5,6 @@ import 'dart:developer';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/home_components/home_loading_shimmer_effect.dart';
-import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/song_card_component.dart';
 import 'package:glorify_god/components/title_tile_component.dart';
 import 'package:glorify_god/config/remote_config.dart';
@@ -17,11 +16,9 @@ import 'package:glorify_god/utils/app_strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
-import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -200,37 +197,38 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget appBar(AppState appState) {
     return ListTile(
       title: RichText(
-        text: TextSpan(
+        text:  TextSpan(
           children: [
             TextSpan(
               text: AppStrings.appName,
               style: TextStyle(
                 fontSize: 26,
-                fontFamily: 'AppTitle',
-                letterSpacing: 4,
+                fontFamily: 'Memphis-Bold',
+                letterSpacing: 1,
                 fontWeight: FontWeight.bold,
-                // color: Colors.white,
-                fontStyle: FontStyle.italic,
-                foreground: Paint()
-                  ..shader = LinearGradient(
-                    colors: [
-                      AppColors.redAccent,
-                      AppColors.blueAccent,
-                      // AppColors.purple,
-                    ],
-                    begin: Alignment.bottomLeft,
-                    end: Alignment.topRight,
-                  ).createShader(
-                    const Rect.fromLTWH(10, 20, 8, 18),
-                  ),
+                color: AppColors.white,
+                // fontStyle: FontStyle.italic,
+                // foreground: Paint()
+                //   ..shader = LinearGradient(
+                //     colors: [
+                //       AppColors.redAccent,
+                //       AppColors.blueAccent,
+                //       // AppColors.purple,
+                //     ],
+                //     begin: Alignment.bottomLeft,
+                //     end: Alignment.topRight,
+                //   ).createShader(
+                //     const Rect.fromLTWH(10, 30, 8, 18),
+                //   ),
               ),
             ),
-            const TextSpan(
+            TextSpan(
               text: ' with Songs',
               style: TextStyle(
-                fontSize: 8,
+                fontSize: 10,
+                color: AppColors.white,
+                fontWeight: FontWeight.w800,
                 fontFamily: 'Memphis-Light',
-                letterSpacing: 0.8,
               ),
             ),
           ],
@@ -245,20 +243,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             fontFamily: 'AppTitle',
             letterSpacing: 4,
             fontWeight: FontWeight.bold,
-            // color: Colors.white,
+            color: AppColors.redAccent,
             fontStyle: FontStyle.italic,
-            foreground: Paint()
-              ..shader = LinearGradient(
-                colors: [
-                  AppColors.redAccent,
-                  AppColors.blueAccent,
-                  // AppColors.purple,
-                ],
-                begin: Alignment.bottomLeft,
-                end: Alignment.topRight,
-              ).createShader(
-                const Rect.fromLTWH(2, 0, 2, 15),
-              ),
+            // foreground: Paint()
+            //   ..shader = LinearGradient(
+            //     colors: [
+            //       AppColors.redAccent,
+            //       AppColors.blueAccent,
+            //       // AppColors.purple,
+            //     ],
+            //     begin: Alignment.bottomLeft,
+            //     end: Alignment.topRight,
+            //   ).createShader(
+            //     const Rect.fromLTWH(2, 0, 2, 15),
+            //   ),
           ),
         ),
       ),
@@ -367,5 +365,16 @@ Future startAudio({
   // If enabled in ios simulator it is not working
   //     // (No particular reason found) -->/
   // await appState.audioPlayer.seek(Duration.zero, index: initialId,);
+
+  // Listen for changes in the currently playing index
+  appState.audioPlayer.currentIndexStream.listen((index) {
+    if (index != null && index < audioSource.length) {
+      final currentSongId = audioSource[index].songId;
+      log('$currentSongId', name: 'The song changed');
+      // Perform your API call for the current song here using currentSongId
+      // ...
+    }
+  });
+
   await appState.audioPlayer.play();
 }

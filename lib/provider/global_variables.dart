@@ -9,4 +9,14 @@ class GlobalVariables extends ChangeNotifier {
     _onLogoutLoading = value;
     notifyListeners();
   }
+
+
+  bool _checkFavourites = true;
+
+  bool get checkFavourites => _checkFavourites;
+
+  set checkFavourites(bool value) {
+    _checkFavourites = value;
+    notifyListeners();
+  }
 }

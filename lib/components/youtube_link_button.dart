@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:flutter/material.dart';
-import 'package:glorify_god/utils/app_colors.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class YoutubeLinkButton extends StatelessWidget {
@@ -43,12 +42,12 @@ class YoutubeLinkButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12)
             ),
-            leading: CircleAvatar(
-              backgroundColor: AppColors.dullBlack.withOpacity(0.3),
-              backgroundImage: NetworkImage(
-                ytImage,
-              ),
-            ),
+            // leading: CircleAvatar(
+            //   backgroundColor: AppColors.dullBlack.withOpacity(0.3),
+            //   backgroundImage: NetworkImage(
+            //     ytImage,
+            //   ),
+            // ),
             title: AppText(
               text: ytTitle,
               textAlign: TextAlign.left,

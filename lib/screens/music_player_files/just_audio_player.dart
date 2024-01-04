@@ -105,7 +105,7 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
               stream: appState.audioPlayer.playerStateStream,
               builder: (context, snapShot) {
                 if (snapShot.hasError) {
-                  log('The snap Error ${snapShot.error}');
+                  log('${snapShot.error}', name: 'The playerStream snap Error');
                 }
 
                 final playerState = snapShot.data;
@@ -253,6 +253,8 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
       padding: EdgeInsets.zero,
       onPressed: () async {
         await appState.audioPlayer.seekToPrevious();
+        await appState.audioPlayer.pause();
+        await appState.audioPlayer.play();
       },
       child: const Icon(
         Icons.skip_previous_rounded,
@@ -293,6 +295,8 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
       onPressed: () async {
         // player.seek(Duration(seconds: player.position.inSeconds + 5));
         await appState.audioPlayer.seekToNext();
+        await appState.audioPlayer.pause();
+        await appState.audioPlayer.play();
       },
     );
   }
@@ -311,7 +315,7 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
           final trackData = snapshot.data;
 
           final duration = trackData?.duration ?? Duration.zero;
-          final position = trackData?.position ?? Duration.zero;
+          var position = trackData?.position ?? Duration.zero;
 
           return Column(
             children: [
@@ -349,8 +353,22 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                   inactiveColor: Colors.grey[600],
                   activeColor: Colors.white,
                   onChanged: (value) {
+                    setState(() {
+                      position = Duration(seconds: value.toInt());
+                    });
+                  },
+                  onChangeEnd: (value) {
+                    // Debugging: Print the seek position
+                    log('Seeking to: $value seconds');
+
+                    // Seek when the user finishes sliding
                     final finalPosition = Duration(seconds: value.toInt());
                     appState.audioPlayer.seek(finalPosition);
+
+                    // Debugging: Print the current audio position after seeking
+                    appState.audioPlayer.positionStream.listen((position) {
+                      log('Current position after seek: $position');
+                    });
                   },
                 ),
               ),

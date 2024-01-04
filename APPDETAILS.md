@@ -93,4 +93,15 @@
    - Search field moved up to the app bar and profile section brought to the bottom bar
    - Explore section set to coming soon
    - Profile will show the background a fix quote image and the profile image on top with the name
+
+- 3/1/2024
+    - Working on EC2 instance connection with Database changes
+
+- 4/1/2024
+    - Added EndPoint with some changes in the end_points file - working fine
+    - Fixed Some issues related to audio player
+    - Home screen tile UI change
+      Need more clarity on fixing the UI for title
+    - Removed the youtube image box for testing ( No thought on bringing it back )
+    - Liked songs song tile overflow fix
           

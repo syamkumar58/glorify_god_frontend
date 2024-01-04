@@ -45,16 +45,13 @@ class _SongsLikesTileState extends State<SongsLikesTile> {
           ],
         ),
       ),
-      title: Row(
-        children: [
-          AppText(
-            text: widget.songTitle,
-            styles: const TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
-          ),
-        ],
+      title: AppText(
+        text: widget.songTitle,
+        textAlign: TextAlign.start,
+        styles: const TextStyle(
+          fontSize: 18,
+          color: Colors.white,
+        ),
       ),
       subtitle: Row(
         children: [

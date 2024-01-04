@@ -1,9 +1,9 @@
 const bool useLocalHost = false;
 
-const String localHost = '10.0.2.2'; //'localhost'; //
+const String localHost = 'localhost'; //'10.0.2.2'; //
 // < If platform is Android use '10.0.2.2' as host and IOS uses 'localhost'>/
 const String hostUrl =
-    useLocalHost ? 'http://$localHost:8000' : 'http://16.171.33.222';
+    useLocalHost ? 'http://$localHost:8000' : 'http://13.201.167.116';
 
 const String loginUrl = '$hostUrl/login/user_login_call';
 const String getUserByIDUrl = '$hostUrl/login/get_user_by_id';
