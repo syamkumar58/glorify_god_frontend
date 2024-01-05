@@ -347,7 +347,7 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                   trackHeight: 6,
                 ),
                 child: Slider(
-                  // min: 0,
+                  min: 0,
                   max: (duration.inSeconds.toDouble() ?? 0) as double,
                   value: (position.inSeconds.toDouble() ?? 0) as double,
                   inactiveColor: Colors.grey[600],
