@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_dynamic_calls
 
 import 'dart:developer';
+import 'dart:ui';
 import 'package:audio_service/audio_service.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/noisey_text.dart';
@@ -10,6 +11,7 @@ import 'package:glorify_god/provider/app_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
+import 'package:glorify_god/utils/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +41,8 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
   double get width => MediaQuery.of(context).size.width;
 
   double get height => MediaQuery.of(context).size.height;
-  bool isFav = false;
+
+  // bool isFav = false;
   bool favLoading = true;
   AppState appState = AppState();
 
@@ -55,7 +58,7 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
     appState = context.read<AppState>();
     final res = await appState.checkFavourites(songId: widget.songId);
     setState(() {
-      isFav = res;
+      appState.isSongFavourite = res;
       favLoading = false;
     });
   }
@@ -101,49 +104,73 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
             log('${trackData.extras!['ytUrl']}',
                 name: 'The yt url is it there ah ');
 
-            return StreamBuilder(
-              stream: appState.audioPlayer.playerStateStream,
-              builder: (context, snapShot) {
-                if (snapShot.hasError) {
-                  log('${snapShot.error}', name: 'The playerStream snap Error');
-                }
+            return Container(
+              decoration: BoxDecoration(
+                  color: AppColors.black,
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: NetworkImage(
+                      trackData.artUri.toString(),
+                    ),
+                  )),
+              child: StreamBuilder(
+                stream: appState.audioPlayer.playerStateStream,
+                builder: (context, snapShot) {
+                  if (snapShot.hasError) {
+                    log('${snapShot.error}', name: 'The playerStream snap Error');
+                  }
 
-                final playerState = snapShot.data;
-                final processingState = playerState?.processingState;
-                final playing = playerState?.playing;
+                  final playerState = snapShot.data;
+                  final processingState = playerState?.processingState;
+                  final playing = playerState?.playing;
 
-                return SafeArea(
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      // appBar(),
-                      playerUi(
-                        title: trackData.title,
-                        artist: trackData.artist ?? '',
-                        artUri: trackData.artUri.toString(),
-                      ),
-                      seekBar(),
-                      controlBackgroundWithControls(
-                        isPlaying: playing ?? false,
-                        processingState:
-                            processingState ?? ProcessingState.buffering,
-                      ),
-                      if (trackData.extras!['ytUrl'].toString().isNotEmpty)
-                        YoutubeLinkButton(
-                          ytImage: trackData.extras!['ytImage'].toString(),
-                          ytTitle: trackData.extras!['ytTitle'].toString(),
-                          ytUrl: trackData.extras!['ytUrl'].toString(),
+                  return SafeArea(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: AppColors.black,
+                          image: DecorationImage(
+                            fit: BoxFit.fill,
+                            opacity: 0.2,
+                            image: NetworkImage(
+                              trackData.artUri.toString(),
+                            ),
+                          )),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            // appBar(),
+                            playerUi(
+                              title: trackData.title,
+                              artist: trackData.artist ?? '',
+                              artUri: trackData.artUri.toString(),
+                            ),
+                            seekBar(),
+                            controlBackgroundWithControls(
+                              isPlaying: playing ?? false,
+                              processingState:
+                                  processingState ?? ProcessingState.buffering,
+                            ),
+                            if (trackData.extras!['ytUrl'].toString().isNotEmpty)
+                              YoutubeLinkButton(
+                                ytImage: trackData.extras!['ytImage'].toString(),
+                                ytTitle: trackData.extras!['ytTitle'].toString(),
+                                ytUrl: trackData.extras!['ytUrl'].toString(),
+                              ),
+                            const Padding(
+                              padding: EdgeInsets.only(top: 30),
+                              child: AdsCard(),
+                            ),
+                          ],
                         ),
-                      const Padding(
-                        padding: EdgeInsets.only(top: 30),
-                        child: AdsCard(),
                       ),
-                    ],
-                  ),
-                );
-              },
+                    ),
+                  );
+                },
+              ),
             );
           },
         ),
@@ -302,6 +329,8 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
   }
 
   Widget seekBar() {
+    appState = Provider.of<AppState>(context);
+    log('${appState.isSongFavourite}', name: 'From widget the fav');
     return Padding(
       padding: const EdgeInsets.only(
         top: 10,
@@ -330,12 +359,16 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                             await appState.likedSongs();
                             log('$favourite', name: 'from onTap fav');
                             setState(() {
-                              isFav = favourite;
+                              appState.isSongFavourite = favourite;
                             });
                           },
                           icon: Icon(
-                            isFav ? Icons.favorite : Icons.favorite_border,
-                            color: isFav ? Colors.red : Colors.grey,
+                            appState.isSongFavourite
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: appState.isSongFavourite
+                                ? Colors.red
+                                : Colors.grey,
                             size: 29,
                           ),
                         )
@@ -402,31 +435,9 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
     );
   }
 
-  Widget floatingFavButton() {
-    return Padding(
-      padding: const EdgeInsets.only(right: 20, bottom: 20),
-      child: Bounce(
-        duration: const Duration(milliseconds: 150),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Icon(
-            isFav ? Icons.favorite : Icons.favorite_border_outlined,
-            color: isFav ? Colors.red : Colors.grey.shade700,
-            size: 40,
-          ),
-        ),
-        onPressed: () {
-          setState(() {
-            isFav = !isFav;
-          });
-        },
-      ),
-    );
-  }
-
   Future<bool> onFav() async {
     var favourite = false;
-    if (isFav) {
+    if (appState.isSongFavourite) {
       favourite = await appState.unFavourite(
         songId: widget.songId,
       );

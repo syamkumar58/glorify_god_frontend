@@ -4,7 +4,7 @@
    - Music that only for christ songs
    - Basic functions like forward and backward play pause feature 
    - Every song has a feature of adding to favourites
-   - 
+
 
 17/1/2023
    - Created app files Architecture
@@ -104,4 +104,11 @@
       Need more clarity on fixing the UI for title
     - Removed the youtube image box for testing ( No thought on bringing it back )
     - Liked songs song tile overflow fix
+
+- 5/1/2024
+  - Added min value to slider
+  - Text alignments fixes
+  - Audio player UI changes with blurred background with the song image
+  - Bottom height and UI changes
+  - Home screen app title changed with new font family
           

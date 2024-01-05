@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -64,6 +65,7 @@ class _SearchScreenState extends State<SearchScreen>
     return Scaffold(
       appBar: customAppbar('SEARCH'),
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(bottom: 200),
         child: SizedBox(
           width: width,
           height: height,
@@ -87,16 +89,17 @@ class _SearchScreenState extends State<SearchScreen>
                       child: Center(
                         child: Column(
                           children: [
-                            if(searchController.text.isNotEmpty)
-                            Lottie.asset(
-                              LottieAnimations.searchMusicAni,
-                              controller: animationController,
-                              animate: true,
-                              width: 120,
-                              height: 120,
-                              fit: BoxFit.fill,
-                              filterQuality: FilterQuality.high,
-                            )else
+                            if (searchController.text.isNotEmpty)
+                              Lottie.asset(
+                                LottieAnimations.searchMusicAni,
+                                controller: animationController,
+                                animate: true,
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.fill,
+                                filterQuality: FilterQuality.high,
+                              )
+                            else
                               Icon(
                                 Icons.search,
                                 color: AppColors.dullBlack,
@@ -171,8 +174,13 @@ class _SearchScreenState extends State<SearchScreen>
   Widget searchedSongs() {
     return Expanded(
       child: ListView.separated(
-        padding:
-            const EdgeInsets.only(bottom: 60, top: 15, left: 12, right: 12),
+        padding: EdgeInsets.only(
+            bottom: appState.audioPlayer.processingState == ProcessingState.idle
+                ? 200
+                : 280,
+            top: 15,
+            left: 12,
+            right: 12),
         itemCount: searchedList.length,
         itemBuilder: (context, index) {
           final songDetails = searchedList[index];

@@ -94,7 +94,7 @@ class _BottomTabsState extends State<BottomTabs> {
             name: 'Yhe processingState');
 
         return SizedBox(
-          height: processingState != ProcessingState.idle ? 140 : 80,
+          height: processingState != ProcessingState.idle ? 150 : 90,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -127,13 +127,20 @@ class _BottomTabsState extends State<BottomTabs> {
 
         final songId = int.parse(trackData.id);
 
-        return ClipRRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
-            child: Container(
-              width: width,
-              height: 60,
-              color: Colors.transparent,
+        return Container(
+          width: width,
+          height: 60,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            image: DecorationImage(
+              fit: BoxFit.fill,
+                opacity: 0.4,
+              image: NetworkImage(trackData.artUri.toString())
+            )
+          ),
+          child: ClipRRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
               child: Center(
                 child: ListTile(
                   dense: true,
@@ -143,13 +150,17 @@ class _BottomTabsState extends State<BottomTabs> {
                   leading: SongImageBox(
                     imageUrl: trackData.artUri.toString(),
                   ),
-                  title: AppText(
-                    text: trackData.title,
-                    textAlign: TextAlign.left,
-                    styles: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                  title: SizedBox(
+                    width: width * 0.3,
+                    child: Text(
+                      trackData.title,
+                      textAlign: TextAlign.left,
+                      maxLines: 1,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   subtitle: AppText(
@@ -227,7 +238,7 @@ class _BottomTabsState extends State<BottomTabs> {
         activeColor: Colors.white,
         tabBackgroundColor: Colors.blueGrey.shade800,
         padding: const EdgeInsets.all(10),
-        tabMargin: const EdgeInsets.symmetric(horizontal: 12),
+        tabMargin: const EdgeInsets.only(left: 12,right: 12,top: 5,bottom: 5),
         tabs: [
           navBar(
             activeIcon: Icons.library_music,

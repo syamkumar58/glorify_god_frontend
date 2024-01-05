@@ -119,6 +119,15 @@ class AppState with ChangeNotifier {
     }
   }
 
+  bool _isSongFavourite = false;
+
+  bool get isSongFavourite => _isSongFavourite;
+
+  set isSongFavourite(bool value) {
+    _isSongFavourite = value;
+    notifyListeners();
+  }
+
   Future<bool> addFavourite({
     required int songId,
   }) async {

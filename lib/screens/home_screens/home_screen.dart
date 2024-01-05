@@ -165,17 +165,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 const AdsCard(),
                 if (appState.getArtistsWithSongsList.isNotEmpty)
                   ...appState.getArtistsWithSongsList.map((e) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (e.songs.isNotEmpty)
-                          TitleTile(
-                            title: e.artistName,
-                            showViewAll: false,
-                            onPressViewAll: () {},
-                          ),
-                        if (e.songs.isNotEmpty) songCard(e.songs),
-                      ],
+                    return Container(
+                      color: Colors.transparent,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (e.songs.isNotEmpty)
+                            TitleTile(
+                              title: e.artistName,
+                              showViewAll: false,
+                              onPressViewAll: () {},
+                            ),
+                          if (e.songs.isNotEmpty) songCard(e.songs),
+                        ],
+                      ),
                     );
                   })
                 else
@@ -197,15 +201,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget appBar(AppState appState) {
     return ListTile(
       title: RichText(
-        text:  TextSpan(
+        text: TextSpan(
           children: [
             TextSpan(
               text: AppStrings.appName,
               style: TextStyle(
-                fontSize: 26,
-                fontFamily: 'Memphis-Bold',
-                letterSpacing: 1,
-                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                fontFamily: 'RubikGlitch-Regular',
+                // letterSpacing: 0,
+                fontWeight: FontWeight.w400,
                 color: AppColors.white,
                 // fontStyle: FontStyle.italic,
                 // foreground: Paint()
@@ -223,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
             TextSpan(
-              text: ' with Songs',
+              text: '  with Songs',
               style: TextStyle(
                 fontSize: 10,
                 color: AppColors.white,
@@ -367,10 +371,14 @@ Future startAudio({
   // await appState.audioPlayer.seek(Duration.zero, index: initialId,);
 
   // Listen for changes in the currently playing index
-  appState.audioPlayer.currentIndexStream.listen((index) {
+  appState.audioPlayer.currentIndexStream.listen((index) async {
     if (index != null && index < audioSource.length) {
       final currentSongId = audioSource[index].songId;
-      log('$currentSongId', name: 'The song changed');
+
+      final res =
+          await appState.checkFavourites(songId: audioSource[index].songId);
+      appState.isSongFavourite = res;
+      log('$currentSongId - $res - ${appState.isSongFavourite}', name: 'The song changed');
       // Perform your API call for the current song here using currentSongId
       // ...
     }

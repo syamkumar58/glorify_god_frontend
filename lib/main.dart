@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
@@ -32,17 +30,7 @@ Future<void> main() async {
   await ad.MobileAds.instance.initialize();
 
   runApp(
-    p.MultiProvider(
-      providers: [
-        p.ChangeNotifierProvider(
-          create: (_) => AppState(),
-        ),
-        p.ChangeNotifierProvider(
-          create: (_) => GlobalVariables(),
-        ),
-      ],
-      child: const GlorifyGod(),
-    ),
+    const GlorifyGod(),
   );
 }
 
@@ -56,35 +44,23 @@ class GlorifyGod extends StatefulWidget {
 }
 
 class _GlorifyGodState extends State<GlorifyGod> {
-  AppState appState = AppState();
-  StreamSubscription<ConnectivityResult>? subscription;
-
-  @override
-  void initState() {
-    appState = context.read<AppState>();
-    super.initState();
-    checkConnection();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    subscription!.cancel();
-  }
-
-  Future checkConnection() async {
-    subscription = Connectivity().onConnectivityChanged.listen((connection) {
-      appState.connectivityResult = connection;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: AppStrings.appName,
-      theme: FlexThemeData.dark(),
-      debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+    return p.MultiProvider(
+      providers: [
+        p.ChangeNotifierProvider(
+          create: (_) => AppState(),
+        ),
+        p.ChangeNotifierProvider(
+          create: (_) => GlobalVariables(),
+        ),
+      ],
+      child: MaterialApp(
+        title: AppStrings.appName,
+        theme: FlexThemeData.dark(),
+        debugShowCheckedModeBanner: false,
+        home: const SplashScreen(),
+      ),
     );
   }
 }

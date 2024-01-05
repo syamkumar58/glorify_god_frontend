@@ -26,12 +26,13 @@ class _TitleTileState extends State<TitleTile> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: AppText(
+      title: AppText(
         text: widget.title,
+        textAlign: TextAlign.start,
         styles: const TextStyle(
           color: Colors.white,
           fontSize: 17,
-          letterSpacing: 1,
+          letterSpacing: 0.5,
           fontWeight: FontWeight.w500,
         ),
       ),

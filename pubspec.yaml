@@ -129,6 +129,9 @@ flutter:
     - family: Memphis-Light
       fonts:
         - asset: fonts/Memphis-Light.ttf
+    - family: RubikGlitch-Regular
+      fonts:
+        - asset: fonts/RubikGlitch-Regular.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:
