@@ -1,22 +1,10 @@
-final config = [
-  {
-    "message":
-        "శ్రద్ధగా పని చేయువారు ఏలుబడి చేయుదురు సోమరులు వెట్టి పనులు చేయవలసి వచ్చును.",
-    "verses": "సామెతలు 12:24",
-    "imageUrl": "",
-  },
-  {
-    "message": "Work hard and become a LEADER;be lazy and become a SLAVE",
-    "verses": "Proverbs 12:24",
-    "imageUrl": "",
-  },
-  {
-    "message":
-        "कामकाजी लोग प्रभुता करते हैं, परन्तु आलसी बेगारी में पकड़े जाते हैं।",
-    "verses": "नीतिवचन 12:24",
-    "imageUrl": "",
-  },
-];
+import 'package:glorify_god/models/remote_config/remote_config_model.dart';
+
+RemoteConfig remoteConfigData = RemoteConfig(
+  bannerMessages: [],
+  adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+  showUpdateBanner: false,
+);
 
 //<--
 // SHA1: 14:1F:3B:AF:F1:4D:5D:7A:4E:6E:58:9C:9B:80:F3:BB:E7:8D:D0:6E

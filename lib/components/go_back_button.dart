@@ -8,6 +8,7 @@ class GoBackButton extends StatelessWidget {
     return const Icon(
       Icons.arrow_back_ios,
       color: Colors.white,
+      size: 20,
     );
   }
 }

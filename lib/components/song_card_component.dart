@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:flutter/material.dart';
+import 'package:glorify_god/utils/app_colors.dart';
 
 class SongCard extends StatefulWidget {
   const SongCard({super.key, required this.image, required this.title});
@@ -22,17 +23,18 @@ class _SongCardState extends State<SongCard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 20, top: 12, bottom: 12),
+      padding: const EdgeInsets.only(left: 12, bottom: 0),
       child: SizedBox(
         width: 120,
         height: 160,
         child: Column(
           children: [
             Container(
-              width: 120,
-              height: 120,
+              width: 110,
+              height: 110,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
+                color: AppColors.dullBlack,
                 image: DecorationImage(
                   image: NetworkImage(
                     widget.image,

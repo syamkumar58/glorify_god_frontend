@@ -90,7 +90,6 @@ class ApiCalls {
           'is_physical_device': true,
         },
       };
-
       const loginEndpoint = '$loginUrl?gender=MALE';
 
       final loginResponse = await http.post(
@@ -100,7 +99,6 @@ class ApiCalls {
       );
 
       if (loginResponse.statusCode == 200) {
-        log(loginResponse.body, name: 'login call res');
         final response = userLoginResponseModelFromJson(loginResponse.body);
         return response;
       } else {
@@ -120,9 +118,12 @@ class ApiCalls {
   Future<http.Response?> getUserById({required int userId}) async {
     final url = '$getUserByIDUrl/$userId';
     final token = await getToken();
+    log(token, name: 'token to getUserById');
     try {
-      final user =
-          await http.get(Uri.parse(url), headers: {'Authorization': token});
+      final user = await http.get(Uri.parse(url), headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token
+      });
 
       log(user.body, name: 'the user by id 1');
 
@@ -137,52 +138,18 @@ class ApiCalls {
     }
   }
 
-  Future<http.Response?> createArtist({
-    required String artistName,
-    required String artistImage,
-    String churchName = '',
-    required String createdAt,
-  }) async {
-    const url = createArtistUrl;
-
-    final body = {
-      'artistName': artistName,
-      'artistImage': artistImage,
-      'churchName': churchName,
-      'createdAt': createdAt,
-    };
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: header,
-        body: json.encode(body),
-      );
-
-      if (response.statusCode == 200) {
-        log(response.body, name: 'createArtist response');
-        return response;
-      } else {
-        log('response in else ${response.statusCode}');
-        return null;
-      }
-    } catch (e) {
-      log('$e', name: 'createArtist error');
-      rethrow;
-    }
-  }
-
-  Future<http.Response> getAllArtistsWithSongs() async {
+  Future<http.Response?> getAllArtistsWithSongs() async {
+    log('$getArtistWithSongsUrl',name: 'getArtistWithSongsUrl url');
     final token = await getToken();
     try {
       final response = await http.get(
         Uri.parse(getArtistWithSongsUrl),
-        headers: {authorization: token},
+        headers: {'Content-Type': 'application/json', authorization: token},
       );
       return response;
     } catch (e) {
       log('$e', name: 'getAllArtistsWithSongs error');
-      rethrow;
+      return null;
     }
   }
 
@@ -198,7 +165,7 @@ class ApiCalls {
 
       final add = await http.post(
         Uri.parse(url),
-        headers: {authorization: token},
+        headers: {'Content-Type': 'application/json', authorization: token},
       );
 
       log('${add.statusCode}', name: 'add fav response');
@@ -221,7 +188,7 @@ class ApiCalls {
 
       final add = await http.delete(
         Uri.parse(url),
-        headers: {authorization: token},
+        headers: {'Content-Type': 'application/json', authorization: token},
       );
 
       log('${add.statusCode}', name: 'un fav response');
@@ -233,13 +200,16 @@ class ApiCalls {
     }
   }
 
-  Future<http.Response> checkSongIdAddedOrNot({required int songId}) async {
+  Future<http.Response> checkSongIdAddedOrNot({
+    required int songId,
+    required int userId,
+  }) async {
     final token = await getToken();
-    final url = '$checkFavUrl?songId=$songId';
+    final url = '$checkFavUrl?userId=$userId&songId=$songId';
     try {
       final response = await http.get(
         Uri.parse(url),
-        headers: {authorization: token},
+        headers: {'Content-Type': 'application/json', authorization: token},
       );
       return response;
     } catch (e) {
@@ -248,46 +218,137 @@ class ApiCalls {
     }
   }
 
-  Future<http.Response> getFavourites({required int userId}) async {
+  Future<http.Response?> getFavourites({required int userId}) async {
     final token = await getToken();
     final uri = '$getFavouritesUrl?userId=$userId';
+    log(uri, name: 'getFavourites request sending');
     try {
-      final response =
-          await http.get(Uri.parse(uri), headers: {authorization: token});
+      final response = await http.get(Uri.parse(uri),
+          headers: {'Content-Type': 'application/json', authorization: token});
       log('${response.statusCode}', name: 'getFavourites response');
       return response;
     } catch (e) {
       log('$e', name: 'getFavourites error');
-      rethrow;
+      return null;
     }
   }
 
-  Future<http.Response> searchApi({
+  Future<http.Response?> searchApi({
     required String text,
   }) async {
     log(text, name: 'searched text is');
     final token = await getToken();
     final uri = '$searchUrl?query=$text';
     try {
-      final response =
-          await http.get(Uri.parse(uri), headers: {authorization: token});
+      final response = await http.get(Uri.parse(uri),
+          headers: {'Content-Type': 'application/json', authorization: token});
       log('${response.statusCode}', name: 'searched response');
       return response;
     } catch (e) {
       log('$e', name: 'checkSongIdAddedOrNot error');
-      rethrow;
+      return null;
     }
   }
 
   Future<http.Response> getSongs() async {
     final token = await getToken();
     try {
-      final response = await http
-          .get(Uri.parse(getAllSongs), headers: {authorization: token});
+      final response = await http.get(Uri.parse(getAllSongs),
+          headers: {'Content-Type': 'application/json', authorization: token});
 
       return response;
     } catch (e) {
       log('$e', name: 'getSongs error');
+      rethrow;
+    }
+  }
+
+  Future<http.Response> updateRating({
+    required int userId,
+    required int rating,
+  }) async {
+    final token = await getToken();
+    final body = {
+      "userId": userId,
+      "ratings": rating,
+      "createdAt": "${DateTime.now()}",
+    };
+    final requestBody = json.encode(body);
+    const uri = updateRatingUrl;
+    final theHeaders = {
+      'Content-Type': 'application/json',
+      authorization: token
+    };
+
+    try {
+      final res = await http.post(
+        Uri.parse(uri),
+        headers: theHeaders,
+        body: requestBody,
+      );
+      log('${res.statusCode}', name: 'the res from app state for update');
+      return res;
+    } catch (e) {
+      log('$e', name: 'updateRating error');
+      rethrow;
+    }
+  }
+
+  Future<http.Response?> getRating({
+    required int userId,
+  }) async {
+    final token = await getToken();
+    final uri = '$getRatingUrl?userId=$userId';
+    try {
+      final res = await http.get(Uri.parse(uri),
+          headers: {'Content-Type': 'application/json', authorization: token});
+      return res;
+    } catch (e) {
+      log('$e', name: 'getRating error');
+      return null;
+    }
+  }
+
+  Future<http.Response> updateFeedback({
+    required int userId,
+    required String message,
+  }) async {
+    const url = feedbackUrl;
+    final token = await getToken();
+    final body = {
+      "userId": userId,
+      "feedback": message,
+      "createdAt": "${DateTime.now()}",
+    };
+
+    log(json.encode(body), name: 'Feedback request');
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json', authorization: token},
+        body: json.encode(body),
+      );
+
+      log('${res.statusCode}', name: 'feedback response');
+
+      return res;
+    } catch (e) {
+      log('$e', name: 'updateFeedback error');
+      rethrow;
+    }
+  }
+
+  Future<http.Response> getUserReportedIssuesById({required int userId}) async {
+    final url = '$getUserReportedIssuesByIdUrl?userId=$userId';
+    final token = await getToken();
+    try {
+      final res = await http.get(Uri.parse(url),
+          headers: {'Content-Type': 'application/json', authorization: token});
+
+      return res;
+    } catch (e) {
+      log('$e', name: 'getUserReportedById error');
       rethrow;
     }
   }

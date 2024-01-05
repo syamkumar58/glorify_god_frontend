@@ -1,4 +1,5 @@
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:glorify_god/utils/app_colors.dart';
 
 String convertDurations(Duration duration) {
   final convert = duration.inHours > 0
@@ -11,6 +12,9 @@ String convertDurations(Duration duration) {
 void toastMessage({required String message}) {
   Fluttertoast.showToast(
     msg: message,
+    backgroundColor: AppColors.white,
+    textColor: AppColors.black,
+    gravity: ToastGravity.SNACKBAR,
   );
 }
 

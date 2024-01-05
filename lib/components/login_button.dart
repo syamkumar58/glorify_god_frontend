@@ -28,7 +28,7 @@ CupertinoButton loginButton({
         child: Row(
           children: [
             CircleAvatar(
-              radius: 26,
+              radius: 25,
               backgroundColor: Colors.transparent,
               backgroundImage: AssetImage(
                 backgroundImage,
@@ -38,7 +38,7 @@ CupertinoButton loginButton({
               width: 10,
             ),
             AppText(
-              text:  title,
+              text: title,
               styles: TextStyle(
                 fontSize: fontSize,
                 fontWeight: fontWeight,

@@ -2,23 +2,21 @@
 
 import 'dart:developer';
 
-import 'package:flutter/foundation.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/banner_card.dart';
-import 'package:glorify_god/components/noisey_text.dart';
+import 'package:glorify_god/components/home_components/home_loading_shimmer_effect.dart';
 import 'package:glorify_god/components/song_card_component.dart';
 import 'package:glorify_god/components/title_tile_component.dart';
-import 'package:glorify_god/config/helpers.dart';
+import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart' as app;
 import 'package:glorify_god/provider/app_state.dart';
+import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
-import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
@@ -31,34 +29,35 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   app.AppState appState = app.AppState();
 
   double get width => MediaQuery.of(context).size.width;
 
   double get height => MediaQuery.of(context).size.height;
+  bool connectionError = false;
+  List<int> showShimmers = [1, 2, 3, 4];
+  late AnimationController lottieController;
 
   @override
   void initState() {
+    lottieController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    lottieController.repeat();
     appState = context.read<app.AppState>();
     super.initState();
     getAllSongs();
   }
 
   Future getAllSongs() async {
-    await appState.getAllArtistsWithSongs();
-    for (final x in appState.getArtistsWithSongsList) {
-      log(x.artistName, name: 'appState.getArtistsWithSongsList');
-
-      for (final song in x.songs) {
-        log(
-            'Song Details:'
-            '\n  Song ID: ${song.songId}'
-            '\n  Title: ${song.title}'
-            '\n  Artist: ${song.artist}'
-            '\n  Art URI: ${song.artUri}'
-            '\n  Song URL: ${song.songUrl}',
-            name: 'appState.getArtistsWithSongsList');
+    try {
+      await appState.getAllArtistsWithSongs();
+    } catch (er) {
+      log('$er', name: 'The home screen error');
+      if (er.toString().contains('Null check operator used on a null value')) {
+        setState(() {
+          connectionError = true;
+        });
       }
     }
   }
@@ -67,45 +66,124 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     appState = Provider.of<app.AppState>(context);
     return Scaffold(
-      appBar: appBar(appState),
+      appBar: PreferredSize(
+        preferredSize:
+            Size.fromHeight(remoteConfigData.showUpdateBanner ? 160 : 60),
+        child: SafeArea(
+          child: Column(
+            children: [
+              if (remoteConfigData.showUpdateBanner)
+                ListTile(
+                  tileColor: Colors.blue,
+                  title: Text(
+                    "Exciting news! A new version of our app is now available. Elevate your experience by updating through the Play/App Store today!",
+                    style: GoogleFonts.manrope(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.start,
+                  ),
+                  trailing: IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.close,
+                        size: 22,
+                        color: AppColors.white,
+                      )),
+                ),
+              appBar(appState),
+            ],
+          ),
+        ),
+      ),
       body: SizedBox(
         width: width,
         height: height,
         child: SafeArea(
           child: SingleChildScrollView(
+            physics: appState.getArtistsWithSongsList.isNotEmpty
+                ? const AlwaysScrollableScrollPhysics()
+                : const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.only(bottom: 50),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (kDebugMode)
-                  CupertinoButton(
-                    onPressed: () async {
-                      Fluttertoast.showToast(msg: 'something went wrong on logIn');
-                      // toastMessage(message: 'something went wrong on logIn');
-                    },
-                    child: const AppText(
-                      text: 'Test',
-                      styles: TextStyle(
-                        fontSize: 24,
+                if (connectionError)
+                  Container(
+                    width: width,
+                    decoration: const BoxDecoration(color: Colors.blue),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        "**Service Update: Servers Currently Unavailable**\n",
+                                    style: GoogleFonts.manrope(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        "We apologize for the inconvenience, but our servers are currently down for maintenance. Please try accessing the app again later. Thank you for your understanding.",
+                                    style: GoogleFonts.manrope(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
+
+                // if (kDebugMode)
+                //   CupertinoButton(
+                //     onPressed: () async {
+                //       // Fluttertoast.showToast(
+                //       //     msg: 'something went wrong on logIn');
+                //       toastMessage(message: 'something went wrong on logIn');
+                //     },
+                //     child: const AppText(
+                //       text: 'Test',
+                //       styles: TextStyle(
+                //         fontSize: 24,
+                //       ),
+                //     ),
+                //   ),
                 const BannerCard(),
                 const AdsCard(),
-                ...appState.getArtistsWithSongsList.map((e) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (e.songs.isNotEmpty)
-                        TitleTile(
-                          title: e.artistName,
-                          showViewAll: false,
-                          onPressViewAll: () {},
-                        ),
-                      if (e.songs.isNotEmpty) songCard(e.songs),
-                    ],
-                  );
-                }),
+                if (appState.getArtistsWithSongsList.isNotEmpty)
+                  ...appState.getArtistsWithSongsList.map((e) {
+                    return Container(
+                      color: Colors.transparent,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (e.songs.isNotEmpty)
+                            TitleTile(
+                              title: e.artistName,
+                              showViewAll: false,
+                              onPressViewAll: () {},
+                            ),
+                          if (e.songs.isNotEmpty) songCard(e.songs),
+                        ],
+                      ),
+                    );
+                  })
+                else
+                  const HomeShimmerEffect(),
                 // TitleTile(
                 //   title: 'Most played',
                 //   onPressViewAll: () {},
@@ -120,40 +198,72 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  PreferredSizeWidget appBar(AppState appState) {
-    return AppBar(
-      backgroundColor: Colors.grey.shade900,
-      centerTitle: false,
-      elevation: 2,
-      automaticallyImplyLeading: false,
-      title: const AppText(
-        text: AppStrings.appName,
-        styles: TextStyle(
-          fontSize: 26,
-          fontFamily: 'AppTitle',
-          letterSpacing: 4,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-          fontStyle: FontStyle.italic,
+  Widget appBar(AppState appState) {
+    return ListTile(
+      title: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: AppStrings.appName,
+              style: TextStyle(
+                fontSize: 20,
+                fontFamily: 'RubikGlitch-Regular',
+                // letterSpacing: 0,
+                fontWeight: FontWeight.w400,
+                color: AppColors.white,
+                // fontStyle: FontStyle.italic,
+                // foreground: Paint()
+                //   ..shader = LinearGradient(
+                //     colors: [
+                //       AppColors.redAccent,
+                //       AppColors.blueAccent,
+                //       // AppColors.purple,
+                //     ],
+                //     begin: Alignment.bottomLeft,
+                //     end: Alignment.topRight,
+                //   ).createShader(
+                //     const Rect.fromLTWH(10, 30, 8, 18),
+                //   ),
+              ),
+            ),
+            TextSpan(
+              text: '  with Songs',
+              style: TextStyle(
+                fontSize: 10,
+                color: AppColors.white,
+                fontWeight: FontWeight.w800,
+                fontFamily: 'Memphis-Light',
+              ),
+            ),
+          ],
         ),
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 22),
-          child: CupertinoButton(
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              // GoRouter.of(context).push('/profileScreen');
-              GoRouter.of(context).push('/searchScreen');
-            },
-            child: const Icon(
-              Icons.search,
-              size: 28,
-              color: Colors.white,
-            ),
+      trailing: Padding(
+        padding: const EdgeInsets.only(right: 12),
+        child: Text(
+          ' ✞',
+          style: TextStyle(
+            fontSize: 26,
+            fontFamily: 'AppTitle',
+            letterSpacing: 4,
+            fontWeight: FontWeight.bold,
+            color: AppColors.redAccent,
+            fontStyle: FontStyle.italic,
+            // foreground: Paint()
+            //   ..shader = LinearGradient(
+            //     colors: [
+            //       AppColors.redAccent,
+            //       AppColors.blueAccent,
+            //       // AppColors.purple,
+            //     ],
+            //     begin: Alignment.bottomLeft,
+            //     end: Alignment.topRight,
+            //   ).createShader(
+            //     const Rect.fromLTWH(2, 0, 2, 15),
+            //   ),
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -172,21 +282,16 @@ class _HomeScreenState extends State<HomeScreen> {
               (e) => Bounce(
                 duration: const Duration(milliseconds: 50),
                 onPressed: () async {
+                  final initialId = songs.indexOf(e);
+                  log('${e.songId} , $initialId', name: 'on tap songId');
                   if (appState.audioPlayer.playing) {
                     await appState.audioPlayer.pause();
                   }
                   await startAudio(
                     appState: appState,
                     audioSource: songs,
-                    //<-- This condition is because
-                    // For ios it is taking by the index value 0 and
-                    // Android is working from 1 also -->/
-                    initialId: e.songId - 1,
-                  )
-                      //     .then((value) {}).catchError((dynamic onError){
-                      //   log('$onError',name:'On start audio error what is it');
-                      // })
-                      ;
+                    initialId: initialId,
+                  );
                 },
                 child: SongCard(
                   image: e.artUri,
@@ -197,6 +302,12 @@ class _HomeScreenState extends State<HomeScreen> {
             .toList(),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    lottieController.dispose();
+    super.dispose();
   }
 }
 
@@ -224,11 +335,15 @@ Future startAudio({
         final audioSource = AudioSource.uri(
           Uri.parse(e.songUrl),
           tag: MediaItem(
-            id: e.songId.toString(),
-            title: e.title,
-            artist: e.artist,
-            artUri: Uri.parse(e.artUri),
-          ),
+              id: e.songId.toString(),
+              title: e.title,
+              artist: e.artist,
+              artUri: Uri.parse(e.artUri),
+              extras: {
+                'ytTitle': e.ytTitle,
+                'ytImage': e.ytImage,
+                'ytUrl': e.ytUrl,
+              }),
         );
         log('${audioSource.headers}', name: 'The audio source loaded');
         return audioSource;
@@ -254,5 +369,20 @@ Future startAudio({
   // If enabled in ios simulator it is not working
   //     // (No particular reason found) -->/
   // await appState.audioPlayer.seek(Duration.zero, index: initialId,);
+
+  // Listen for changes in the currently playing index
+  appState.audioPlayer.currentIndexStream.listen((index) async {
+    if (index != null && index < audioSource.length) {
+      final currentSongId = audioSource[index].songId;
+
+      final res =
+          await appState.checkFavourites(songId: audioSource[index].songId);
+      appState.isSongFavourite = res;
+      log('$currentSongId - $res - ${appState.isSongFavourite}', name: 'The song changed');
+      // Perform your API call for the current song here using currentSongId
+      // ...
+    }
+  });
+
   await appState.audioPlayer.play();
 }

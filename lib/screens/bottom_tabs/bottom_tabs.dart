@@ -1,18 +1,17 @@
 // ignore_for_file: strict_raw_type
 
-import 'dart:convert';
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/song_image_box.dart';
-import 'package:glorify_god/models/user_models/user_login_response_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
-import 'package:glorify_god/screens/explorer_screens/explore_screen.dart';
 import 'package:glorify_god/screens/favourites_screen/liked_screen.dart';
 import 'package:glorify_god/screens/home_screens/home_screen.dart';
 import 'package:glorify_god/screens/music_player_files/just_audio_player.dart';
 import 'package:glorify_god/screens/profile_screens/profile_screen.dart';
-import 'package:glorify_god/src/api/api_calls.dart';
+import 'package:glorify_god/screens/search_screens/search_screen.dart';
+import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:flutter/cupertino.dart';
@@ -39,47 +38,27 @@ class _BottomTabsState extends State<BottomTabs> {
 
   double get height => MediaQuery.of(context).size.height;
   AppState appState = AppState();
-  bool isLoading = true;
+  bool isLoading = false;
   int _screenIndex = 0;
   late Box box;
   List<Widget> screens = const [
     HomeScreen(),
+    SearchScreen(),
     LikedScreen(),
-    ExploreScreen(),
     ProfileScreen(),
   ];
 
   @override
   void initState() {
     box = Hive.box(HiveKeys.openBox);
+    appState = context.read<AppState>();
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      initiallySetUserDataGlobally();
-    });
+    initialUserCall();
   }
 
-  Future initiallySetUserDataGlobally() async {
-    final glorifyGodBox = Hive.box<dynamic>(HiveKeys.openBox);
-
-    final userLogInData = await glorifyGodBox.get(
-      HiveKeys.logInKey,
-    );
-
-    if (userLogInData != null) {
-      final toJson = jsonEncode(userLogInData);
-      final logIn = userLoginResponseModelFromJson(toJson);
-
-      final user = await ApiCalls().getUserById(userId: logIn.userId);
-
-      if (user != null) {
-        final userDetails = userLoginResponseModelFromJson(user.body);
-        appState.userData = userDetails;
-      }
-
-      setState(() {
-        isLoading = false;
-      });
-    }
+  Future initialUserCall() async {
+    await appState.initiallySetUserDataGlobally();
+    await appState.getRatings();
   }
 
   @override
@@ -115,7 +94,7 @@ class _BottomTabsState extends State<BottomTabs> {
             name: 'Yhe processingState');
 
         return SizedBox(
-          height: processingState != ProcessingState.idle ? 120 : 60,
+          height: processingState != ProcessingState.idle ? 150 : 90,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -151,57 +130,98 @@ class _BottomTabsState extends State<BottomTabs> {
         return Container(
           width: width,
           height: 60,
-          color: Colors.grey.shade800,
-          child: Center(
-            child: ListTile(
-              dense: true,
-              onTap: () {
-                showMusicScreen(songId);
-              },
-              leading: SongImageBox(
-                imageUrl: trackData.artUri.toString(),
-              ),
-              title: AppText(
-                text: trackData.title,
-                textAlign: TextAlign.left,
-                styles: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: AppText(
-                text: trackData.artist.toString(),
-                textAlign: TextAlign.left,
-                styles: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              trailing: Bounce(
-                duration: const Duration(milliseconds: 50),
-                onPressed: () {
-                  if (isPlaying) {
-                    appState.audioPlayer.pause();
-                  } else {
-                    appState.audioPlayer.play();
-                  }
-                },
-                child: processingState == ProcessingState.loading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 5,
-                          color: Colors.white,
-                        ),
-                      )
-                    : Icon(
-                        isPlaying ? Icons.pause_circle : Icons.play_circle,
-                        size: 30,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            image: DecorationImage(
+              fit: BoxFit.fill,
+                opacity: 0.4,
+              image: NetworkImage(trackData.artUri.toString())
+            )
+          ),
+          child: ClipRRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              child: Center(
+                child: ListTile(
+                  dense: true,
+                  onTap: () {
+                    showMusicScreen(songId);
+                  },
+                  leading: SongImageBox(
+                    imageUrl: trackData.artUri.toString(),
+                  ),
+                  title: SizedBox(
+                    width: width * 0.3,
+                    child: Text(
+                      trackData.title,
+                      textAlign: TextAlign.left,
+                      maxLines: 1,
+                      style: const TextStyle(
+                        fontSize: 16,
                         color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
+                    ),
+                  ),
+                  subtitle: AppText(
+                    text: trackData.artist.toString(),
+                    textAlign: TextAlign.left,
+                    styles: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  trailing: SizedBox(
+                    width: 100,
+                    child: Row(
+                      children: [
+                        Bounce(
+                          duration: const Duration(milliseconds: 50),
+                          onPressed: () {
+                            if (isPlaying) {
+                              appState.audioPlayer.pause();
+                            } else {
+                              appState.audioPlayer.play();
+                            }
+                          },
+                          child: processingState == ProcessingState.loading
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CupertinoActivityIndicator(
+                                    color: AppColors.white,
+                                  ),
+                                )
+                              : Icon(
+                                  isPlaying
+                                      ? Icons.pause_circle
+                                      : Icons.play_circle,
+                                  size: 30,
+                                  color: Colors.white,
+                                ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12),
+                          child: IconButton(
+                              padding: EdgeInsets.zero,
+                              onPressed: () {
+                                if (processingState != ProcessingState.idle) {
+                                  appState.audioPlayer.stop();
+                                }
+                              },
+                              icon: Icon(
+                                Icons.close,
+                                size: 20,
+                                color: processingState != ProcessingState.idle
+                                    ? AppColors.white
+                                    : AppColors.dullBlack,
+                              )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
@@ -211,14 +231,14 @@ class _BottomTabsState extends State<BottomTabs> {
   }
 
   Widget gNav() {
-    return SizedBox(
-      height: 60,
+    return SafeArea(
       child: GNav(
         gap: 8,
+        // haptic: true,
         activeColor: Colors.white,
         tabBackgroundColor: Colors.blueGrey.shade800,
         padding: const EdgeInsets.all(10),
-        tabMargin: const EdgeInsets.symmetric(horizontal: 12),
+        tabMargin: const EdgeInsets.only(left: 12,right: 12,top: 5,bottom: 5),
         tabs: [
           navBar(
             activeIcon: Icons.library_music,
@@ -227,21 +247,21 @@ class _BottomTabsState extends State<BottomTabs> {
             tabName: AppStrings.tabSongs,
           ),
           navBar(
-            tabName: AppStrings.tabLiked,
-            activeIcon: Icons.favorite,
-            inactiveIcon: Icons.favorite_border_outlined,
+            tabName: AppStrings.tabSearch,
+            activeIcon: Icons.search,
+            inactiveIcon: Icons.search,
             index: 1,
           ),
           navBar(
-            tabName: AppStrings.tabExplore,
-            activeIcon: Icons.language,
-            inactiveIcon: Icons.language_outlined,
+            tabName: AppStrings.tabLiked,
+            activeIcon: Icons.favorite,
+            inactiveIcon: Icons.favorite_border_outlined,
             index: 2,
           ),
           navBar(
             tabName: AppStrings.tabProfile,
-            activeIcon: Icons.person,
-            inactiveIcon: Icons.person,
+            activeIcon: Icons.account_circle,
+            inactiveIcon: Icons.account_circle_outlined,
             index: 3,
           ),
         ],

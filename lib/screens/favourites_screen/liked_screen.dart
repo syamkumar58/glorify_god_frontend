@@ -1,5 +1,8 @@
+import 'dart:developer';
 
+import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/banner_card.dart';
+import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
@@ -23,20 +26,18 @@ class LikedScreen extends StatefulWidget {
 
 class _LikedScreenState extends State<LikedScreen> {
   AppState appState = AppState();
-  bool isLoading = false;
+  bool isLoading = true;
   List<Song> collectedSongs = [];
 
   Future<void> getLikedSongs() async {
-    setState(() {
-      isLoading = true;
-    });
-    await appState.likedSongs();
-    Future.delayed(const Duration(seconds: 5), () async {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
+    await appState.likedSongs().whenComplete(() {
+      Future.delayed(const Duration(seconds: 3), () async {
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
+      });
     });
   }
 
@@ -52,22 +53,31 @@ class _LikedScreenState extends State<LikedScreen> {
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        leading: const SizedBox(),
-        title: AppText(
-          text: AppStrings.favoritesTitle,
-          styles: GoogleFonts.manrope(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
-      ),
+      appBar: customAppbar('LIKED'),
       body: Column(
         children: [
           const BannerCard(),
-          if (!isLoading) playAllButton(),
+          if (!isLoading && appState.likedSongsList.isNotEmpty)
+            playAllButton()
+          else if (!isLoading && appState.likedSongsList.isEmpty)
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 50, bottom: 50),
+                  child: Center(
+                    child: AppText(
+                      styles: GoogleFonts.manrope(
+                        fontSize: 18,
+                        color: AppColors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      text: AppStrings.noFavourites,
+                    ),
+                  ),
+                ),
+                const AdsCard(),
+              ],
+            ),
           Expanded(child: songs()),
         ],
       ),
@@ -76,7 +86,7 @@ class _LikedScreenState extends State<LikedScreen> {
 
   Widget playAllButton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.only(top: 20, bottom: 20),
       child: Container(
         width: 200,
         height: 30,
@@ -87,7 +97,7 @@ class _LikedScreenState extends State<LikedScreen> {
         child: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () async {
-            await onPlay(appState.likedSongsList[0].songId);
+            await onPlay(0);
           },
           child: AppText(
             text: 'Play all',
@@ -133,7 +143,10 @@ class _LikedScreenState extends State<LikedScreen> {
           return Bounce(
             duration: const Duration(milliseconds: 200),
             onPressed: () async {
-              await onPlay(songDetails.songId);
+              final initialId = appState.likedSongsList
+                  .indexOf(appState.likedSongsList[index]);
+              log('$initialId', name: 'initial id in liked');
+              await onPlay(initialId);
             },
             child: SongsLikesTile(
               index: index + 1,
@@ -147,7 +160,7 @@ class _LikedScreenState extends State<LikedScreen> {
     );
   }
 
-  Future<void> onPlay(int songId) async {
+  Future<void> onPlay(int initialId) async {
     for (final song in appState.likedSongsList) {
       final eachSong = Song(
         songId: song.songId,
@@ -166,7 +179,7 @@ class _LikedScreenState extends State<LikedScreen> {
     await startAudio(
       appState: appState,
       audioSource: collectedSongs,
-      initialId: songId - 1,
+      initialId: initialId,
     );
   }
 }

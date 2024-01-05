@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:glorify_god/config/remote_config.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdsCard extends StatefulWidget {
@@ -17,7 +18,7 @@ class _AdsCardState extends State<AdsCard> {
   bool adLoaded = false;
 
   Future<void> initializeAd() async {
-    const adUnitId = 'ca-app-pub-3940256099942544/6300978111';
+    final adUnitId = remoteConfigData.adUnitId;
     bannerAd = BannerAd(
       size: AdSize.banner,
       adUnitId: adUnitId,
@@ -39,7 +40,6 @@ class _AdsCardState extends State<AdsCard> {
     );
 
     await bannerAd.load();
-
   }
 
   @override
@@ -54,7 +54,7 @@ class _AdsCardState extends State<AdsCard> {
       child: Container(
         width: bannerAd.size.width.toDouble(),
         height: bannerAd.size.height.toDouble(),
-        margin: const EdgeInsets.only(top: 30, bottom: 20),
+        margin: const EdgeInsets.only(top: 20),
         decoration: BoxDecoration(
           // color: Colors.white,
           borderRadius: BorderRadius.circular(8),

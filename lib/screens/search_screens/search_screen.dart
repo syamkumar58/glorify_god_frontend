@@ -2,16 +2,23 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:glorify_god/components/ads_card.dart';
-import 'package:glorify_god/components/go_back_button.dart';
+import 'package:glorify_god/components/custom_app_bar.dart';
+import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
+import 'package:glorify_god/models/search_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/screens/home_screens/home_screen.dart';
+import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
-import 'package:go_router/go_router.dart';
+import 'package:glorify_god/utils/asset_images.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -22,8 +29,11 @@ class SearchScreen extends StatefulWidget {
   _SearchScreenState createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends State<SearchScreen>
+    with TickerProviderStateMixin {
   TextEditingController searchController = TextEditingController();
+
+  late AnimationController animationController;
 
   double get width => MediaQuery.of(context).size.width;
 
@@ -37,20 +47,25 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Timer? _searchDelay;
 
+  List<SearchModel> searchedList = [];
+
+  @override
+  void initState() {
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    );
+    animationController.repeat();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            cancelTimer();
-            GoRouter.of(context).pop();
-          },
-          icon: const GoBackButton(),
-        ),
-      ),
+      appBar: customAppbar('SEARCH'),
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(bottom: 200),
         child: SizedBox(
           width: width,
           height: height,
@@ -62,8 +77,51 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Column(
                 children: [
                   const AdsCard(),
+                  const SizedBox(
+                    height: 12,
+                  ),
                   searchField(),
-                  if (searchController.text.isNotEmpty) searchedSongs(),
+                  if (searchedList.isNotEmpty)
+                    searchedSongs()
+                  else if (searchedList.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 50),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            if (searchController.text.isNotEmpty)
+                              Lottie.asset(
+                                LottieAnimations.searchMusicAni,
+                                controller: animationController,
+                                animate: true,
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.fill,
+                                filterQuality: FilterQuality.high,
+                              )
+                            else
+                              Icon(
+                                Icons.search,
+                                color: AppColors.dullBlack,
+                                size: 40,
+                              ),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            AppText(
+                              text: searchController.text.isEmpty
+                                  ? AppStrings.searchForYourFavouriteMusic
+                                  : AppStrings.searchingForYourFavouriteMusic,
+                              styles: GoogleFonts.manrope(
+                                fontSize: 16,
+                                color: AppColors.dullWhite,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -91,7 +149,12 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           suffixIcon: IconButton(
             onPressed: () {
+              if (kDebugMode) {
+                FocusScope.of(context).unfocus();
+              }
               searchController.clear();
+              searchedList.clear();
+              cancelTimer();
             },
             icon: Icon(
               Icons.close,
@@ -111,15 +174,22 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget searchedSongs() {
     return Expanded(
       child: ListView.separated(
-        padding: const EdgeInsets.only(bottom: 60, top: 15),
-        itemCount: appState.searchList.length,
+        padding: EdgeInsets.only(
+            bottom: appState.audioPlayer.processingState == ProcessingState.idle
+                ? 200
+                : 280,
+            top: 15,
+            left: 12,
+            right: 12),
+        itemCount: searchedList.length,
         itemBuilder: (context, index) {
-          final songDetails = appState.searchList[index];
+          final songDetails = searchedList[index];
           return Bounce(
             duration: const Duration(milliseconds: 200),
             onPressed: () async {
+              final initialId = searchedList.indexOf(searchedList[index]);
               FocusScope.of(context).unfocus();
-              for (final song in appState.searchList) {
+              for (final song in searchedList) {
                 final eachSong = Song(
                   songId: song.songId,
                   songUrl: song.songUrl,
@@ -137,7 +207,7 @@ class _SearchScreenState extends State<SearchScreen> {
               await startAudio(
                 appState: appState,
                 audioSource: collectedSongs,
-                initialId: songDetails.songId - 1,
+                initialId: initialId,
               );
             },
             child: SongsLikesTile(
@@ -156,8 +226,11 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<dynamic> onChangedValue(String text) async {
-    _searchDelay = Timer.periodic(const Duration(seconds: 2), (timer) {
-      appState.search(text: text);
+    _searchDelay = Timer.periodic(const Duration(seconds: 2), (timer) async {
+      final list = await appState.search(text: text);
+      setState(() {
+        searchedList = list;
+      });
     });
   }
 
@@ -170,6 +243,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void dispose() {
     cancelTimer();
+    animationController.dispose();
     super.dispose();
   }
 }
