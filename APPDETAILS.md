@@ -111,4 +111,10 @@
   - Audio player UI changes with blurred background with the song image
   - Bottom height and UI changes
   - Home screen app title changed with new font family
+
+- 7/1/2024
+  - Added all app icons
+  - On tap music bar instead of bottomSheet now moved to materialRoute with page transition (code from chatGpt) works super fine
+  - Search screen logic added on clearing the entry
+  - End point moved to the domain system now that points to api.glorifygod.in
           

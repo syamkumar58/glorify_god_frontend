@@ -65,7 +65,7 @@ class _SearchScreenState extends State<SearchScreen>
     return Scaffold(
       appBar: customAppbar('SEARCH'),
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(bottom: 200),
+        padding: const EdgeInsets.only(bottom: 200),
         child: SizedBox(
           width: width,
           height: height,
@@ -165,7 +165,13 @@ class _SearchScreenState extends State<SearchScreen>
         ),
         onChanged: (text) {
           if (_searchDelay?.isActive ?? false) _searchDelay!.cancel();
-          onChangedValue(text);
+          if (text.isNotEmpty) {
+            onChangedValue(text);
+          } else {
+            searchController.clear();
+            searchedList.clear();
+            cancelTimer();
+          }
         },
       ),
     );

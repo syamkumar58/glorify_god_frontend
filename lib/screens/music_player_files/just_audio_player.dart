@@ -81,13 +81,20 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
-    return mainBody();
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
+      body: mainBody(),
+    );
   }
 
   Widget mainBody() {
     return SizedBox(
       width: width,
-      height: height * 0.8,
+      height: height,
       child: SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: 50),
         child: StreamBuilder(
@@ -106,37 +113,36 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
 
             return Container(
               decoration: BoxDecoration(
-                  color: AppColors.black,
-                  image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: NetworkImage(
-                      trackData.artUri.toString(),
-                    ),
-                  )),
+                color: AppColors.black,
+              ),
               child: StreamBuilder(
                 stream: appState.audioPlayer.playerStateStream,
                 builder: (context, snapShot) {
                   if (snapShot.hasError) {
-                    log('${snapShot.error}', name: 'The playerStream snap Error');
+                    log('${snapShot.error}',
+                        name: 'The playerStream snap Error');
                   }
 
                   final playerState = snapShot.data;
                   final processingState = playerState?.processingState;
                   final playing = playerState?.playing;
 
-                  return SafeArea(
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: AppColors.black,
-                          image: DecorationImage(
-                            fit: BoxFit.fill,
-                            opacity: 0.2,
-                            image: NetworkImage(
-                              trackData.artUri.toString(),
-                            ),
-                          )),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+                  return Container(
+                    height: height,
+                    width: width,
+                    decoration: BoxDecoration(
+                        color: AppColors.black,
+                        image: DecorationImage(
+                          fit: BoxFit.fill,
+                          opacity: 0.2,
+                          image: NetworkImage(
+                            trackData.artUri.toString(),
+                          ),
+                        )),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 100),
                         child: Column(
                           children: [
                             const SizedBox(
@@ -154,10 +160,14 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                               processingState:
                                   processingState ?? ProcessingState.buffering,
                             ),
-                            if (trackData.extras!['ytUrl'].toString().isNotEmpty)
+                            if (trackData.extras!['ytUrl']
+                                .toString()
+                                .isNotEmpty)
                               YoutubeLinkButton(
-                                ytImage: trackData.extras!['ytImage'].toString(),
-                                ytTitle: trackData.extras!['ytTitle'].toString(),
+                                ytImage:
+                                    trackData.extras!['ytImage'].toString(),
+                                ytTitle:
+                                    trackData.extras!['ytTitle'].toString(),
                                 ytUrl: trackData.extras!['ytUrl'].toString(),
                               ),
                             const Padding(

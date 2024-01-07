@@ -16,6 +16,7 @@ import 'package:glorify_god/utils/app_strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
+import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -240,28 +241,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
       trailing: Padding(
         padding: const EdgeInsets.only(right: 12),
-        child: Text(
-          ' ✞',
-          style: TextStyle(
-            fontSize: 26,
-            fontFamily: 'AppTitle',
-            letterSpacing: 4,
-            fontWeight: FontWeight.bold,
-            color: AppColors.redAccent,
-            fontStyle: FontStyle.italic,
-            // foreground: Paint()
-            //   ..shader = LinearGradient(
-            //     colors: [
-            //       AppColors.redAccent,
-            //       AppColors.blueAccent,
-            //       // AppColors.purple,
-            //     ],
-            //     begin: Alignment.bottomLeft,
-            //     end: Alignment.topRight,
-            //   ).createShader(
-            //     const Rect.fromLTWH(2, 0, 2, 15),
-            //   ),
-          ),
+        child: Image.asset(
+          AppImages.appWhiteIcon,
+          width: 25,
+          height: 20,
+          fit: BoxFit.contain,
         ),
       ),
     );
@@ -378,7 +362,8 @@ Future startAudio({
       final res =
           await appState.checkFavourites(songId: audioSource[index].songId);
       appState.isSongFavourite = res;
-      log('$currentSongId - $res - ${appState.isSongFavourite}', name: 'The song changed');
+      log('$currentSongId - $res - ${appState.isSongFavourite}',
+          name: 'The song changed');
       // Perform your API call for the current song here using currentSongId
       // ...
     }

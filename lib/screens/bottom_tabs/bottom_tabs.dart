@@ -131,13 +131,11 @@ class _BottomTabsState extends State<BottomTabs> {
           width: width,
           height: 60,
           decoration: BoxDecoration(
-            color: Colors.black,
-            image: DecorationImage(
-              fit: BoxFit.fill,
-                opacity: 0.4,
-              image: NetworkImage(trackData.artUri.toString())
-            )
-          ),
+              color: Colors.black,
+              image: DecorationImage(
+                  fit: BoxFit.fill,
+                  opacity: 0.4,
+                  image: NetworkImage(trackData.artUri.toString()))),
           child: ClipRRect(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -145,7 +143,26 @@ class _BottomTabsState extends State<BottomTabs> {
                 child: ListTile(
                   dense: true,
                   onTap: () {
-                    showMusicScreen(songId);
+                    // showMusicScreen(songId);
+                    Navigator.of(context).push(PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) {
+                        return JustAudioPlayer(songId: songId);
+                      },
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0.0, 1.0);
+                        const end = Offset.zero;
+                        const curve = Curves.easeInOutCubic;
+
+                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ));
+
                   },
                   leading: SongImageBox(
                     imageUrl: trackData.artUri.toString(),
@@ -238,7 +255,8 @@ class _BottomTabsState extends State<BottomTabs> {
         activeColor: Colors.white,
         tabBackgroundColor: Colors.blueGrey.shade800,
         padding: const EdgeInsets.all(10),
-        tabMargin: const EdgeInsets.only(left: 12,right: 12,top: 5,bottom: 5),
+        tabMargin:
+            const EdgeInsets.only(left: 12, right: 12, top: 5, bottom: 5),
         tabs: [
           navBar(
             activeIcon: Icons.library_music,

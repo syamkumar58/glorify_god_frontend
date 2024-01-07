@@ -3,6 +3,7 @@ class AppImages {
   static String googleImage = '$path/googleImage.png';
   static String cross = '$path/cross.jpeg';
   static String jesusName = '$path/jesusName.jpeg';
+  static String appWhiteIcon = '$path/appWhiteIcon.png';
 }
 
 class LottieAnimations {

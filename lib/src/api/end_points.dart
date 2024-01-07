@@ -3,7 +3,7 @@ const bool useLocalHost = false;
 const String localHost = 'localhost'; //'10.0.2.2'; //
 // < If platform is Android use '10.0.2.2' as host and IOS uses 'localhost'>/
 const String hostUrl =
-    useLocalHost ? 'http://$localHost:8000' : 'http://3.110.121.25';
+    useLocalHost ? 'http://$localHost:8000' : 'http://api.glorifygod.in';
 
 const String loginUrl = '$hostUrl/login/user_login_call';
 const String getUserByIDUrl = '$hostUrl/login/get_user_by_id';
