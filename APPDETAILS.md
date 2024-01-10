@@ -117,4 +117,9 @@
   - On tap music bar instead of bottomSheet now moved to materialRoute with page transition (code from chatGpt) works super fine
   - Search screen logic added on clearing the entry
   - End point moved to the domain system now that points to api.glorifygod.in
-          
+
+- 10/1/2024
+  - Changed google service json file for android
+  - implemented Privacy policy apis
+  - Privacy policy screen now changed to internal app screen not an url to call  
+             
