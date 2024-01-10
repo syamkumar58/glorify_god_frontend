@@ -20,3 +20,6 @@ const String getRatingUrl = '$hostUrl/rateApp/getUserRating';
 const String feedbackUrl = '$hostUrl/feedBack/feedback';
 const String getUserReportedIssuesByIdUrl =
     '$hostUrl/feedBack/getUserReportedIssuesById';
+const String privacyPolicyUrl = '$hostUrl/privacyPolicy';
+const String privacyPolicyAcceptedUrl =
+    '$hostUrl/privacyPolicy/checkUserAcceptedPolicyById';

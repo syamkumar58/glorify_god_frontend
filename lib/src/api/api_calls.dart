@@ -139,7 +139,7 @@ class ApiCalls {
   }
 
   Future<http.Response?> getAllArtistsWithSongs() async {
-    log('$getArtistWithSongsUrl',name: 'getArtistWithSongsUrl url');
+    log('$getArtistWithSongsUrl', name: 'getArtistWithSongsUrl url');
     final token = await getToken();
     try {
       final response = await http.get(
@@ -341,6 +341,35 @@ class ApiCalls {
 
   Future<http.Response> getUserReportedIssuesById({required int userId}) async {
     final url = '$getUserReportedIssuesByIdUrl?userId=$userId';
+    final token = await getToken();
+    try {
+      final res = await http.get(Uri.parse(url),
+          headers: {'Content-Type': 'application/json', authorization: token});
+
+      return res;
+    } catch (e) {
+      log('$e', name: 'getUserReportedById error');
+      rethrow;
+    }
+  }
+
+  Future<http.Response> acceptedPolicyById({required int userId}) async {
+    final url = '$privacyPolicyAcceptedUrl?userId=$userId';
+    final token = await getToken();
+    try {
+      final res = await http.get(Uri.parse(url),
+          headers: {'Content-Type': 'application/json', authorization: token});
+
+      return res;
+    } catch (e) {
+      log('$e', name: 'acceptedPolicyById error');
+      rethrow;
+    }
+  }
+
+  Future<http.Response> checkUserAcceptedPolicyById(
+      {required int userId}) async {
+    final url = '$privacyPolicyAcceptedUrl?userId=$userId';
     final token = await getToken();
     try {
       final res = await http.get(Uri.parse(url),

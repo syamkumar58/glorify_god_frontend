@@ -307,4 +307,26 @@ class AppState with ChangeNotifier {
     final data = userReportedIssuesModelFromJson(res.body);
     reportedIssue = data;
   }
+
+  Future<bool> acceptedPolicyById() async {
+    final userId = userData.userId;
+    final res = await ApiCalls().acceptedPolicyById(userId: userId);
+    log('${res.statusCode}', name: 'acceptedPolicyById response');
+    if (res.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> checkUserAcceptedPolicyById() async {
+    final userId = userData.userId;
+    final res = await ApiCalls().checkUserAcceptedPolicyById(userId: userId);
+    log('${res.statusCode}', name: 'checkUserAcceptedPolicyById response');
+    if (res.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

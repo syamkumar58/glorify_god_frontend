@@ -12,7 +12,20 @@
           "package_name": "com.example.glorify_god"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "13510448361-ebp4hmm06od01gnjf9egfc0c12323jc7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.glorify_god",
+            "certificate_hash": "59830600250ea022656efd03ec21ea1b20b09c3d"
+          }
+        },
+        {
+          "client_id": "13510448361-4sgurqs7rh94n11i6thu4qalds5ldqlb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBZ-XnU5xYy_En4Qismn5sCA7arWtFwIt4"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "13510448361-4sgurqs7rh94n11i6thu4qalds5ldqlb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "13510448361-sbd3dns69qf2ka1ehmp4qd824vbd65ui.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.glorifyGod"
+              }
+            }
+          ]
         }
       }
     }
