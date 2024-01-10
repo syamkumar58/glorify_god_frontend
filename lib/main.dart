@@ -6,6 +6,7 @@ import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
 import 'package:glorify_god/screens/splash_screen.dart';
 import 'package:glorify_god/utils/app_strings.dart';
+import 'package:glorify_god/utils/asset_images.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:hive/hive.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -15,6 +16,10 @@ import 'package:provider/provider.dart' as p;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Show the LoadingScreen while initializing Firebase and other services
+  runApp(const LoadingScreen());
+
   await Firebase.initializeApp();
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
@@ -32,6 +37,46 @@ Future<void> main() async {
   runApp(
     const GlorifyGod(),
   );
+}
+
+
+/// LoadingScreen
+class LoadingScreen extends StatelessWidget {
+  const LoadingScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+
+    double height = MediaQuery.of(context).size.height;
+    return MaterialApp(
+      title: AppStrings.appName,
+      theme: FlexThemeData.dark(),
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: Colors.black, // Set background color to black
+        body: SafeArea(
+          child: Container(
+            width: width,
+            height: height,
+            padding: const EdgeInsets.symmetric(vertical: 200),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  AppImages.appWhiteIcon,
+                  height: 60,
+                  width: 50,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// GlorifyGod

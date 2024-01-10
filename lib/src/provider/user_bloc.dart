@@ -14,12 +14,15 @@ Future<UserCredential> signInWithGoogle() async {
   //<--If using Firebase, you might want to reinitialize Firebase -->/
   // await Firebase.initializeApp();
   //<-- Sign In with google -->/
+  log('Here is step 1');
   final googleSigning = await googleSignIn.signIn();
 
   //<-- google authentication from firebase  -->/
+  log('Here is step 2');
   final googleAuth = await googleSigning?.authentication;
 
   //<-- google credentials -->/
+  log('Here is step 3');
   final credentials = GoogleAuthProvider.credential(
     accessToken: googleAuth!.accessToken,
     idToken: googleAuth.idToken,
@@ -30,16 +33,18 @@ Future<UserCredential> signInWithGoogle() async {
   // If not creates one in the firebase
   // or
   // It signOuts the existing user from there and sign in again with the same credentials -->/
+  log('Here is step 4');
   final user = await FirebaseAuth.instance
       .fetchSignInMethodsForEmail(googleSigning!.email);
-
+  log('Here is step 5');
   if (user.isNotEmpty) {
     //<-- if user cred isNotEmpty means user is there in the firebase
     // 1. SignOut
     // 2. Sign in to firebase with same credentials
     // -->/
+    log('Here is step 6');
     await googleSignIn.signOut();
-
+    log('Here is step 7');
     final userDetails =
         await FirebaseAuth.instance.signInWithCredential(credentials);
     log('$userDetails', name: 'from the if con');
@@ -49,6 +54,7 @@ Future<UserCredential> signInWithGoogle() async {
     //<-- If the user not in firebase
     // Simply create a new user details
     // -->/
+    log('Here is step 8');
     final userDetails =
         await FirebaseAuth.instance.signInWithCredential(credentials);
     log('$userDetails', name: 'from the else con');

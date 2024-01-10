@@ -92,6 +92,8 @@ class ApiCalls {
       };
       const loginEndpoint = '$loginUrl?gender=MALE';
 
+      log('$loginEndpoint -',name:'The login call URL');
+
       final loginResponse = await http.post(
         Uri.parse(loginEndpoint),
         headers: header,
