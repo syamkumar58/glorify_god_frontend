@@ -11,6 +11,7 @@ import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/screens/login_pages/login_page.dart';
 import 'package:glorify_god/screens/profile_screens/contact_support_screen.dart';
+import 'package:glorify_god/screens/profile_screens/privacy_policy_screen.dart';
 import 'package:glorify_god/screens/profile_screens/reportAProblem.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
@@ -64,7 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(
                 height: 20,
               ),
-              restData(),
+              restOfScreen(),
               // quoteBackgroundWithProfileImage(),
               // name(),
               const SizedBox(
@@ -151,7 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget restData() {
+  Widget restOfScreen() {
     return Center(
       child: Container(
         width: width * 0.9,
@@ -180,6 +181,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     CupertinoPageRoute(builder: (_) => const ReportAProblem()));
               },
             ),
+            tile(
+                icon: Icons.verified_user_outlined,
+                text: 'Privacy Policy',
+                onTap: () async {
+                  // final url = 'http://glorifyGod.in/privacyPolicy';
+
+                  // if (await canLaunchUrlString(url)) {
+                  //   await launchUrlString(url);
+                  // }
+
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (_) => const PrivacyPolicyScreen(
+                        showNavBack: true,
+                      ),
+                    ),
+                  );
+                }),
             tile(
               icon: Icons.logout_rounded,
               text: AppStrings.logout,

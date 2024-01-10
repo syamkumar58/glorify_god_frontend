@@ -5,7 +5,7 @@ import 'dart:ui';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/components/login_button.dart';
 import 'package:glorify_god/components/noisey_text.dart';
-import 'package:glorify_god/screens/bottom_tabs/bottom_tabs.dart';
+import 'package:glorify_god/screens/profile_screens/privacy_policy_screen.dart';
 import 'package:glorify_god/src/provider/user_bloc.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
@@ -15,7 +15,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
-import 'package:lottie/lottie.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class LoginPage extends StatefulWidget {
@@ -223,11 +222,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         setState(() {
           loading = false;
         });
-        await Navigator.push(
+        await Navigator.pushAndRemoveUntil(
           context,
-          CupertinoPageRoute<BottomTabs>(
-            builder: (_) => const BottomTabs(),
+          CupertinoPageRoute<PrivacyPolicyScreen>(
+            builder: (_) => const PrivacyPolicyScreen(showNavBack: false),
           ),
+          (route) => false,
         );
       } else {
         setState(() {
