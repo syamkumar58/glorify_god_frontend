@@ -271,6 +271,7 @@ class AppState with ChangeNotifier {
     final userId = userData.userId;
     final res = await ApiCalls().getRating(userId: userId);
     if (res != null) {
+      log('${res.body}',name:'The json body for the app rating call');
       final data = json.decode(res.body);
       userGivenRating = int.parse(data['ratings'].toString());
       log('$userGivenRating', name: 'The res for get Rating');

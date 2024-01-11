@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:auto_route/annotations.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/models/remote_config/remote_config_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
@@ -39,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     setConfigData();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Future.delayed(const Duration(seconds: 4), navigations);
+      Future.delayed(const Duration(seconds: 2), navigations);
     });
   }
 
@@ -82,29 +83,63 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.black,
-      body: SizedBox(
-        width: width,
-        height: height,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: width * 0.9,
-              child: TextLiquidFill(
-                text: AppStrings.appName,
-                waveColor: AppColors.redAccent,
-                waveDuration: const Duration(seconds: 3),
-                loadDuration: const Duration(seconds: 3),
-                textStyle: const TextStyle(
-                  fontSize: 60,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'AppTitle',
-                  letterSpacing: 2,
+      body: SafeArea(
+        child: SizedBox(
+          width: width,
+          height: height,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              // SizedBox(
+              //   width: width * 0.9,
+              //   child: TextLiquidFill(
+              //     text: AppStrings.appName,
+              //     waveColor: AppColors.redAccent,
+              //     waveDuration: const Duration(seconds: 3),
+              //     loadDuration: const Duration(seconds: 3),
+              //     textStyle: const TextStyle(
+              //       fontSize: 60,
+              //       fontWeight: FontWeight.bold,
+              //       fontFamily: 'AppTitle',
+              //       letterSpacing: 2,
+              //     ),
+              //     boxHeight: 150,
+              //   ),
+              // ),
+              Container(
+                color: Colors.transparent,
+                width: width * 0.9,
+                height: height * 0.46,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: AppText(
+                    text: AppStrings.appName,
+                    styles: TextStyle(
+                      color: AppColors.redAccent,
+                      fontSize: 60,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'AppTitle',
+                      letterSpacing: 2,
+                    ),
+                  ),
                 ),
-                boxHeight: 150,
               ),
-            ),
-          ],
+              Container(
+                color: Colors.transparent,
+                height: height * 0.4,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: CupertinoActivityIndicator(
+                      color: AppColors.white,
+                      radius: 14,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
