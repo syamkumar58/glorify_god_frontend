@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:auto_route/annotations.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:glorify_god/components/noisey_text.dart';
