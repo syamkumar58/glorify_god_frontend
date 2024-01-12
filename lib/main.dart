@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +14,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart' as ad;
 import 'package:provider/provider.dart' as p;
 
 Future<void> main() async {
-  log('${DateTime.now()}', name: 'Exit 1');
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await JustAudioBackground.init(
+  JustAudioBackground.init(
     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
     androidNotificationChannelName: 'Audio playback',
     androidNotificationOngoing: true,
@@ -29,7 +27,7 @@ Future<void> main() async {
 
   await Hive.openBox<dynamic>(HiveKeys.openBox);
 
-  await ad.MobileAds.instance.initialize();
+  ad.MobileAds.instance.initialize();
 
   runApp(
     const GlorifyGod(),

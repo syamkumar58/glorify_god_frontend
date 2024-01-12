@@ -189,7 +189,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
             ),
             if (!widget.showNavBack)
               Padding(
-                padding: const EdgeInsets.only(top: 8),
+                padding: const EdgeInsets.only(top: 4),
                 child: CupertinoButton(
                     padding: const EdgeInsets.only(left: 60, right: 60),
                     color: AppColors.white,

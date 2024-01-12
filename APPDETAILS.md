@@ -122,4 +122,15 @@
   - Changed google service json file for android
   - implemented Privacy policy apis
   - Privacy policy screen now changed to internal app screen not an url to call  
-             
+
+- 11/1/2024
+  - Added to native white screen to app title logo for IOS at launch (Some more changes need to be done there)
+  - Android only Image is added to drawable folder
+    Still work is under progress
+  - Removed unUsed import
+
+- 12/1/2024
+  - App launch white screen replaced with splashLogo
+  - Fixed some fixes
+  - main.dart main function removed await and did unAwait for fast launch
+     

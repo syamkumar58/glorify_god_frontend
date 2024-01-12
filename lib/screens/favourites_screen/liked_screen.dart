@@ -31,7 +31,7 @@ class _LikedScreenState extends State<LikedScreen> {
 
   Future<void> getLikedSongs() async {
     await appState.likedSongs().whenComplete(() {
-      Future.delayed(const Duration(seconds: 3), () async {
+      Future.delayed(const Duration(seconds: 2), () async {
         if (mounted) {
           setState(() {
             isLoading = false;

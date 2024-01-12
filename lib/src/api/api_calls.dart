@@ -299,6 +299,7 @@ class ApiCalls {
   }) async {
     final token = await getToken();
     final uri = '$getRatingUrl?userId=$userId';
+    log('$uri',name:'getRating url request');
     try {
       final res = await http.get(Uri.parse(uri),
           headers: {'Content-Type': 'application/json', authorization: token});

@@ -115,6 +115,8 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
               decoration: BoxDecoration(
                 color: AppColors.black,
               ),
+              width: width,
+              height: height,
               child: StreamBuilder(
                 stream: appState.audioPlayer.playerStateStream,
                 builder: (context, snapShot) {
@@ -170,10 +172,7 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                                     trackData.extras!['ytTitle'].toString(),
                                 ytUrl: trackData.extras!['ytUrl'].toString(),
                               ),
-                            const Padding(
-                              padding: EdgeInsets.only(top: 30),
-                              child: AdsCard(),
-                            ),
+                            const AdsCard(),
                           ],
                         ),
                       ),

@@ -270,13 +270,16 @@ class AppState with ChangeNotifier {
   Future getRatings() async {
     final userId = userData.userId;
     final res = await ApiCalls().getRating(userId: userId);
-    if (res != null) {
-      log('${res.body}',name:'The json body for the app rating call');
+    if (res != null && res.statusCode == 200) {
+      log('${res.body} & ${res.statusCode}',
+          name: 'The json body for the app rating call');
       final data = json.decode(res.body);
       userGivenRating = int.parse(data['ratings'].toString());
       log('$userGivenRating', name: 'The res for get Rating');
       return res;
     } else {
+      userGivenRating = 0;
+      log('Something went wrong');
       // toastMessage(message: 'Connection error.');
     }
   }
