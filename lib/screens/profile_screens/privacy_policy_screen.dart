@@ -18,17 +18,17 @@ class PrivacyPolicyScreen extends StatefulWidget {
 }
 
 class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
-  bool loading = true;
-  bool value = false;
+  bool loading = false;
+  bool value = true;
   AppState appState = AppState();
 
   @override
   void initState() {
     appState = context.read<AppState>();
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      checkingCall();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   checkingCall();
+    // });
   }
 
   Future checkingCall() async {
@@ -200,7 +200,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                               loading = true;
                             });
                             final accepted =
-                                await appState.acceptedPolicyById();
+                                await appState.acceptedPolicyById(check: true);
                             setState(() {
                               loading = false;
                             });

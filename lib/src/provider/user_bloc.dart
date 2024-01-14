@@ -11,6 +11,13 @@ import 'package:hive/hive.dart';
 GoogleSignIn googleSignIn = GoogleSignIn();
 
 Future<UserCredential> signInWithGoogle() async {
+
+  //<--If using Firebase, you might want to reinitialize Firebase -->/
+  // await Firebase.initializeApp();
+
+  // Sign out from Google
+  await googleSignIn.signOut();
+
   //<--If using Firebase, you might want to reinitialize Firebase -->/
   // await Firebase.initializeApp();
   //<-- Sign In with google -->/

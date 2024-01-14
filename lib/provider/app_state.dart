@@ -312,10 +312,12 @@ class AppState with ChangeNotifier {
     reportedIssue = data;
   }
 
-  Future<bool> acceptedPolicyById() async {
+  Future<bool> acceptedPolicyById({required bool check}) async {
     final userId = userData.userId;
-    final res = await ApiCalls().acceptedPolicyById(userId: userId);
-    log('${res.statusCode}', name: 'acceptedPolicyById response');
+    final res =
+        await ApiCalls().acceptedPolicyById(userId: userId, check: check);
+    log('${res.statusCode} - b ${res.body}',
+        name: 'acceptedPolicyById response');
     if (res.statusCode == 200) {
       return true;
     } else {
@@ -326,7 +328,20 @@ class AppState with ChangeNotifier {
   Future<bool> checkUserAcceptedPolicyById() async {
     final userId = userData.userId;
     final res = await ApiCalls().checkUserAcceptedPolicyById(userId: userId);
-    log('${res.statusCode}', name: 'checkUserAcceptedPolicyById response');
+    log('${res.statusCode} - b ${res.body}',
+        name: 'checkUserAcceptedPolicyById response');
+    if (res.statusCode == 200) {
+      return res.body.contains('true') ? true : false;
+    } else {
+      return res.body.contains('true') ? true : false;
+    }
+  }
+
+  Future<bool> removeUserFromPrivacyPolicyById() async {
+    final userId = userData.userId;
+    final res =
+        await ApiCalls().removeUserFromPrivacyPolicyById(userId: userId);
+    log('${res.statusCode}', name: 'removeUserFromPrivacyPolicyById response');
     if (res.statusCode == 200) {
       return true;
     } else {

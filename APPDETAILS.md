@@ -137,3 +137,5 @@
 - 14/1/2024
   - Bug fixes
   - YouTube link UI changes
+  - Removed privacy policy as a login interphase and marked the policy as true for every user when login
+      API implementation is pending

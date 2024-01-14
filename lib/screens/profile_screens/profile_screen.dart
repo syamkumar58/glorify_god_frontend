@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
@@ -20,6 +21,7 @@ import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -48,32 +50,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
-    return Scaffold(
-      appBar: customAppbar('PROFILE'),
-      body: SizedBox(
-        height: height,
-        width: width,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 60),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 20,
-              ),
-              profileData(),
-              const SizedBox(
-                height: 20,
-              ),
-              restOfScreen(),
-              // quoteBackgroundWithProfileImage(),
-              // name(),
-              const SizedBox(
-                height: 20,
-              ),
-              // Align(alignment: Alignment.bottomLeft, child: logoutButton()),
-              const AdsCard(),
-            ],
+    return ModalProgressHUD(
+      inAsyncCall: onLogout,
+      child: Scaffold(
+        appBar: customAppbar('PROFILE'),
+        body: SizedBox(
+          height: height,
+          width: width,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 60),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 20,
+                ),
+                profileData(),
+                const SizedBox(
+                  height: 20,
+                ),
+                restOfScreen(),
+                // quoteBackgroundWithProfileImage(),
+                // name(),
+                const SizedBox(
+                  height: 20,
+                ),
+                // Align(alignment: Alignment.bottomLeft, child: logoutButton()),
+                const AdsCard(),
+              ],
+            ),
           ),
         ),
       ),
@@ -207,17 +212,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   setState(() {
                     onLogout = true;
                   });
+                  // await appState.removeUserFromPrivacyPolicyById();
                   await appState.audioPlayer.pause();
                   await appState.audioPlayer.stop();
                   await GoogleSignIn().signOut();
                   await hiveBox!.clear();
-                  await onLogOutPushScreen();
+                  Future.delayed(const Duration(seconds: 2), () async {
+                    await onLogOutPushScreen();
+                  });
                 } else {
                   toastMessage(
                       message: 'Check your internet connection and try again');
                 }
               },
             ),
+            if (kDebugMode)
+              tile(
+                icon: Icons.telegram,
+                text: 'Test Bu',
+                onTap: () async {
+                  // final check = await appState.checkUserAcceptedPolicyById();
+                  // log('$check',name:'Check from profile screen test bu');
+                  // if (check) {
+                  //   log('$check',name:'Check from profile screen test bu 1');
+                  //   await appState.removeUserFromPrivacyPolicyById();
+                  // } else {
+                  //   log('$check',name:'Check from profile screen test bu 2');
+                  //   await appState.acceptedPolicyById(check: true);
+                  // }
+                },
+              ),
           ],
         ),
       ),

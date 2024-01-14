@@ -33,7 +33,7 @@ class BottomTabs extends StatefulWidget {
   _BottomTabsState createState() => _BottomTabsState();
 }
 
-class _BottomTabsState extends State<BottomTabs> {
+class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   double get width => MediaQuery.of(context).size.width;
 
   double get height => MediaQuery.of(context).size.height;
@@ -52,8 +52,22 @@ class _BottomTabsState extends State<BottomTabs> {
   void initState() {
     box = Hive.box(HiveKeys.openBox);
     appState = context.read<AppState>();
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
     initialUserCall();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.detached:
+        appState.audioPlayer.dispose();
+      case AppLifecycleState.resumed:
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.paused:
+    }
   }
 
   Future initialUserCall() async {
@@ -148,12 +162,14 @@ class _BottomTabsState extends State<BottomTabs> {
                       pageBuilder: (context, animation, secondaryAnimation) {
                         return JustAudioPlayer(songId: songId);
                       },
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
                         const begin = Offset(0.0, 1.0);
                         const end = Offset.zero;
                         const curve = Curves.easeInOutCubic;
 
-                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
                         var offsetAnimation = animation.drive(tween);
 
                         return SlideTransition(
@@ -162,7 +178,6 @@ class _BottomTabsState extends State<BottomTabs> {
                         );
                       },
                     ));
-
                   },
                   leading: SongImageBox(
                     imageUrl: trackData.artUri.toString(),
@@ -323,5 +338,12 @@ class _BottomTabsState extends State<BottomTabs> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    appState.audioPlayer.stop();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 }

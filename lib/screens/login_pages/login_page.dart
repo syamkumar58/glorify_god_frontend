@@ -5,7 +5,7 @@ import 'dart:ui';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/components/login_button.dart';
 import 'package:glorify_god/components/noisey_text.dart';
-import 'package:glorify_god/screens/profile_screens/privacy_policy_screen.dart';
+import 'package:glorify_god/screens/bottom_tabs/bottom_tabs.dart';
 import 'package:glorify_god/src/provider/user_bloc.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
@@ -34,13 +34,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   bool loading = false;
 
-  late AnimationController lottieController;
-
   @override
   void initState() {
-    lottieController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 5));
-    lottieController.repeat();
     glorifyGodBox = Hive.box(HiveKeys.openBox);
     super.initState();
   }
@@ -223,12 +218,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           loading = false;
         });
         await Navigator.pushAndRemoveUntil(
-          context,
-          CupertinoPageRoute<PrivacyPolicyScreen>(
-            builder: (_) => const PrivacyPolicyScreen(showNavBack: false),
-          ),
-          (route) => false,
-        );
+            context,
+            CupertinoPageRoute<BottomTabs>(
+              builder: (_) => const BottomTabs(),
+            ),
+            (route) => false);
       } else {
         setState(() {
           loading = false;

@@ -23,3 +23,4 @@ const String getUserReportedIssuesByIdUrl =
 const String privacyPolicyUrl = '$hostUrl/privacyPolicy';
 const String privacyPolicyAcceptedUrl =
     '$hostUrl/privacyPolicy/checkUserAcceptedPolicyById';
+const String removeUserFromPrivacyPolicyUrl = '$hostUrl/privacyPolicy/removePrivacyPolicy';

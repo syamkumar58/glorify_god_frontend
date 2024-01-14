@@ -354,13 +354,14 @@ class ApiCalls {
     }
   }
 
-  Future<http.Response> acceptedPolicyById({required int userId}) async {
-    final url = '$privacyPolicyAcceptedUrl?userId=$userId';
+  Future<http.Response> acceptedPolicyById(
+      {required int userId, required bool check}) async {
+    final url = '$privacyPolicyUrl/?userId=$userId&check=$check';
     final token = await getToken();
     try {
-      final res = await http.get(Uri.parse(url),
+      final res = await http.post(Uri.parse(url),
           headers: {'Content-Type': 'application/json', authorization: token});
-
+      log('${res.body}', name: 'acceptedPolicyById from api services');
       return res;
     } catch (e) {
       log('$e', name: 'acceptedPolicyById error');
@@ -379,6 +380,22 @@ class ApiCalls {
       return res;
     } catch (e) {
       log('$e', name: 'getUserReportedById error');
+      rethrow;
+    }
+  }
+
+  Future<http.Response> removeUserFromPrivacyPolicyById(
+      {required int userId}) async {
+    final url = '$removeUserFromPrivacyPolicyUrl?userId=$userId';
+    final token = await getToken();
+    try {
+      final res = await http.delete(Uri.parse(url),
+          headers: {'Content-Type': 'application/json', authorization: token});
+      log('${res.body} - ${res.statusCode}',
+          name: 'removeUserFromPrivacyPolicyById response On success ');
+      return res;
+    } catch (e) {
+      log('$e', name: 'removeUserFromPrivacyPolicyById error');
       rethrow;
     }
   }
