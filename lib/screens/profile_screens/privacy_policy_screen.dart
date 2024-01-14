@@ -158,7 +158,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
   Widget bottomBar() {
     return Container(
       width: double.infinity,
-      height: !widget.showNavBack ? 130 : 80,
+      height: !widget.showNavBack ? 130 : 82,
       color: AppColors.dullBlack.withOpacity(0.8),
       child: SafeArea(
         child: Column(

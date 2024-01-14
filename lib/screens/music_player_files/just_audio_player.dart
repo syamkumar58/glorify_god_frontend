@@ -268,10 +268,10 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 backwardButton(),
-                if (processingState == ProcessingState.buffering)
-                  const CircularProgressIndicator(
+                if (processingState == ProcessingState.buffering &&
+                    processingState != ProcessingState.loading)
+                  const CupertinoActivityIndicator(
                     color: Colors.white,
-                    strokeWidth: 6,
                   )
                 else
                   playPauseButton(isPlaying: isPlaying),
@@ -287,53 +287,75 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
   Widget backwardButton() {
     return CupertinoButton(
       padding: EdgeInsets.zero,
-      onPressed: () async {
-        await appState.audioPlayer.seekToPrevious();
-        await appState.audioPlayer.pause();
-        await appState.audioPlayer.play();
-      },
-      child: const Icon(
+      onPressed: appState.audioPlayer.processingState == ProcessingState.ready
+          ? () async {
+              await appState.audioPlayer.seekToPrevious();
+              await appState.audioPlayer.pause();
+              await appState.audioPlayer.play();
+            }
+          : null,
+      child: Icon(
         Icons.skip_previous_rounded,
         size: 30,
         // color: player.position.inSeconds > 5 ? Colors.white
         // : Colors.grey[600],
-        color: Colors.white,
+        color: appState.audioPlayer.processingState == ProcessingState.ready
+            ? AppColors.white
+            : AppColors.dullWhite,
       ),
     );
   }
 
   Widget playPauseButton({bool isPlaying = false}) {
-    return Bounce(
-      onPressed: () async {
-        if (isPlaying) {
-          await appState.audioPlayer.pause();
-        } else {
-          await appState.audioPlayer.play();
-        }
-      },
-      duration: const Duration(milliseconds: 150),
-      child: Icon(
-        isPlaying ? Icons.pause_circle : Icons.play_circle,
-        color: Colors.white,
-        size: 45,
-      ),
-    );
+    return appState.audioPlayer.processingState == ProcessingState.ready
+        ? Bounce(
+            onPressed: () async {
+              if (isPlaying) {
+                await appState.audioPlayer.pause();
+              } else {
+                await appState.audioPlayer.play();
+              }
+            },
+            duration: const Duration(milliseconds: 150),
+            child: Icon(
+              isPlaying ? Icons.pause_circle : Icons.play_circle,
+              color: Colors.white,
+              size: 45,
+            ),
+          )
+        : Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: AppColors.white,
+            ),
+            child: Center(
+              child: CupertinoActivityIndicator(
+                color: AppColors.dullBlack,
+              ),
+            ),
+          );
   }
 
   Widget forwardButton() {
     return CupertinoButton(
       padding: EdgeInsets.zero,
-      child: const Icon(
+      onPressed: appState.audioPlayer.processingState == ProcessingState.ready
+          ? () async {
+              // player.seek(Duration(seconds: player.position.inSeconds + 5));
+              await appState.audioPlayer.seekToNext();
+              await appState.audioPlayer.pause();
+              await appState.audioPlayer.play();
+            }
+          : null,
+      child: Icon(
         Icons.skip_next_rounded,
         size: 30,
-        color: Colors.white,
+        color: appState.audioPlayer.processingState == ProcessingState.ready
+            ? AppColors.white
+            : AppColors.dullWhite,
       ),
-      onPressed: () async {
-        // player.seek(Duration(seconds: player.position.inSeconds + 5));
-        await appState.audioPlayer.seekToNext();
-        await appState.audioPlayer.pause();
-        await appState.audioPlayer.play();
-      },
     );
   }
 

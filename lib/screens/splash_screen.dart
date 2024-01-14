@@ -40,11 +40,12 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     setConfigData();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (Platform.isAndroid) {
-        navigations();
-      } else {
-        Future.delayed(const Duration(seconds: 2), navigations);
-      }
+      Future.delayed(const Duration(seconds: 2), navigations);
+      // if (Platform.isAndroid) {
+      //   navigations();
+      // } else {
+      //   Future.delayed(const Duration(seconds: 2), navigations);
+      // }
     });
   }
 

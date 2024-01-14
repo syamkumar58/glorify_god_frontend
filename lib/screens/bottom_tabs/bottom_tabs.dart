@@ -324,10 +324,4 @@ class _BottomTabsState extends State<BottomTabs> {
       },
     );
   }
-
-  @override
-  void dispose() {
-    appState.audioPlayer.dispose();
-    super.dispose();
-  }
 }

@@ -63,4 +63,10 @@ class _GlorifyGodState extends State<GlorifyGod> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    AppState().audioPlayer.dispose();
+  }
 }

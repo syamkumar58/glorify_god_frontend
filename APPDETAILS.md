@@ -133,4 +133,7 @@
   - App launch white screen replaced with splashLogo
   - Fixed some fixes
   - main.dart main function removed await and did unAwait for fast launch
-     
+
+- 14/1/2024
+  - Bug fixes
+  - YouTube link UI changes
