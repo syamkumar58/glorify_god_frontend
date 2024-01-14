@@ -14,7 +14,7 @@ class AppStrings {
   static const proverbs1224 = 'Proverbs 12:24';
   static const proverbsMessage =
       'Work hard and become a LEADER; be lazy and become a SLAVE';
-  static const searchSongs = 'Search Song';
+  static const searchSongs = 'Search by Song or by pastor name';
   static const profileScreen = 'Profile screen';
   static const helpAndSupport = 'Help & Support';
   static const rateUs = 'Rate us';

@@ -164,6 +164,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 //   ),
                 const BannerCard(),
                 const AdsCard(),
+                const SizedBox(
+                  height: 30,
+                ),
                 if (appState.getArtistsWithSongsList.isNotEmpty)
                   ...appState.getArtistsWithSongsList.map((e) {
                     return Container(
@@ -177,6 +180,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               title: e.artistName,
                               showViewAll: false,
                               onPressViewAll: () {},
+                              pastorImage: e.artistImage,
                             ),
                           if (e.songs.isNotEmpty) songCard(e.songs),
                         ],

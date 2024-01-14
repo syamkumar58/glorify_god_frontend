@@ -139,6 +139,11 @@ class _SearchScreenState extends State<SearchScreen>
         cursorColor: Colors.blueGrey.shade300,
         decoration: InputDecoration(
           hintText: AppStrings.searchSongs,
+          hintStyle: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: AppColors.dullWhite,
+          ),
           border: InputBorder.none,
           disabledBorder: InputBorder.none,
           enabledBorder: InputBorder.none,
