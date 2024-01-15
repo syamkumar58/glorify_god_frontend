@@ -18,7 +18,8 @@ class AppStrings {
   static const profileScreen = 'Profile screen';
   static const helpAndSupport = 'Help & Support';
   static const rateUs = 'Rate us';
-  static const rateUsQuote = 'Your feedback is the compass guiding our journey. Rate our app to help us chart a course toward constant improvement and a better experience for you.';
+  static const rateUsQuote =
+      'Your feedback is the compass guiding our journey. Rate our app to help us chart a course toward constant improvement and a better experience for you.';
   static const reportIssue = 'Report a Problem';
   static const noFavourites = 'No favourites';
   static const noSearchDetails = 'No search found';
@@ -28,4 +29,6 @@ class AppStrings {
   static const support = 'Support';
   static const send = 'Send';
   static const logout = 'Logout';
+  static const copyRightText =
+      "Copyright ©2023 Korapati Syam Kumar.All rights reserved";
 }

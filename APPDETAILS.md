@@ -142,3 +142,4 @@
 
 - 15/1/2024
   - Search field on empty issue fix
+  - Copyright text implementation

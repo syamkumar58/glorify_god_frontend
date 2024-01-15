@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/banner_card.dart';
+import 'package:glorify_god/components/home_components/copy_right_text.dart';
 import 'package:glorify_god/components/home_components/home_loading_shimmer_effect.dart';
 import 'package:glorify_god/components/song_card_component.dart';
 import 'package:glorify_god/components/title_tile_component.dart';
@@ -195,6 +196,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 // ),
                 // mostPlayedSongs(),
                 const AdsCard(),
+                const CopyRightText(),
               ],
             ),
           ),
