@@ -139,3 +139,6 @@
   - YouTube link UI changes
   - Removed privacy policy as a login interphase and marked the policy as true for every user when login
       API implementation is pending
+
+- 15/1/2024
+  - Search field on empty issue fix

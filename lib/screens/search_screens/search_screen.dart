@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_dynamic_calls
 
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:glorify_god/components/ads_card.dart';
@@ -173,8 +174,10 @@ class _SearchScreenState extends State<SearchScreen>
           if (text.isNotEmpty) {
             onChangedValue(text);
           } else {
-            searchController.clear();
-            searchedList.clear();
+            setState(() {
+              searchController.clear();
+              searchedList.clear();
+            });
             cancelTimer();
           }
         },
@@ -194,6 +197,7 @@ class _SearchScreenState extends State<SearchScreen>
             right: 12),
         itemCount: searchedList.length,
         itemBuilder: (context, index) {
+          log('$searchedList', name: 'The searchedList from the widget');
           final songDetails = searchedList[index];
           return Bounce(
             duration: const Duration(milliseconds: 200),
