@@ -65,6 +65,7 @@ dependencies:
   themed: ^4.0.0
   url_launcher: ^6.2.2
   very_good_analysis: ^3.1.0
+  youtube_player_flutter: ^8.1.2
 #  webview_flutter: ^4.4.3
   flutter:
     sdk: flutter

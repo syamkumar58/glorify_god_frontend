@@ -165,6 +165,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 //   ),
                 const BannerCard(),
                 const AdsCard(),
+                // const SizedBox(
+                //   height: 30,
+                // ),
+                // const YoutubeVideoPlayerScreen(),
                 const SizedBox(
                   height: 30,
                 ),

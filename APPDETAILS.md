@@ -143,3 +143,5 @@
 - 15/1/2024
   - Search field on empty issue fix
   - Copyright text implementation
+  - Created One more adUnit for IOS in AdMob
+  - Did some changes in UI and small fixes

@@ -25,7 +25,7 @@ class _AdsCardState extends State<AdsCard> {
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
-          log(ad.adUnitId, name: 'Ad loaded');
+          log('${ad.adUnitId} - ti ${DateTime.now()}', name: 'Ad loaded');
           setState(
             () {
               adLoaded = true;
