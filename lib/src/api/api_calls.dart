@@ -139,7 +139,7 @@ class ApiCalls {
   }
 
   Future<http.Response?> getAllArtistsWithSongs() async {
-    log('$getArtistWithSongsUrl', name: 'getArtistWithSongsUrl url');
+    log(getArtistWithSongsUrl, name: 'getArtistWithSongsUrl url');
     final token = await getToken();
     try {
       final response = await http.get(
@@ -299,7 +299,7 @@ class ApiCalls {
   }) async {
     final token = await getToken();
     final uri = '$getRatingUrl?userId=$userId';
-    log('$uri',name:'getRating url request');
+    log(uri,name:'getRating url request');
     try {
       final res = await http.get(Uri.parse(uri),
           headers: {'Content-Type': 'application/json', authorization: token});
@@ -361,7 +361,7 @@ class ApiCalls {
     try {
       final res = await http.post(Uri.parse(url),
           headers: {'Content-Type': 'application/json', authorization: token});
-      log('${res.body}', name: 'acceptedPolicyById from api services');
+      log(res.body, name: 'acceptedPolicyById from api services');
       return res;
     } catch (e) {
       log('$e', name: 'acceptedPolicyById error');

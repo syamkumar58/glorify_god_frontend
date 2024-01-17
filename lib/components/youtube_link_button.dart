@@ -74,7 +74,7 @@ class YoutubeLinkButton extends StatelessWidget {
                       borderRadius: BorderRadius.circular(50),
                       color: AppColors.dullBlack,
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.play_arrow_outlined,
                     ),
                   ),

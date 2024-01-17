@@ -145,3 +145,6 @@
   - Copyright text implementation
   - Created One more adUnit for IOS in AdMob
   - Did some changes in UI and small fixes
+
+- 16/1/2024
+  - Added a new wallet screen (Not clearly Done)
