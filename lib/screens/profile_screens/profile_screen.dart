@@ -11,9 +11,10 @@ import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/screens/login_pages/login_page.dart';
+import 'package:glorify_god/screens/profile_screens/songs_info_screen.dart';
 import 'package:glorify_god/screens/profile_screens/contact_support_screen.dart';
 import 'package:glorify_god/screens/profile_screens/privacy_policy_screen.dart';
-import 'package:glorify_god/screens/profile_screens/reportAProblem.dart';
+import 'package:glorify_god/screens/profile_screens/report_a_problem.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:flutter/material.dart';
@@ -66,8 +67,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   height: 20,
                 ),
                 profileData(),
-                const SizedBox(
-                  height: 20,
+                Padding(
+                  padding: const EdgeInsets.only(top: 20, bottom: 20),
+                  child: Center(
+                    child: Container(
+                      width: width * 0.9,
+                      decoration: BoxDecoration(
+                        color: AppColors.dullBlack.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: tile(
+                        icon: Icons.diamond_outlined,
+                        text: AppStrings.songInfo,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            CupertinoPageRoute(
+                              builder: (_) => const SongsInfoScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                 ),
                 restOfScreen(),
                 // quoteBackgroundWithProfileImage(),

@@ -1,87 +1,94 @@
 // import 'package:audio_service/audio_service.dart';
 // import 'package:flutter/material.dart';
-// import 'package:just_audio/just_audio.dart';
+// import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 //
-// MediaControl playControl = const MediaControl(
-//   androidIcon: 'drawable/play_arrow',
-//   label: 'Play',
-//   action: MediaAction.play,
-// );
-// MediaControl pauseControl = const MediaControl(
-//   androidIcon: 'drawable/pause',
-//   label: 'Pause',
-//   action: MediaAction.pause,
-// );
-// MediaControl skipToNextControl = const MediaControl(
-//   androidIcon: 'drawable/skip_to_next',
-//   label: 'Next',
-//   action: MediaAction.skipToNext,
-// );
-// MediaControl skipToPreviousControl = const MediaControl(
-//   androidIcon: 'drawable/skip_to_prev',
-//   label: 'Previous',
-//   action: MediaAction.skipToPrevious,
-// );
-// MediaControl stopControl = const MediaControl(
-//   androidIcon: 'drawable/stop',
-//   label: 'Stop',
-//   action: MediaAction.stop,
-// );
+// class PlayerScreen extends StatefulWidget {
+//   const PlayerScreen({super.key, required this.songs});
 //
-// class AudioPlayerTask extends BackgroundAudioTask {
-//   final _que = <MediaItem>[
-//     MediaItem(
-//         id:
-//         'https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3',
-//         album: 'Science Friday',
-//         title: 'A salute to head-Scratching science',
-//         duration: const Duration(milliseconds: 57398921),
-//         artUri: Uri.parse(
-//             'https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg')),
-//     MediaItem(
-//         id: 'https://s3.amazonaws.com/scifri-segments/scifri201711241.mp3',
-//         album: 'Science Friday',
-//         title: 'A salute to head-Scratching science',
-//         duration: const Duration(milliseconds: 57398921),
-//         artUri: Uri.parse(
-//             'https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg')),
-//   ];
-//
-//
-//   int _queIndex = -1;
-//   AudioPlayer _audioPlayer = AudioPlayer();
-//   late AudioProcessingState _audioProcessingState;
-//   late bool isPlaying;
-//
-//   bool get hasNext => _queIndex + 1 > _que.length;
-//   bool get hasPrevious => _queIndex > 0;
-//
-//   MediaItem get mediaItem => _que[_queIndex];
-//
-//
-//
+//   final List<Song> songs;
 //
 //   @override
-//   Future<void> onStart(Map<String, dynamic>? params) {
-//     return super.onStart(params);
-//   }
-//
-//
-//
-//
+//   State<PlayerScreen> createState() => _PlayerScreenState();
 // }
 //
-// class Player extends StatefulWidget {
-//   const Player({Key? key}) : super(key: key);
-//
-//   @override
-//   // ignore: library_private_types_in_public_api
-//   _PlayerState createState() => _PlayerState();
-// }
-//
-// class _PlayerState extends State<Player> {
+// class _PlayerScreenState extends State<PlayerScreen> {
 //   @override
 //   Widget build(BuildContext context) {
-//     return const Scaffold();
+//     return Scaffold(
+//       extendBodyBehindAppBar: true,
+//       appBar: AppBar(
+//         elevation: 0,
+//         backgroundColor: Colors.transparent,
+//       ),
+//       body: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         mainAxisSize: MainAxisSize.max,
+//         crossAxisAlignment: CrossAxisAlignment.center,
+//         children: [
+//           ElevatedButton(
+//             onPressed: () async {
+//               await AudioService.start(
+//                 backgroundTaskEntrypoint: () {
+//                   myAudioHandler(songs: widget.songs);
+//                 },
+//                 androidNotificationChannelName: 'Audio playback',
+//               );
+//             },
+//             child: const Text("Play from 1st song"),
+//           ),
+//           ElevatedButton(
+//             onPressed: () async {
+//               await AudioService.skipToNext();
+//             },
+//             child: const Text("Play Next"),
+//           ),
+//           ElevatedButton(
+//             onPressed: () async {
+//               await AudioService.skipToPrevious();
+//             },
+//             child: const Text("Play Previous"),
+//           ),
+//           ElevatedButton(
+//             onPressed: () async {
+//               await AudioService.play();
+//             },
+//             child: const Text("Play"),
+//           ),
+//           ElevatedButton(
+//             onPressed: () async {
+//               await AudioService.pause();
+//             },
+//             child: const Text("Pause"),
+//           ),
+//           // Slider(
+//           //     min: 0,
+//           //     value: position.inSeconds.toDouble(),
+//           //     max: position > duration ? 0 : duration.inSeconds.toDouble(),
+//           //     onChanged: (value) {
+//           //       setState(() {
+//           //         final newPosition = Duration(seconds: value.toInt());
+//           //         audioPlayer.seek(newPosition);
+//           //       });
+//           //     }),
+//           // Text(
+//           //   widget.songs[currentIndex].title,
+//           //   style: const TextStyle(
+//           //     fontSize: 40,
+//           //   ),
+//           // ),
+//           // Text(
+//           //   '${position.inMinutes}:${position.inSeconds}   -   ${duration.inMinutes}:${duration.inSeconds}',
+//           //   style: const TextStyle(
+//           //     fontSize: 24,
+//           //   ),
+//           // ),
+//         ],
+//       ),
+//     );
 //   }
+// }
+//
+// Future myAudioHandler({required List<Song> songs}) async {
+//   await AudioServiceBackground.run(
+//       () => AudioBackgroundPlayerTask(songs: songs));
 // }

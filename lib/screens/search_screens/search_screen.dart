@@ -207,6 +207,7 @@ class _SearchScreenState extends State<SearchScreen>
               for (final song in searchedList) {
                 final eachSong = Song(
                   songId: song.songId,
+                  artistUID: song.artistUID,
                   songUrl: song.songUrl,
                   title: song.title,
                   artist: song.artist,

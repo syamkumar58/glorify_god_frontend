@@ -85,6 +85,15 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.keyboard_arrow_down,
+              color: AppColors.white,
+              size: 30,
+            )),
         backgroundColor: Colors.transparent,
       ),
       body: mainBody(),
@@ -108,9 +117,6 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
 
             final trackData = state?.currentSource!.tag as MediaItem;
 
-            log('${trackData.extras!['ytUrl']}',
-                name: 'The yt url is it there ah ');
-
             return Container(
               decoration: BoxDecoration(
                 color: AppColors.black,
@@ -127,6 +133,7 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
 
                   final playerState = snapShot.data;
                   final processingState = playerState?.processingState;
+                  log('$processingState', name: 'processingState from stream');
                   final playing = playerState?.playing;
 
                   return Container(
@@ -172,7 +179,11 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                                     trackData.extras!['ytTitle'].toString(),
                                 ytUrl: trackData.extras!['ytUrl'].toString(),
                               ),
-                            const AdsCard(),
+
+                            const Padding(
+                              padding: EdgeInsets.only(top: 40),
+                              child: AdsCard(),
+                            ),
                           ],
                         ),
                       ),
@@ -360,8 +371,6 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
   }
 
   Widget seekBar() {
-    appState = Provider.of<AppState>(context);
-    log('${appState.isSongFavourite}', name: 'From widget the fav');
     return Padding(
       padding: const EdgeInsets.only(
         top: 10,
@@ -388,7 +397,6 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                           onPressed: () async {
                             final favourite = await onFav();
                             await appState.likedSongs();
-                            log('$favourite', name: 'from onTap fav');
                             setState(() {
                               appState.isSongFavourite = favourite;
                             });
@@ -407,33 +415,39 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                 ),
               ),
               SliderTheme(
-                data: const SliderThemeData(
+                data: SliderThemeData(
                   trackHeight: 6,
+                  thumbShape: SliderComponentShape.noOverlay,
+                  thumbColor: Colors.transparent,
                 ),
                 child: Slider(
                   min: 0,
-                  max: (duration.inSeconds.toDouble() ?? 0) as double,
-                  value: (position.inSeconds.toDouble() ?? 0) as double,
+                  max: position.inSeconds.toDouble() >=
+                          duration.inSeconds.toDouble()
+                      ? 0
+                      : (duration.inSeconds.toDouble() ?? 0) as double,
+                  value: position.inSeconds.toDouble() >=
+                          duration.inSeconds.toDouble()
+                      ? 0
+                      : (position.inSeconds.toDouble() ?? 0) as double,
                   inactiveColor: Colors.grey[600],
                   activeColor: Colors.white,
                   onChanged: (value) {
-                    setState(() {
-                      position = Duration(seconds: value.toInt());
-                    });
+                    // setState(() {
+                    //   position = Duration(seconds: value.toInt());
+                    // });
                   },
-                  onChangeEnd: (value) {
-                    // Debugging: Print the seek position
-                    log('Seeking to: $value seconds');
-
-                    // Seek when the user finishes sliding
-                    final finalPosition = Duration(seconds: value.toInt());
-                    appState.audioPlayer.seek(finalPosition);
-
-                    // Debugging: Print the current audio position after seeking
-                    appState.audioPlayer.positionStream.listen((position) {
-                      log('Current position after seek: $position');
-                    });
-                  },
+                  // onChangeEnd: (value) {
+                  //   // Debugging: Print the seek position
+                  //   log('Seeking to: $value seconds');
+                  //
+                  //   // Seek when the user finishes sliding
+                  //   final finalPosition = Duration(seconds: value.toInt());
+                  //   appState.audioPlayer.seek(finalPosition);
+                  //
+                  //   // Debugging: Print the current audio position after seeking
+                  //   appState.audioPlayer.positionStream.listen((position) {});
+                  // },
                 ),
               ),
               Padding(

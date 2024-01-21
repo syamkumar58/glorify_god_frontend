@@ -15,6 +15,7 @@ String getFavouritesModelToJson(List<GetFavouritesModel> data) =>
 class GetFavouritesModel {
   GetFavouritesModel({
     required this.songId,
+    required this.artistUID,
     required this.songUrl,
     required this.artist,
     required this.lyricist,
@@ -31,6 +32,7 @@ class GetFavouritesModel {
   factory GetFavouritesModel.fromJson(Map<String, dynamic> json) =>
       GetFavouritesModel(
         songId: int.parse(json['songId'].toString()),
+        artistUID: int.parse(json['artistUID'].toString()),
         songUrl: json['songUrl'].toString(),
         artist: json['artist'].toString(),
         lyricist: json['lyricist'].toString(),
@@ -44,6 +46,7 @@ class GetFavouritesModel {
         createdAt: DateTime.parse(json['createdAt'].toString()),
       );
   final int songId;
+  final int artistUID;
   final String songUrl;
   final String artist;
   final String lyricist;
@@ -58,6 +61,7 @@ class GetFavouritesModel {
 
   Map<String, dynamic> toJson() => {
         'songId': songId,
+        'artistUID': artistUID,
         'songUrl': songUrl,
         'artist': artist,
         'lyricist': lyricist,

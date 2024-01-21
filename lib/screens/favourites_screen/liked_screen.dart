@@ -173,6 +173,7 @@ class _LikedScreenState extends State<LikedScreen> {
         ytUrl: song.ytUrl,
         ytTitle: song.ytTitle,
         ytImage: song.ytImage,
+        artistUID: song.artistUID,
       );
       collectedSongs.add(eachSong);
     }

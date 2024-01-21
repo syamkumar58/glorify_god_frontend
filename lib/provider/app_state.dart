@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/get_favourites_model.dart';
+import 'package:glorify_god/models/profile_models/tracker_model.dart';
 import 'package:glorify_god/models/profile_models/user_reported_isses_model.dart';
 import 'package:glorify_god/models/search_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
@@ -21,6 +22,41 @@ class AppState with ChangeNotifier {
 
   set audioPlayer(AudioPlayer value) {
     _audioPlayer = value;
+    notifyListeners();
+  }
+
+  Song emptySongData = Song(
+    songId: 0,
+    artistUID: 0,
+    songUrl: '',
+    title: '',
+    artist: '',
+    artUri: '',
+    lyricist: '',
+    ytTitle: '',
+    ytUrl: '',
+    ytImage: '',
+    createdAt: DateTime.now(),
+  );
+
+  Song _songData = Song(
+    songId: 0,
+    artistUID: 0,
+    songUrl: '',
+    title: '',
+    artist: '',
+    artUri: '',
+    lyricist: '',
+    ytTitle: '',
+    ytUrl: '',
+    ytImage: '',
+    createdAt: DateTime.now(),
+  );
+
+  Song get songData => _songData;
+
+  set songData(Song value) {
+    _songData = value;
     notifyListeners();
   }
 
@@ -346,6 +382,31 @@ class AppState with ChangeNotifier {
       return true;
     } else {
       return false;
+    }
+  }
+
+  Future updateTrackerDetails({required int artistId}) async {
+    final res = await ApiCalls().updateTrackerDetails(
+      artistId: artistId,
+    );
+
+    if (res.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<TrackerModel?> getTrackerDetails({required int artistId}) async {
+    final res = await ApiCalls().getTrackerDetailsById(artistId: artistId);
+
+    if (res.statusCode == 200) {
+      final trackerDetails = trackerModelFromJson(res.body);
+      log('${trackerDetails.artistId} && ${trackerDetails.totalSongsCompleted}',
+          name: 'getTrackerDetails response');
+      return trackerDetails;
+    } else {
+      return null;
     }
   }
 }

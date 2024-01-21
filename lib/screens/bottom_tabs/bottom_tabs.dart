@@ -1,5 +1,6 @@
 // ignore_for_file: strict_raw_type
 
+import 'dart:async';
 import 'dart:developer';
 import 'dart:ui';
 
@@ -16,7 +17,6 @@ import 'package:glorify_god/utils/app_strings.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
 import 'package:just_audio/just_audio.dart';
@@ -41,6 +41,7 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   bool isLoading = false;
   int _screenIndex = 0;
   late Box box;
+  StreamSubscription<Duration>? positionStreamSubscription;
   List<Widget> screens = const [
     HomeScreen(),
     SearchScreen(),
@@ -55,6 +56,9 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
     initialUserCall();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      listenSongCompletion();
+    });
   }
 
   @override
@@ -73,6 +77,42 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   Future initialUserCall() async {
     await appState.initiallySetUserDataGlobally();
     await appState.getRatings();
+  }
+
+  bool checkItOnce = false;
+
+  Future listenSongCompletion() async {
+    positionStreamSubscription =
+        appState.audioPlayer.positionStream.listen((songPosition) async {
+      final songDuration = appState.audioPlayer.duration ?? Duration.zero;
+      log('cross 1 $songPosition');
+      log('cross 2 $songPosition $songDuration');
+      if (!checkItOnce &&
+          songPosition > Duration.zero &&
+          songDuration > Duration.zero &&
+          songPosition.inSeconds >= songDuration.inSeconds) {
+        setState(() {
+          checkItOnce = true;
+        });
+        log('cross 3 $songPosition $songDuration');
+        //<-- If the song completed and artistUID is not Zero then update the tracker by 1
+        // That one song was completed and was added to tracker details
+        // -->/
+        if (appState.songData.artistUID != 0) {
+          log('${appState.songData.artistUID}', name: 'icyMeta data');
+          await appState.updateTrackerDetails(
+              artistId: appState.songData.artistUID);
+        }
+      } else if (checkItOnce &&
+          songPosition > Duration.zero &&
+          songDuration > Duration.zero &&
+          songPosition.inSeconds < songDuration.inSeconds) {
+        setState(() {
+          checkItOnce = false;
+        });
+        log('cross 4 $songPosition $songDuration');
+      }
+    });
   }
 
   @override
@@ -148,111 +188,86 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
               color: Colors.black,
               image: DecorationImage(
                   fit: BoxFit.fill,
-                  opacity: 0.4,
+                  opacity: 0.1,
                   image: NetworkImage(trackData.artUri.toString()))),
-          child: ClipRRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              child: Center(
-                child: ListTile(
-                  dense: true,
-                  onTap: () {
-                    // showMusicScreen(songId);
-                    Navigator.of(context).push(PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) {
-                        return JustAudioPlayer(songId: songId);
-                      },
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        const begin = Offset(0.0, 1.0);
-                        const end = Offset.zero;
-                        const curve = Curves.easeInOutCubic;
-
-                        var tween = Tween(begin: begin, end: end)
-                            .chain(CurveTween(curve: curve));
-                        var offsetAnimation = animation.drive(tween);
-
-                        return SlideTransition(
-                          position: offsetAnimation,
-                          child: child,
-                        );
-                      },
-                    ));
+          child: Center(
+            child: ListTile(
+              dense: true,
+              onTap: () {
+                // showMusicScreen(songId);
+                Navigator.of(context).push(PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) {
+                    return JustAudioPlayer(songId: songId);
                   },
-                  leading: SongImageBox(
-                    imageUrl: trackData.artUri.toString(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    const begin = Offset(0.0, 1.0);
+                    const end = Offset.zero;
+                    const curve = Curves.easeInOutCubic;
+
+                    var tween = Tween(begin: begin, end: end)
+                        .chain(CurveTween(curve: curve));
+                    var offsetAnimation = animation.drive(tween);
+
+                    return SlideTransition(
+                      position: offsetAnimation,
+                      child: child,
+                    );
+                  },
+                ));
+              },
+              leading: SongImageBox(
+                imageUrl: trackData.artUri.toString(),
+              ),
+              title: SizedBox(
+                width: width * 0.3,
+                child: Text(
+                  trackData.title,
+                  textAlign: TextAlign.left,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
-                  title: SizedBox(
-                    width: width * 0.3,
-                    child: Text(
-                      trackData.title,
-                      textAlign: TextAlign.left,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                ),
+              ),
+              subtitle: AppText(
+                text: trackData.artist.toString(),
+                textAlign: TextAlign.left,
+                styles: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              trailing: SizedBox(
+                width: 100,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.keyboard_arrow_up,
+                      color: AppColors.white,
+                      size: 30,
                     ),
-                  ),
-                  subtitle: AppText(
-                    text: trackData.artist.toString(),
-                    textAlign: TextAlign.left,
-                    styles: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  trailing: SizedBox(
-                    width: 100,
-                    child: Row(
-                      children: [
-                        Bounce(
-                          duration: const Duration(milliseconds: 50),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12),
+                      child: IconButton(
+                          padding: EdgeInsets.zero,
                           onPressed: () {
-                            if (isPlaying) {
-                              appState.audioPlayer.pause();
-                            } else {
-                              appState.audioPlayer.play();
+                            if (processingState != ProcessingState.idle) {
+                              appState.audioPlayer.stop();
                             }
                           },
-                          child: processingState == ProcessingState.loading
-                              ? SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CupertinoActivityIndicator(
-                                    color: AppColors.white,
-                                  ),
-                                )
-                              : Icon(
-                                  isPlaying
-                                      ? Icons.pause_circle
-                                      : Icons.play_circle,
-                                  size: 30,
-                                  color: Colors.white,
-                                ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 12),
-                          child: IconButton(
-                              padding: EdgeInsets.zero,
-                              onPressed: () {
-                                if (processingState != ProcessingState.idle) {
-                                  appState.audioPlayer.stop();
-                                }
-                              },
-                              icon: Icon(
-                                Icons.close,
-                                size: 20,
-                                color: processingState != ProcessingState.idle
-                                    ? AppColors.white
-                                    : AppColors.dullBlack,
-                              )),
-                        ),
-                      ],
+                          icon: Icon(
+                            Icons.close,
+                            size: 20,
+                            color: processingState != ProcessingState.idle
+                                ? AppColors.white
+                                : AppColors.dullBlack,
+                          )),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
@@ -343,6 +358,9 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   @override
   void dispose() {
     appState.audioPlayer.stop();
+    if (positionStreamSubscription != null) {
+      positionStreamSubscription!.cancel();
+    }
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

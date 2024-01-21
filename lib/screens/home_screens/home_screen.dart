@@ -1,7 +1,6 @@
 // ignore_for_file: strict_raw_type, avoid_dynamic_calls
 
 import 'dart:developer';
-
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/home_components/copy_right_text.dart';
@@ -148,21 +147,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                     ),
                   ),
-
-                // if (kDebugMode)
-                //   CupertinoButton(
-                //     onPressed: () async {
-                //       // Fluttertoast.showToast(
-                //       //     msg: 'something went wrong on logIn');
-                //       toastMessage(message: 'something went wrong on logIn');
-                //     },
-                //     child: const AppText(
-                //       text: 'Test',
-                //       styles: TextStyle(
-                //         fontSize: 24,
-                //       ),
-                //     ),
-                //   ),
                 const BannerCard(),
                 const AdsCard(),
                 // const SizedBox(
@@ -180,6 +164,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // if (kDebugMode)
+                          //   CupertinoButton(
+                          //     onPressed: () async {},
+                          //     child: const AppText(
+                          //       text: 'Test',
+                          //       styles: TextStyle(
+                          //         fontSize: 24,
+                          //       ),
+                          //     ),
+                          //   ),
                           if (e.songs.isNotEmpty)
                             TitleTile(
                               title: e.artistName,
@@ -319,13 +313,6 @@ Future startAudio({
       // Set's the mediaItem for starting the audio
       // -->/
       ...audioSource.map((e) {
-        log(
-            '${e.songUrl}\n'
-            '${e.songId}\n'
-            '${e.title}\n'
-            '${e.artist}\n'
-            '${e.artUri}\n',
-            name: 'On start audios the e');
         final audioSource = AudioSource.uri(
           Uri.parse(e.songUrl),
           tag: MediaItem(
@@ -339,7 +326,6 @@ Future startAudio({
                 'ytUrl': e.ytUrl,
               }),
         );
-        log('${audioSource.headers}', name: 'The audio source loaded');
         return audioSource;
       }),
     ],
@@ -359,14 +345,16 @@ Future startAudio({
         initialId, // <-- 1. If enabled in ios simulator it is not working
     // (No particular reason found) -->
   );
-  // <-- 2. From point 1 tried this point 2 and same happened
-  // If enabled in ios simulator it is not working
-  //     // (No particular reason found) -->/
-  // await appState.audioPlayer.seek(Duration.zero, index: initialId,);
 
   // Listen for changes in the currently playing index
   appState.audioPlayer.currentIndexStream.listen((index) async {
     if (index != null && index < audioSource.length) {
+      //<-- When audio starts the individual song data will be set global usage -->/
+      appState.songData = appState
+          .emptySongData; //<-- Clear the data before setting new data -->/
+      appState.songData = audioSource[index];
+      //<-- -->/
+
       final currentSongId = audioSource[index].songId;
 
       final res =

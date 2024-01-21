@@ -299,7 +299,7 @@ class ApiCalls {
   }) async {
     final token = await getToken();
     final uri = '$getRatingUrl?userId=$userId';
-    log(uri,name:'getRating url request');
+    log(uri, name: 'getRating url request');
     try {
       final res = await http.get(Uri.parse(uri),
           headers: {'Content-Type': 'application/json', authorization: token});
@@ -396,6 +396,46 @@ class ApiCalls {
       return res;
     } catch (e) {
       log('$e', name: 'removeUserFromPrivacyPolicyById error');
+      rethrow;
+    }
+  }
+
+  Future<http.Response> updateTrackerDetails({required int artistId}) async {
+    const url = updateTrackerDetailsUrl;
+    final token = await getToken();
+
+    final Map<String, dynamic> body = {
+      "artistId": '$artistId',
+      "totalSongsCompleted": 1,
+    };
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json', authorization: token},
+        body: json.encode(body),
+      );
+
+      return res;
+    } catch (e) {
+      log('$e', name: 'updateTrackerDetails error');
+      rethrow;
+    }
+  }
+
+  Future<http.Response> getTrackerDetailsById({required int artistId}) async {
+    var url = '$getTrackerDetailsByIdUrl?artistId=$artistId';
+    final token = await getToken();
+
+    try {
+      final res = http.get(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json', authorization: token},
+      );
+
+      return res;
+    } catch (e) {
+      log('$e', name: 'getTrackerDetailsById error');
       rethrow;
     }
   }

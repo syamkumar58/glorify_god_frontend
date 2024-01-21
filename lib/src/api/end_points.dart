@@ -24,3 +24,6 @@ const String privacyPolicyUrl = '$hostUrl/privacyPolicy';
 const String privacyPolicyAcceptedUrl =
     '$hostUrl/privacyPolicy/checkUserAcceptedPolicyById';
 const String removeUserFromPrivacyPolicyUrl = '$hostUrl/privacyPolicy/removePrivacyPolicy';
+const String updateTrackerDetailsUrl = '$hostUrl/tracker/updateTracker';
+const String getTrackerDetailsByIdUrl = '$hostUrl/tracker/trackerDetailsById';
+

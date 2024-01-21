@@ -31,4 +31,5 @@ class AppStrings {
   static const logout = 'Logout';
   static const copyRightText =
       "Copyright ©2023 Korapati Syam Kumar.All rights reserved";
+  static const songInfo = 'Songs Information';
 }
