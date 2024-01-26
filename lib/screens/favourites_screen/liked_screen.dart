@@ -7,7 +7,6 @@ import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
-import 'package:glorify_god/screens/home_screens/home_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:flutter/cupertino.dart';
@@ -164,7 +163,7 @@ class _LikedScreenState extends State<LikedScreen> {
     for (final song in appState.likedSongsList) {
       final eachSong = Song(
         songId: song.songId,
-        songUrl: song.songUrl,
+        videoUrl: song.videoUrl,
         title: song.title,
         artist: song.artist,
         artUri: song.artUri,
@@ -177,10 +176,6 @@ class _LikedScreenState extends State<LikedScreen> {
       );
       collectedSongs.add(eachSong);
     }
-    await startAudio(
-      appState: appState,
-      audioSource: collectedSongs,
-      initialId: initialId,
-    );
+    // await VideoHandler().startTheVideo(videoUrl: '', globalVariables: null);
   }
 }

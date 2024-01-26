@@ -11,6 +11,7 @@ import 'package:glorify_god/components/songs_tile.dart';
 import 'package:glorify_god/models/search_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
+import 'package:glorify_god/provider/global_variables.dart';
 import 'package:glorify_god/screens/home_screens/home_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
@@ -43,6 +44,7 @@ class _SearchScreenState extends State<SearchScreen>
   List<dynamic> theData = [];
 
   AppState appState = AppState();
+  GlobalVariables globalVariables = GlobalVariables();
 
   List<Song> collectedSongs = [];
 
@@ -63,6 +65,7 @@ class _SearchScreenState extends State<SearchScreen>
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
+    globalVariables = Provider.of<GlobalVariables>(context);
     return Scaffold(
       appBar: customAppbar('SEARCH'),
       body: SingleChildScrollView(
@@ -202,13 +205,13 @@ class _SearchScreenState extends State<SearchScreen>
           return Bounce(
             duration: const Duration(milliseconds: 200),
             onPressed: () async {
-              final initialId = searchedList.indexOf(searchedList[index]);
+              // final initialId = searchedList.indexOf(searchedList[index]);
               FocusScope.of(context).unfocus();
               for (final song in searchedList) {
                 final eachSong = Song(
                   songId: song.songId,
                   artistUID: song.artistUID,
-                  songUrl: song.songUrl,
+                  videoUrl: song.videoUrl,
                   title: song.title,
                   artist: song.artist,
                   artUri: song.artUri,
@@ -220,11 +223,23 @@ class _SearchScreenState extends State<SearchScreen>
                 );
                 collectedSongs.add(eachSong);
               }
-              await startAudio(
-                appState: appState,
-                audioSource: collectedSongs,
-                initialId: initialId,
-              );
+              await VideoHandler(
+                      songData: Song(
+                        artistUID: songDetails.artistUID,
+                        videoUrl: songDetails.videoUrl,
+                        title: songDetails.title,
+                        artist: songDetails.artist,
+                        artUri: songDetails.artUri,
+                        lyricist: songDetails.lyricist,
+                        ytTitle: songDetails.ytTitle,
+                        ytUrl: songDetails.ytUrl,
+                        ytImage: songDetails.ytImage,
+                        createdAt: songDetails.createdAt,
+                        songId: songDetails.songId,
+                      ),
+                      songs: collectedSongs,
+                      globalVariables: globalVariables)
+                  .startTheVideo(videoUrl: songDetails.videoUrl);
             },
             child: SongsLikesTile(
               songTitle: songDetails.title,

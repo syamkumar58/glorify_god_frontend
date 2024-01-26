@@ -8,7 +8,6 @@ import 'package:glorify_god/screens/splash_screen.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:hive/hive.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart' as ad;
 import 'package:provider/provider.dart' as p;
@@ -16,11 +15,11 @@ import 'package:provider/provider.dart' as p;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  JustAudioBackground.init(
-    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'Audio playback',
-    androidNotificationOngoing: true,
-  );
+  // JustAudioBackground.init(
+  //   androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+  //   androidNotificationChannelName: 'Audio playback',
+  //   androidNotificationOngoing: true,
+  // );
   final path = await getApplicationDocumentsDirectory();
 
   Hive.init(path.path);

@@ -2,25 +2,24 @@
 
 import 'dart:async';
 import 'dart:developer';
-import 'dart:ui';
-
+import 'package:chewie/chewie.dart';
 import 'package:glorify_god/components/noisey_text.dart';
-import 'package:glorify_god/components/song_image_box.dart';
+import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
+import 'package:glorify_god/provider/global_variables.dart';
 import 'package:glorify_god/screens/favourites_screen/liked_screen.dart';
 import 'package:glorify_god/screens/home_screens/home_screen.dart';
-import 'package:glorify_god/screens/music_player_files/just_audio_player.dart';
 import 'package:glorify_god/screens/profile_screens/profile_screen.dart';
 import 'package:glorify_god/screens/search_screens/search_screen.dart';
+import 'package:glorify_god/screens/video_player_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
@@ -38,9 +37,11 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
 
   double get height => MediaQuery.of(context).size.height;
   AppState appState = AppState();
+  GlobalVariables globalVariables = GlobalVariables();
   bool isLoading = false;
   int _screenIndex = 0;
   late Box box;
+  bool checkItOnce = false;
   StreamSubscription<Duration>? positionStreamSubscription;
   List<Widget> screens = const [
     HomeScreen(),
@@ -79,8 +80,6 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
     await appState.getRatings();
   }
 
-  bool checkItOnce = false;
-
   Future listenSongCompletion() async {
     positionStreamSubscription =
         appState.audioPlayer.positionStream.listen((songPosition) async {
@@ -118,6 +117,7 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
+    globalVariables = Provider.of<GlobalVariables>(context);
     return ModalProgressHUD(
       inAsyncCall: isLoading,
       progressIndicator: const CupertinoActivityIndicator(),
@@ -130,150 +130,112 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   }
 
   Widget gNavBar() {
-    return StreamBuilder(
-      stream: appState.audioPlayer.playerStateStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          log('${snapshot.error}',
-              name: 'The snapshot error from stream builder');
-        }
+    return StreamBuilder<ControllerWithSongData>(
+        stream: globalVariables.songStreamController.stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            log('${snapshot.error}', name: 'snapShot has error');
+            return const SizedBox();
+          }
 
-        final playerState = snapshot.data;
-        final playing = playerState?.playing;
-        final processingState = playerState?.processingState;
-        log(
-            '$playerState\n'
-            '$playing\n'
-            '$processingState',
-            name: 'Yhe processingState');
+          log('${snapshot.hasData}', name: 'snapShot has data');
 
-        return SizedBox(
-          height: processingState != ProcessingState.idle ? 150 : 90,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (processingState != ProcessingState.idle)
-                musicUI(
-                  playing ?? false,
-                  processingState ?? ProcessingState.idle,
-                ),
-              gNav(),
-            ],
-          ),
-        );
-      },
-    );
+          return Container(
+            color: Colors.transparent,
+            height: snapshot.hasData ? 150 : 90,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (snapshot.hasData) videoBar(snapshot),
+                gNav(),
+              ],
+            ),
+          );
+        });
   }
 
-  Widget musicUI(
-    bool isPlaying,
-    ProcessingState processingState,
-  ) {
-    return StreamBuilder(
-      stream: appState.audioPlayer.sequenceStateStream,
-      builder: (context, snapshot) {
-        final state = snapshot.data;
-        if (state?.sequence.isEmpty ?? true) {
-          return const SizedBox();
-        }
-
-        final trackData = state?.currentSource!.tag as MediaItem;
-
-        final songId = int.parse(trackData.id);
-
-        return Container(
-          width: width,
-          height: 60,
-          decoration: BoxDecoration(
-              color: Colors.black,
-              image: DecorationImage(
-                  fit: BoxFit.fill,
-                  opacity: 0.1,
-                  image: NetworkImage(trackData.artUri.toString()))),
-          child: Center(
-            child: ListTile(
-              dense: true,
-              onTap: () {
-                // showMusicScreen(songId);
-                Navigator.of(context).push(PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) {
-                    return JustAudioPlayer(songId: songId);
-                  },
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    const begin = Offset(0.0, 1.0);
-                    const end = Offset.zero;
-                    const curve = Curves.easeInOutCubic;
-
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
-                    var offsetAnimation = animation.drive(tween);
-
-                    return SlideTransition(
-                      position: offsetAnimation,
-                      child: child,
-                    );
-                  },
-                ));
-              },
-              leading: SongImageBox(
-                imageUrl: trackData.artUri.toString(),
-              ),
-              title: SizedBox(
-                width: width * 0.3,
-                child: Text(
-                  trackData.title,
-                  textAlign: TextAlign.left,
-                  maxLines: 1,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              subtitle: AppText(
-                text: trackData.artist.toString(),
-                textAlign: TextAlign.left,
-                styles: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              trailing: SizedBox(
-                width: 100,
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.keyboard_arrow_up,
-                      color: AppColors.white,
-                      size: 30,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 12),
-                      child: IconButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            if (processingState != ProcessingState.idle) {
-                              appState.audioPlayer.stop();
-                            }
-                          },
-                          icon: Icon(
-                            Icons.close,
-                            size: 20,
-                            color: processingState != ProcessingState.idle
-                                ? AppColors.white
-                                : AppColors.dullBlack,
-                          )),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+  Widget videoBar(AsyncSnapshot<ControllerWithSongData> snapshot) {
+    return InkWell(
+      onTap: () {
+        showMusicScreen(
+          songData: snapshot.data!.songData,
+          songs: snapshot.data!.songs,
         );
       },
+      child: Container(
+        height: 60,
+        width: width,
+        color: Colors.transparent,
+        child: Row(
+          children: [
+            Container(
+              height: 60,
+              width: width * 0.3,
+              color: Colors.transparent,
+              child: Chewie(
+                controller: snapshot.data!.chewieController,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 3),
+              child: Container(
+                  height: 60,
+                  width: width * 0.4,
+                  color: Colors.transparent,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AppText(
+                        text: snapshot.data!.songData.title,
+                        styles: GoogleFonts.manrope(
+                          fontSize: 16,
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      AppText(
+                        text: snapshot.data!.songData.artist,
+                        styles: GoogleFonts.manrope(
+                          fontSize: 14,
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  )),
+            ),
+            IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  if (snapshot.data!.chewieController.videoPlayerController
+                      .value.isPlaying) {
+                    globalVariables.chewieController!.pause();
+                  } else {
+                    globalVariables.chewieController!.play();
+                  }
+                },
+                icon: Icon(
+                  snapshot.data!.chewieController.videoPlayerController.value
+                          .isPlaying
+                      ? Icons.pause
+                      : Icons.play_arrow,
+                  color: AppColors.white,
+                )),
+            IconButton(
+              padding: EdgeInsets.zero,
+              onPressed: () async {
+                // snapshot.data!.chewieController.videoPlayerController.dispose();
+                // snapshot.data!.chewieController.dispose();
+              },
+              icon: const Icon(
+                Icons.close,
+                size: 21,
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -334,13 +296,14 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
     );
   }
 
-  Future<void> showMusicScreen(int songId) async {
+  Future<void> showMusicScreen(
+      {required Song songData, required List<Song> songs}) async {
     await showModalBottomSheet<dynamic>(
       context: context,
       isScrollControlled: true,
-      showDragHandle: true,
-      backgroundColor: Colors.black,
-      barrierColor: Colors.grey.withOpacity(0.5),
+      // showDragHandle: true,
+      backgroundColor: AppColors.black,
+      barrierColor: AppColors.black.withOpacity(0.5),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(30),
@@ -348,12 +311,24 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
         ),
       ),
       builder: (ctx) {
-        return JustAudioPlayer(
-          songId: songId,
+        return SizedBox(
+          width: width,
+          height: height * 0.9,
+          child: VideoPlayerScreen(
+            songData: songData,
+            songs: songs,
+          ),
         );
       },
     );
   }
+
+  // AspectRatio(
+  // aspectRatio: 16 / 9,
+  // child: Chewie(
+  // controller: globalVariables.chewieController,
+  // ),
+  // ),
 
   @override
   void dispose() {

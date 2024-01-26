@@ -2,7 +2,6 @@
 
 import 'dart:developer';
 import 'dart:ui';
-import 'package:audio_service/audio_service.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/youtube_link_button.dart';
@@ -14,6 +13,7 @@ import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 

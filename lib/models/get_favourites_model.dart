@@ -16,7 +16,7 @@ class GetFavouritesModel {
   GetFavouritesModel({
     required this.songId,
     required this.artistUID,
-    required this.songUrl,
+    required this.videoUrl,
     required this.artist,
     required this.lyricist,
     required this.userId,
@@ -33,7 +33,7 @@ class GetFavouritesModel {
       GetFavouritesModel(
         songId: int.parse(json['songId'].toString()),
         artistUID: int.parse(json['artistUID'].toString()),
-        songUrl: json['songUrl'].toString(),
+        videoUrl: json['videoUrl'].toString(),
         artist: json['artist'].toString(),
         lyricist: json['lyricist'].toString(),
         userId: int.parse(json['userId'].toString()),
@@ -47,7 +47,7 @@ class GetFavouritesModel {
       );
   final int songId;
   final int artistUID;
-  final String songUrl;
+  final String videoUrl;
   final String artist;
   final String lyricist;
   final int userId;
@@ -62,7 +62,7 @@ class GetFavouritesModel {
   Map<String, dynamic> toJson() => {
         'songId': songId,
         'artistUID': artistUID,
-        'songUrl': songUrl,
+        'videoUrl': videoUrl,
         'artist': artist,
         'lyricist': lyricist,
         'userId': userId,

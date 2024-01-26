@@ -7,7 +7,10 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 class AdsCard extends StatefulWidget {
   const AdsCard({
     super.key,
+    this.adSize = AdSize.banner,
   });
+
+  final AdSize adSize;
 
   @override
   State<AdsCard> createState() => _AdsCardState();
@@ -20,7 +23,7 @@ class _AdsCardState extends State<AdsCard> {
   Future<void> initializeAd() async {
     final adUnitId = remoteConfigData.adUnitId;
     bannerAd = BannerAd(
-      size: AdSize.banner,
+      size: widget.adSize,
       adUnitId: adUnitId,
       request: const AdRequest(),
       listener: BannerAdListener(

@@ -1,6 +1,9 @@
 // ignore_for_file: strict_raw_type, avoid_dynamic_calls
 
+import 'dart:async';
 import 'dart:developer';
+import 'package:chewie/chewie.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/home_components/copy_right_text.dart';
@@ -11,6 +14,8 @@ import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart' as app;
 import 'package:glorify_god/provider/app_state.dart';
+import 'package:glorify_god/provider/global_variables.dart';
+import 'package:glorify_god/screens/video_player_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,9 +23,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -32,6 +36,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   app.AppState appState = app.AppState();
+  GlobalVariables globalVariables = GlobalVariables();
 
   double get width => MediaQuery.of(context).size.width;
 
@@ -40,12 +45,60 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   List<int> showShimmers = [1, 2, 3, 4];
   late AnimationController lottieController;
 
+  List<Map<String, dynamic>> videos = [
+    {
+      'videoUrl':
+          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/thandri-deva-song/Thandri-Deva-video.mp4',
+      'videoThumbnail':
+          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/thandri-deva-song/thandri-deva-image.jpeg',
+      'videoId': 1,
+      'title': 'Thandri Deva',
+      'artist': 'Raj Prakash Paul',
+      'artistId': 1,
+      'createdAt': '',
+    },
+    {
+      'videoUrl':
+          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/mahonathuda-song/mahonathuda-video.mp4',
+      'videoThumbnail':
+          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/mahonathuda-song/mahonathuda-image.jpeg',
+      'videoId': 2,
+      'title': 'Mahonathuda',
+      'artist': 'Raj Prakash Paul',
+      'artistId': 1,
+      'createdAt': '',
+    },
+    {
+      'videoUrl':
+          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/thandri-deva-song/Thandri-Deva-video.mp4',
+      'videoThumbnail':
+          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/thandri-deva-song/thandri-deva-image.jpeg',
+      'videoId': 3,
+      'title': 'Thandri Deva 2',
+      'artist': 'Raj Prakash Paul',
+      'artistId': 1,
+      'createdAt': '',
+    },
+    {
+      'videoUrl':
+          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/mahonathuda-song/mahonathuda-video.mp4',
+      'videoThumbnail':
+          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/mahonathuda-song/mahonathuda-image.jpeg',
+      'videoId': 4,
+      'title': 'Mahonathuda 2',
+      'artist': 'Raj Prakash Paul',
+      'artistId': 1,
+      'createdAt': '',
+    },
+  ];
+
   @override
   void initState() {
     lottieController =
         AnimationController(vsync: this, duration: const Duration(seconds: 2));
     lottieController.repeat();
     appState = context.read<app.AppState>();
+    globalVariables = context.read<GlobalVariables>();
     super.initState();
     getAllSongs();
   }
@@ -66,6 +119,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<app.AppState>(context);
+    globalVariables = Provider.of<GlobalVariables>(context);
     return Scaffold(
       appBar: PreferredSize(
         preferredSize:
@@ -149,6 +203,49 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 const BannerCard(),
                 const AdsCard(),
+
+                // SizedBox(
+                //   height: 220,
+                //   child: Column(
+                //     children: [
+                //       TitleTile(
+                //         title: 'Raj Prakash Paul',
+                //         showViewAll: false,
+                //         onPressViewAll: () {},
+                //         pastorImage: 'pastorImage',
+                //       ),
+                //       SingleChildScrollView(
+                //         scrollDirection: Axis.horizontal,
+                //         child: Row(
+                //           children: [
+                //             ...videos
+                //                 .map(
+                //                   (e) => Bounce(
+                //                     duration: const Duration(milliseconds: 50),
+                //                     onPressed: () async {
+                //                       Navigator.of(context).push(
+                //                         CupertinoPageRoute(
+                //                           builder: (_) => VideoPlayerScreen(
+                //                             allVideos: videos,
+                //                             songData: e,
+                //                           ),
+                //                         ),
+                //                       );
+                //                     },
+                //                     child: SongCard(
+                //                       image: e['videoThumbnail'].toString(),
+                //                       title: e['title'].toString(),
+                //                     ),
+                //                   ),
+                //                 )
+                //                 .toList()
+                //           ],
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+
                 // const SizedBox(
                 //   height: 30,
                 // ),
@@ -164,16 +261,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // if (kDebugMode)
-                          //   CupertinoButton(
-                          //     onPressed: () async {},
-                          //     child: const AppText(
-                          //       text: 'Test',
-                          //       styles: TextStyle(
-                          //         fontSize: 24,
-                          //       ),
-                          //     ),
-                          //   ),
                           if (e.songs.isNotEmpty)
                             TitleTile(
                               title: e.artistName,
@@ -272,14 +359,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 onPressed: () async {
                   final initialId = songs.indexOf(e);
                   log('${e.songId} , $initialId', name: 'on tap songId');
-                  if (appState.audioPlayer.playing) {
-                    await appState.audioPlayer.pause();
-                  }
-                  await startAudio(
-                    appState: appState,
-                    audioSource: songs,
-                    initialId: initialId,
-                  );
+                  // if (appState.audioPlayer.playing) {
+                  //   await appState.audioPlayer.pause();
+                  // }
+
+                  showMusicScreen(songData: e, songs: songs);
+
+                  await VideoHandler(
+                          songData: e,
+                          songs: songs,
+                          globalVariables: globalVariables)
+                      .startTheVideo(videoUrl: e.videoUrl);
                 },
                 child: SongCard(
                   image: e.artUri,
@@ -292,6 +382,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  Future<void> showMusicScreen(
+      {required Song songData, required List<Song> songs}) async {
+    await showModalBottomSheet<dynamic>(
+      context: context,
+      isScrollControlled: true,
+      // showDragHandle: true,
+      backgroundColor: AppColors.black,
+      barrierColor: AppColors.black.withOpacity(0.5),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        ),
+      ),
+      builder: (ctx) {
+        return SizedBox(
+          width: width,
+          height: height * 0.9,
+          child: VideoPlayerScreen(
+            songData: songData,
+            songs: songs,
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     lottieController.dispose();
@@ -299,73 +416,79 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 }
 
-Future startAudio({
-  required AppState appState,
-  required List<Song> audioSource,
-  required int initialId,
-}) async {
-  log('$initialId', name: 'The initial index');
-  final playList = ConcatenatingAudioSource(
-    children: [
-      //<--
-      // Here is to set the audio source that the list of songs to be read
-      // first.
-      // Set's the mediaItem for starting the audio
-      // -->/
-      ...audioSource.map((e) {
-        final audioSource = AudioSource.uri(
-          Uri.parse(e.songUrl),
-          tag: MediaItem(
-              id: e.songId.toString(),
-              title: e.title,
-              artist: e.artist,
-              artUri: Uri.parse(e.artUri),
-              extras: {
-                'ytTitle': e.ytTitle,
-                'ytImage': e.ytImage,
-                'ytUrl': e.ytUrl,
-              }),
-        );
-        return audioSource;
-      }),
-    ],
-  );
-  await appState.audioPlayer.setLoopMode(LoopMode.all);
-  //<-- Starting the audio player
-  // 1. set the list of songs that should play one after one in a loop
-  // 2. initialIndex is for in the above list from which position
-  // the song is actually starting
-  // -->/
-  await appState.audioPlayer.setAudioSource(
-    playList,
-    // This initial id is on first tap of song in the list of songs
-    // it will start playing the particular song and then it start loop
-    // for next song
-    initialIndex:
-        initialId, // <-- 1. If enabled in ios simulator it is not working
-    // (No particular reason found) -->
-  );
-
-  // Listen for changes in the currently playing index
-  appState.audioPlayer.currentIndexStream.listen((index) async {
-    if (index != null && index < audioSource.length) {
-      //<-- When audio starts the individual song data will be set global usage -->/
-      appState.songData = appState
-          .emptySongData; //<-- Clear the data before setting new data -->/
-      appState.songData = audioSource[index];
-      //<-- -->/
-
-      final currentSongId = audioSource[index].songId;
-
-      final res =
-          await appState.checkFavourites(songId: audioSource[index].songId);
-      appState.isSongFavourite = res;
-      log('$currentSongId - $res - ${appState.isSongFavourite}',
-          name: 'The song changed');
-      // Perform your API call for the current song here using currentSongId
-      // ...
-    }
+class VideoHandler {
+  VideoHandler({
+    required this.songData,
+    required this.songs,
+    required this.globalVariables,
   });
 
-  await appState.audioPlayer.play();
+  final Song songData;
+
+  final List<Song> songs;
+
+  final GlobalVariables globalVariables;
+
+  VideoPlayerController? videoPlayerController;
+  int currentVideoIndex = 0;
+
+  Future startTheVideo({required String videoUrl}) async {
+    if (videoPlayerController != null) {
+      log('did this came here');
+      await videoPlayerController!.dispose();
+    }
+
+    videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+
+    globalVariables.chewieController = ChewieController(
+      videoPlayerController: videoPlayerController!,
+      autoPlay: true,
+      showControls: false,
+      aspectRatio: 16 / 9,
+      allowFullScreen: true,
+      materialProgressColors: ChewieProgressColors(
+        playedColor: AppColors.white,
+        handleColor: Colors.transparent,
+      ),
+    );
+
+    final songStreamData = ControllerWithSongData(
+      chewieController: globalVariables.chewieController!,
+      songData: songData,
+      songs: songs,
+    );
+
+    globalVariables.chewieController!.videoPlayerController.addListener(() {
+      globalVariables.songStreamController.add(songStreamData);
+      if (globalVariables
+                  .chewieController!.videoPlayerController.value.position !=
+              Duration.zero &&
+          globalVariables
+                  .chewieController!.videoPlayerController.value.position >=
+              globalVariables
+                  .chewieController!.videoPlayerController.value.duration) {
+        log('The song completed');
+        skipToNext();
+      }
+    });
+  }
+
+  Future skipToNext() async {
+    if (currentVideoIndex < songs.length - 1) {
+      currentVideoIndex++;
+    } else {
+      currentVideoIndex = 0; // Loop back to the first video if at the end
+    }
+    startTheVideo(videoUrl: songs[currentVideoIndex].videoUrl);
+  }
+
+  Future skipToPrevious() async {
+    if (currentVideoIndex > 0) {
+      currentVideoIndex--;
+    } else {
+      currentVideoIndex = songs.length - 1;
+    }
+    startTheVideo(videoUrl: songs[currentVideoIndex].videoUrl);
+  }
 }

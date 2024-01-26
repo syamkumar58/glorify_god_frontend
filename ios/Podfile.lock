@@ -9,8 +9,6 @@ PODS:
     - Flutter
   - audio_session (0.0.1):
     - Flutter
-  - audioplayers_darwin (0.0.1):
-    - Flutter
   - connectivity_plus (0.0.1):
     - Flutter
     - ReachabilitySwift
@@ -24,7 +22,7 @@ PODS:
   - Firebase/RemoteConfig (10.18.0):
     - Firebase/CoreOnly
     - FirebaseRemoteConfig (~> 10.18.0)
-  - firebase_auth (4.15.3):
+  - firebase_auth (4.16.0):
     - Firebase/Auth (= 10.18.0)
     - firebase_core
     - Flutter
@@ -146,6 +144,8 @@ PODS:
   - nanopb/decode (2.30909.1)
   - nanopb/encode (2.30909.1)
   - OrderedSet (5.0.0)
+  - package_info_plus (0.4.5):
+    - Flutter
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -158,13 +158,17 @@ PODS:
   - Toast (4.0.0)
   - url_launcher_ios (0.0.1):
     - Flutter
+  - video_player_avfoundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - wakelock_plus (0.0.1):
+    - Flutter
   - webview_flutter_wkwebview (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - audio_service (from `.symlinks/plugins/audio_service/ios`)
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
-  - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
@@ -177,9 +181,12 @@ DEPENDENCIES:
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/ios`)
   - just_audio (from `.symlinks/plugins/just_audio/ios`)
   - modal_progress_hud_nsn (from `.symlinks/plugins/modal_progress_hud_nsn/ios`)
+  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
+  - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
 
 SPEC REPOS:
@@ -214,8 +221,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/audio_service/ios"
   audio_session:
     :path: ".symlinks/plugins/audio_session/ios"
-  audioplayers_darwin:
-    :path: ".symlinks/plugins/audioplayers_darwin/ios"
   connectivity_plus:
     :path: ".symlinks/plugins/connectivity_plus/ios"
   device_info_plus:
@@ -240,12 +245,18 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/just_audio/ios"
   modal_progress_hud_nsn:
     :path: ".symlinks/plugins/modal_progress_hud_nsn/ios"
+  package_info_plus:
+    :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
+  video_player_avfoundation:
+    :path: ".symlinks/plugins/video_player_avfoundation/darwin"
+  wakelock_plus:
+    :path: ".symlinks/plugins/wakelock_plus/ios"
   webview_flutter_wkwebview:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
 
@@ -253,11 +264,10 @@ SPEC CHECKSUMS:
   AppAuth: 3bb1d1cd9340bd09f5ed189fb00b1cc28e1e8570
   audio_service: f509d65da41b9521a61f1c404dd58651f265a567
   audio_session: 4f3e461722055d21515cf3261b64c973c062f345
-  audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
   connectivity_plus: bf0076dd84a130856aa636df1c71ccaff908fa1d
   device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
   Firebase: 414ad272f8d02dfbf12662a9d43f4bba9bec2a06
-  firebase_auth: df44e14f8a93e8a9869d91695bd3f8e53d2c9f5a
+  firebase_auth: 8e9ec02991ca4659111cc671c84d0c010b6bfb26
   firebase_core: 0af4a2b24f62071f9bf283691c0ee41556dcb3f5
   firebase_remote_config: 14ad7a3c99810d373ba1ad4a754a8cf26c91d476
   FirebaseABTesting: bfa3b384b68cee10a89183649c64cd7998a37a12
@@ -285,6 +295,7 @@ SPEC CHECKSUMS:
   modal_progress_hud_nsn: b66f99f02da7de83484e50dfe1fe2d71ac406e67
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
+  package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
@@ -292,6 +303,8 @@ SPEC CHECKSUMS:
   sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   url_launcher_ios: bf5ce03e0e2088bad9cc378ea97fa0ed5b49673b
+  video_player_avfoundation: e9e6f9cae7d7a6d9b43519b0aab382bca60fcfd1
+  wakelock_plus: 8b09852c8876491e4b6d179e17dfe2a0b5f60d47
   webview_flutter_wkwebview: 2e2d318f21a5e036e2c3f26171342e95908bd60a
 
 PODFILE CHECKSUM: 70d9d25280d0dd177a5f637cdb0f0b0b12c6a189

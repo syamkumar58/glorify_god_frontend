@@ -56,7 +56,7 @@ class GetArtistsWithSongs {
 class Song {
   final int songId;
   final int artistUID;
-  final String songUrl;
+  final String videoUrl;
   final String title;
   final String artist;
   final String artUri;
@@ -69,7 +69,7 @@ class Song {
   Song({
     required this.songId,
     required this.artistUID,
-    required this.songUrl,
+    required this.videoUrl,
     required this.title,
     required this.artist,
     required this.artUri,
@@ -83,7 +83,7 @@ class Song {
   factory Song.fromJson(Map<String, dynamic> json) => Song(
         songId: int.parse(json['songId'].toString()),
         artistUID: int.parse(json['artistUID'].toString()),
-        songUrl: json['songUrl'].toString(),
+        videoUrl: json['videoUrl'].toString(),
         title: json['title'].toString(),
         artist: json['artist'].toString(),
         artUri: json['artUri'].toString(),
@@ -97,7 +97,7 @@ class Song {
   Map<String, dynamic> toJson() => {
         'songId': songId,
         'artistUID': artistUID,
-        'songUrl': songUrl,
+        'videoUrl': videoUrl,
         'title': title,
         'artist': artist,
         'artUri': artUri,
