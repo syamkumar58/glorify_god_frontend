@@ -13,18 +13,15 @@ import 'package:video_player/video_player.dart';
 part 'video_player_state.dart';
 
 class VideoPlayerCubit extends Cubit<VideoPlayerState> {
-  VideoPlayerCubit({required this.appState})
-      : super(VideoPlayerInitial());
-
+  VideoPlayerCubit({required this.appState}) : super(VideoPlayerInitial());
 
   final AppState appState;
-
 
   Future setToInitialState() async {
     emit(VideoPlayerInitial());
   }
 
-  late ChewieController playerController;
+  ChewieController? playerController;
   VideoPlayerController? videoPlayerController;
   int currentSongIndex = 0;
 
@@ -57,18 +54,18 @@ class VideoPlayerCubit extends Cubit<VideoPlayerState> {
       ),
     );
 
-    playerController.videoPlayerController.addListener(() {
+    playerController!.videoPlayerController.addListener(() {
       emit(VideoPlayerInitialised(
         songData: songData,
         songs: songs,
-        chewieController: playerController,
+        chewieController: playerController!,
         currentSongIndex: currentSongIndex,
       ));
 
-      if (playerController.videoPlayerController.value.position !=
+      if (playerController!.videoPlayerController.value.position !=
               Duration.zero &&
-          playerController.videoPlayerController.value.position >=
-              playerController.videoPlayerController.value.duration) {
+          playerController!.videoPlayerController.value.position >=
+              playerController!.videoPlayerController.value.duration) {
         setToInitialState();
         skipToNext(songs: songs);
       }
@@ -78,6 +75,14 @@ class VideoPlayerCubit extends Cubit<VideoPlayerState> {
     appState.checkFavourites(songId: songData.songId);
     // await BlocProvider.of<SongFavouriteCubit>(context)
     //     .checkSongFavourite(songId: songData.songId);
+  }
+
+  Future resume() async {
+    playerController!.play();
+  }
+
+  Future pause() async {
+    playerController!.pause();
   }
 
   Future skipToNext({
@@ -111,9 +116,9 @@ class VideoPlayerCubit extends Cubit<VideoPlayerState> {
   }
 
   Future stopVideoPlayer() async {
-    if (playerController.videoPlayerController.value.isInitialized) {
+    if (playerController!.videoPlayerController.value.isInitialized) {
       videoPlayerController!.dispose();
-      playerController.dispose();
+      playerController!.dispose();
     }
 
     await setToInitialState();

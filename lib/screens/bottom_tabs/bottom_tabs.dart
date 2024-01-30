@@ -1,9 +1,11 @@
 // ignore_for_file: strict_raw_type
 
 import 'dart:async';
+import 'dart:developer';
 import 'package:chewie/chewie.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
+import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
@@ -20,6 +22,7 @@ import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart' as ad;
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -41,6 +44,7 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   AppState appState = AppState();
   GlobalVariables globalVariables = GlobalVariables();
   bool isLoading = false;
+  ChewieController? chewieController;
 
   // bool closeTheStream = false;
   int _screenIndex = 0;
@@ -66,13 +70,47 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    switch (state) {
-      case AppLifecycleState.detached:
-        appState.audioPlayer.dispose();
-      case AppLifecycleState.resumed:
-      case AppLifecycleState.inactive:
-      case AppLifecycleState.hidden:
-      case AppLifecycleState.paused:
+
+    VideoPlayerCubit videoPlayerCubit = BlocProvider.of<VideoPlayerCubit>(context);
+
+    if(videoPlayerCubit.playerController != null && videoPlayerCubit.playerController!.videoPlayerController.value.isInitialized){
+      chewieController = BlocProvider.of<VideoPlayerCubit>(context)
+          .playerController!
+          .videoPlayerController
+          .value
+          .isInitialized
+          ? BlocProvider.of<VideoPlayerCubit>(context).playerController
+          : null;
+      log('$chewieController && state - $state',
+          name: 'checking the state and the controller');
+      switch (state) {
+        case AppLifecycleState.detached:
+          if (chewieController != null &&
+              chewieController!.videoPlayerController.value.isInitialized) {
+            chewieController!.dispose();
+            BlocProvider.of<VideoPlayerCubit>(context).pause();
+          }
+        case AppLifecycleState.resumed:
+          if (chewieController != null &&
+              chewieController!.videoPlayerController.value.isInitialized) {
+            BlocProvider.of<VideoPlayerCubit>(context).pause();
+          }
+        case AppLifecycleState.inactive:
+          if (chewieController != null &&
+              chewieController!.videoPlayerController.value.isInitialized) {
+            BlocProvider.of<VideoPlayerCubit>(context).pause();
+          }
+        case AppLifecycleState.hidden:
+          if (chewieController != null &&
+              chewieController!.videoPlayerController.value.isInitialized) {
+            BlocProvider.of<VideoPlayerCubit>(context).pause();
+          }
+        case AppLifecycleState.paused:
+          if (chewieController != null &&
+              chewieController!.videoPlayerController.value.isInitialized) {
+            BlocProvider.of<VideoPlayerCubit>(context).pause();
+          }
+      }
     }
   }
 
@@ -80,6 +118,8 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
     await appState.initiallySetUserDataGlobally();
     await appState.getRatings();
   }
+
+  Future checkVideoInitialisation() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -112,14 +152,18 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
                   data.chewieController.videoPlayerController.value
                       .isInitialized
               ? 150
-              : 90,
+              : 160,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (data != null &&
                   data.chewieController.videoPlayerController.value
                       .isInitialized)
-                videoBar(data),
+                videoBar(data)
+              else
+                const AdsCard(
+                  adSize: ad.AdSize.banner,
+                ),
               gNav(),
             ],
           ),

@@ -158,4 +158,8 @@
   - Enabled wakelock
   - Video player set-up is done
   - Removed the music player set-up
-  - Added flutter bloc for better state management 
+  - Added flutter bloc for better state management
+  - Added AppLifecycleState
+    While playing audio if user locks the screen, or he puts the app in background the audio stops playing
+  - Changed the ad portion to show in the home screen now came to on top of nav bar in place of video player section
+    If video is playing that will goes off and when disposed it will  show again in that place

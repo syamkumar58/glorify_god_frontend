@@ -7,14 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
-import 'package:glorify_god/components/ads_card.dart';
+import 'package:glorify_god/components/custom_nav_bar_ad.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart' as a;
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -142,15 +141,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       ),
       bottomNavigationBar:
           MediaQuery.of(context).orientation == Orientation.portrait
-              ? SafeArea(
-                  child: Container(
-                      height: 70,
-                      width: width,
-                      color: Colors.transparent,
-                      child: const AdsCard(
-                        adSize: AdSize.banner,
-                      )),
-                )
+              ? const CustomNavBarAd()
               : const SizedBox(),
     );
   }
