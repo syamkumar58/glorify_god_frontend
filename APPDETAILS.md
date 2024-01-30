@@ -151,4 +151,11 @@
 
 - 21/1/2024
   - Done with song completion tracker
-  - Added required API calls for collecting song data on each track with artist U-ID 
+  - Added required API calls for collecting song data on each track with artist U-ID
+
+- 30/1/2024
+  - Removed unused animation and added new music animations
+  - Enabled wakelock
+  - Video player set-up is done
+  - Removed the music player set-up
+  - Added flutter bloc for better state management 

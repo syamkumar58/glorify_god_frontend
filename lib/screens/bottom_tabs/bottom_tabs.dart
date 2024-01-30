@@ -1,9 +1,11 @@
 // ignore_for_file: strict_raw_type
 
 import 'dart:async';
-import 'dart:developer';
 import 'package:chewie/chewie.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/noisey_text.dart';
+import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
@@ -39,6 +41,8 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   AppState appState = AppState();
   GlobalVariables globalVariables = GlobalVariables();
   bool isLoading = false;
+
+  // bool closeTheStream = false;
   int _screenIndex = 0;
   late Box box;
   bool checkItOnce = false;
@@ -57,9 +61,6 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
     initialUserCall();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      listenSongCompletion();
-    });
   }
 
   @override
@@ -80,40 +81,6 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
     await appState.getRatings();
   }
 
-  Future listenSongCompletion() async {
-    positionStreamSubscription =
-        appState.audioPlayer.positionStream.listen((songPosition) async {
-      final songDuration = appState.audioPlayer.duration ?? Duration.zero;
-      log('cross 1 $songPosition');
-      log('cross 2 $songPosition $songDuration');
-      if (!checkItOnce &&
-          songPosition > Duration.zero &&
-          songDuration > Duration.zero &&
-          songPosition.inSeconds >= songDuration.inSeconds) {
-        setState(() {
-          checkItOnce = true;
-        });
-        log('cross 3 $songPosition $songDuration');
-        //<-- If the song completed and artistUID is not Zero then update the tracker by 1
-        // That one song was completed and was added to tracker details
-        // -->/
-        if (appState.songData.artistUID != 0) {
-          log('${appState.songData.artistUID}', name: 'icyMeta data');
-          await appState.updateTrackerDetails(
-              artistId: appState.songData.artistUID);
-        }
-      } else if (checkItOnce &&
-          songPosition > Duration.zero &&
-          songDuration > Duration.zero &&
-          songPosition.inSeconds < songDuration.inSeconds) {
-        setState(() {
-          checkItOnce = false;
-        });
-        log('cross 4 $songPosition $songDuration');
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
@@ -130,36 +97,44 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   }
 
   Widget gNavBar() {
-    return StreamBuilder<ControllerWithSongData>(
-        stream: globalVariables.songStreamController.stream,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            log('${snapshot.error}', name: 'snapShot has error');
-            return const SizedBox();
-          }
+    return BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
+      builder: (context, state) {
+        VideoPlayerInitialised? data;
 
-          log('${snapshot.hasData}', name: 'snapShot has data');
+        if (state is VideoPlayerInitial) {
+        } else if (state is VideoPlayerInitialised) {
+          data = state;
+        }
 
-          return Container(
-            color: Colors.transparent,
-            height: snapshot.hasData ? 150 : 90,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (snapshot.hasData) videoBar(snapshot),
-                gNav(),
-              ],
-            ),
-          );
-        });
+        return Container(
+          color: Colors.transparent,
+          height: data != null &&
+                  data.chewieController.videoPlayerController.value
+                      .isInitialized
+              ? 150
+              : 90,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (data != null &&
+                  data.chewieController.videoPlayerController.value
+                      .isInitialized)
+                videoBar(data),
+              gNav(),
+            ],
+          ),
+        );
+      },
+    );
   }
 
-  Widget videoBar(AsyncSnapshot<ControllerWithSongData> snapshot) {
+  Widget videoBar(VideoPlayerInitialised data) {
     return InkWell(
       onTap: () {
-        showMusicScreen(
-          songData: snapshot.data!.songData,
-          songs: snapshot.data!.songs,
+        musicScreenNavigation(
+          context,
+          songData: data.songData,
+          songs: data.songs,
         );
       },
       child: Container(
@@ -173,7 +148,7 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
               width: width * 0.3,
               color: Colors.transparent,
               child: Chewie(
-                controller: snapshot.data!.chewieController,
+                controller: data.chewieController,
               ),
             ),
             Padding(
@@ -187,7 +162,7 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       AppText(
-                        text: snapshot.data!.songData.title,
+                        text: data.songData.title,
                         styles: GoogleFonts.manrope(
                           fontSize: 16,
                           color: AppColors.white,
@@ -195,7 +170,7 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
                         ),
                       ),
                       AppText(
-                        text: snapshot.data!.songData.artist,
+                        text: data.songData.artist,
                         styles: GoogleFonts.manrope(
                           fontSize: 14,
                           color: AppColors.white,
@@ -208,16 +183,15 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
             IconButton(
                 padding: EdgeInsets.zero,
                 onPressed: () {
-                  if (snapshot.data!.chewieController.videoPlayerController
-                      .value.isPlaying) {
-                    globalVariables.chewieController!.pause();
+                  if (data
+                      .chewieController.videoPlayerController.value.isPlaying) {
+                    data.chewieController.pause();
                   } else {
-                    globalVariables.chewieController!.play();
+                    data.chewieController.play();
                   }
                 },
                 icon: Icon(
-                  snapshot.data!.chewieController.videoPlayerController.value
-                          .isPlaying
+                  data.chewieController.videoPlayerController.value.isPlaying
                       ? Icons.pause
                       : Icons.play_arrow,
                   color: AppColors.white,
@@ -225,14 +199,14 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
             IconButton(
               padding: EdgeInsets.zero,
               onPressed: () async {
-                // snapshot.data!.chewieController.videoPlayerController.dispose();
-                // snapshot.data!.chewieController.dispose();
+                await BlocProvider.of<VideoPlayerCubit>(context)
+                    .stopVideoPlayer();
               },
               icon: const Icon(
                 Icons.close,
                 size: 21,
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -313,7 +287,7 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
       builder: (ctx) {
         return SizedBox(
           width: width,
-          height: height * 0.9,
+          height: height * 0.95,
           child: VideoPlayerScreen(
             songData: songData,
             songs: songs,
@@ -336,6 +310,8 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
     if (positionStreamSubscription != null) {
       positionStreamSubscription!.cancel();
     }
+    globalVariables.chewieController!.dispose();
+    globalVariables.songStreamController.close();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

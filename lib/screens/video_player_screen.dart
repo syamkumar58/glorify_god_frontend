@@ -3,13 +3,19 @@ import 'dart:developer';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
+import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
-import 'package:glorify_god/provider/global_variables.dart';
-import 'package:glorify_god/screens/home_screens/home_screen.dart';
+import 'package:glorify_god/provider/app_state.dart' as a;
 import 'package:glorify_god/utils/app_colors.dart';
+import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
@@ -27,8 +33,9 @@ class VideoPlayerScreen extends StatefulWidget {
   State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
 }
 
-class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  GlobalVariables globalVariables = GlobalVariables();
+class _VideoPlayerScreenState extends State<VideoPlayerScreen>
+    with TickerProviderStateMixin {
+  a.AppState appState = a.AppState();
 
   double get width => MediaQuery.of(context).size.width;
 
@@ -37,10 +44,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   bool showControls = true;
   Timer? _controlsTimer;
 
+  bool loading = false;
+
+  bool landScopeMode = false;
+
+  late AnimationController animationController;
+
   @override
   void initState() {
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    );
+    animationController.repeat();
     super.initState();
-
     // Start the timer initially to hide controls after 5 seconds
     _startControlsTimer();
   }
@@ -73,285 +90,358 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    globalVariables = Provider.of<GlobalVariables>(context);
+    appState = Provider.of<a.AppState>(context);
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(
-            Icons.keyboard_arrow_down,
-            size: 24,
-            color: AppColors.white,
-          ),
-        ),
-        centerTitle: true,
-        title: AppText(
-          text: '',
-          styles: GoogleFonts.manrope(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-            color: AppColors.white,
-            letterSpacing: 1.2,
+      appBar: MediaQuery.of(context).orientation == Orientation.portrait
+          ? AppBar(
+              leading: IconButton(
+                padding: const EdgeInsets.only(left: 12),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(
+                  Icons.keyboard_arrow_left,
+                  size: 32,
+                  color: AppColors.dullWhite,
+                ),
+              ),
+            )
+          : const PreferredSize(
+              preferredSize: Size.fromHeight(0), child: SizedBox()),
+      body: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
+            builder: (context, state) {
+              if (state is! VideoPlayerInitialised) {
+                return waiting();
+              }
+
+              final data = state;
+              return MediaQuery.of(context).orientation == Orientation.portrait
+                  ? SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          videoPortion(data: data),
+                          if (MediaQuery.of(context).orientation ==
+                              Orientation.portrait)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: otherSongs(
+                                playingSongId: data.songData.songId,
+                              ),
+                            ),
+                        ],
+                      ),
+                    )
+                  : videoAspect(data: data);
+            },
           ),
         ),
       ),
-      body: SizedBox(
-        width: width,
-        height: height,
-        child: Column(
+      bottomNavigationBar:
+          MediaQuery.of(context).orientation == Orientation.portrait
+              ? SafeArea(
+                  child: Container(
+                      height: 70,
+                      width: width,
+                      color: Colors.transparent,
+                      child: const AdsCard(
+                        adSize: AdSize.banner,
+                      )),
+                )
+              : const SizedBox(),
+    );
+  }
+
+  Widget videoPortion({required VideoPlayerInitialised data}) {
+    return Column(
+      children: [
+        videoAspect(data: data),
+        if (MediaQuery.of(context).orientation == Orientation.portrait)
+          ListTile(
+            tileColor: Colors.blueGrey.withOpacity(0.1),
+            leading: CircleAvatar(
+              backgroundColor: AppColors.dullBlack,
+              backgroundImage: NetworkImage(data.songData.artUri),
+            ),
+            title: AppText(
+              text: data.songData.title,
+              textAlign: TextAlign.start,
+              styles: GoogleFonts.manrope(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.white,
+              ),
+            ),
+            subtitle: AppText(
+              text: data.songData.artist,
+              textAlign: TextAlign.start,
+              styles: GoogleFonts.manrope(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: AppColors.white,
+              ),
+            ),
+            trailing: IconButton(
+                onPressed: () async {
+                  final favourite = await onFav();
+                  await likedSongs();
+                  setState(() {
+                    appState.isSongFavourite = favourite;
+                  });
+                },
+                icon: Icon(
+                  appState.isSongFavourite
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  size: 21,
+                  color: appState.isSongFavourite
+                      ? AppColors.redAccent
+                      : AppColors.dullWhite,
+                )),
+          ),
+      ],
+    );
+  }
+
+  Widget videoAspect({required VideoPlayerInitialised data}) {
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: GestureDetector(
+        onTap: _toggleControlsVisibility,
+        child: Stack(
+          // alignment: Alignment.center,
           children: [
-            videoPortion(),
-            const AdsCard(),
-            otherSongs(),
+            Chewie(
+              controller: data.chewieController,
+            ),
+            if (showControls && !loading)
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.black.withOpacity(0.4),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                            onPressed: () async {
+                              await skipPrevious();
+                            },
+                            icon: Icon(
+                              Icons.skip_previous,
+                              size: 30,
+                              color: AppColors.white,
+                            )),
+                        Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: AppColors.black.withOpacity(0.7),
+                          ),
+                          child: Center(
+                            child: IconButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: () {
+                                  if (data.chewieController
+                                      .videoPlayerController.value.isPlaying) {
+                                    data.chewieController.pause();
+                                  } else {
+                                    data.chewieController.play();
+                                  }
+                                },
+                                icon: Icon(
+                                  data.chewieController.videoPlayerController
+                                          .value.isPlaying
+                                      ? Icons.pause
+                                      : Icons.play_arrow,
+                                  size: 30,
+                                  color: AppColors.white,
+                                )),
+                          ),
+                        ),
+                        IconButton(
+                            onPressed: () async {
+                              await skipNext();
+                            },
+                            icon: Icon(
+                              Icons.skip_next,
+                              size: 30,
+                              color: AppColors.white,
+                            )),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            if (showControls && !loading)
+              Positioned(
+                bottom: 12,
+                child: Center(
+                  child: SizedBox(
+                    width: width,
+                    child: Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).orientation ==
+                                      Orientation.portrait
+                                  ? width * 0.85
+                                  : width * 0.72,
+                              height: 20,
+                              child: SliderTheme(
+                                data: SliderThemeData(
+                                  trackHeight: 6,
+                                  thumbShape: SliderComponentShape.noThumb,
+                                  thumbColor: Colors.transparent,
+                                  inactiveTrackColor: AppColors.dullWhite,
+                                  activeTrackColor: AppColors.redAccent,
+                                ),
+                                child: Slider(
+                                  min: 0,
+                                  value: data
+                                      .chewieController
+                                      .videoPlayerController
+                                      .value
+                                      .position
+                                      .inSeconds
+                                      .toDouble(),
+                                  max: data
+                                      .chewieController
+                                      .videoPlayerController
+                                      .value
+                                      .duration
+                                      .inSeconds
+                                      .toDouble(),
+                                  onChanged: (val) {
+                                    data.chewieController.videoPlayerController
+                                        .seekTo(
+                                      Duration(
+                                        seconds: val.toInt(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 12, right: 12),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  AppText(
+                                    text:
+                                        '${data.chewieController.videoPlayerController.value.position.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.position.inSeconds % 60).toString().padLeft(2, '0')}',
+                                    styles: GoogleFonts.manrope(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: width * 0.6,
+                                  ),
+                                  AppText(
+                                    text:
+                                        '${data.chewieController.videoPlayerController.value.duration.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.duration.inSeconds % 60).toString().padLeft(2, '0')}',
+                                    styles: GoogleFonts.manrope(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: MediaQuery.of(context).orientation ==
+                                      Orientation.portrait
+                                  ? 0
+                                  : 20,
+                              bottom: MediaQuery.of(context).orientation ==
+                                      Orientation.portrait
+                                  ? 0
+                                  : 20),
+                          child: IconButton(
+                              padding: EdgeInsets.zero,
+                              onPressed: () {
+                                log(
+                                  '${MediaQuery.of(context).orientation == Orientation.portrait}',
+                                  name: 'The orientation',
+                                );
+                                if (MediaQuery.of(context).orientation ==
+                                    Orientation.portrait) {
+                                  SystemChrome.setPreferredOrientations(
+                                    [
+                                      DeviceOrientation.landscapeRight,
+                                      DeviceOrientation.landscapeLeft,
+                                    ],
+                                  );
+                                } else {
+                                  SystemChrome.setPreferredOrientations(
+                                    [DeviceOrientation.portraitUp],
+                                  );
+                                }
+                              },
+                              icon: Icon(
+                                !landScopeMode
+                                    ? Icons.fullscreen
+                                    : Icons.fullscreen_exit,
+                                size: 22,
+                                color: AppColors.white,
+                              )),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget videoPortion() {
-    return StreamBuilder<ControllerWithSongData>(
-        stream: globalVariables.songStreamController.stream,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            log('${snapshot.error}', name: 'The error');
-          }
-
-          if (!snapshot.hasData) {
-            return const Center(
-              child: CupertinoActivityIndicator(),
-            );
-          }
-
-          final data = snapshot.data!;
-
-          return Column(
-            children: [
-              AspectRatio(
-                aspectRatio: 16 / 9,
-                child: GestureDetector(
-                  onTap: _toggleControlsVisibility,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Chewie(
-                        controller: data.chewieController,
-                      ),
-                      if (showControls)
-                        Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.black.withOpacity(0.4),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(
-                                        Icons.skip_previous,
-                                        size: 30,
-                                        color: AppColors.white,
-                                      )),
-                                  Container(
-                                    width: 50,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50),
-                                      color: AppColors.black.withOpacity(0.7),
-                                    ),
-                                    child: Center(
-                                      child: IconButton(
-                                          padding: EdgeInsets.zero,
-                                          onPressed: () {
-                                            // setState(() {
-                                            //   showControls = false;
-                                            // });
-                                            if (data
-                                                .chewieController
-                                                .videoPlayerController
-                                                .value
-                                                .isPlaying) {
-                                              data.chewieController.pause();
-                                            } else {
-                                              data.chewieController.play();
-                                            }
-                                          },
-                                          icon: Icon(
-                                            data
-                                                    .chewieController
-                                                    .videoPlayerController
-                                                    .value
-                                                    .isPlaying
-                                                ? Icons.pause
-                                                : Icons.play_arrow,
-                                            size: 30,
-                                            color: AppColors.white,
-                                          )),
-                                    ),
-                                  ),
-                                  IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(
-                                        Icons.skip_next,
-                                        size: 30,
-                                        color: AppColors.white,
-                                      )),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      if (showControls)
-                        Positioned(
-                          bottom: 12,
-                          child: Center(
-                            child: SizedBox(
-                              width: width * 0.9,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    height: 20,
-                                    child: SliderTheme(
-                                      data: SliderThemeData(
-                                        trackHeight: 6,
-                                        thumbShape:
-                                            SliderComponentShape.noThumb,
-                                        thumbColor: Colors.transparent,
-                                        inactiveTrackColor: AppColors.dullWhite,
-                                        activeTrackColor: AppColors.redAccent,
-                                      ),
-                                      child: Slider(
-                                        min: 0,
-                                        value: data
-                                            .chewieController
-                                            .videoPlayerController
-                                            .value
-                                            .position
-                                            .inSeconds
-                                            .toDouble(),
-                                        max: data
-                                            .chewieController
-                                            .videoPlayerController
-                                            .value
-                                            .duration
-                                            .inSeconds
-                                            .toDouble(),
-                                        onChanged: (val) {
-                                          data.chewieController
-                                              .videoPlayerController
-                                              .seekTo(
-                                            Duration(
-                                              seconds: val.toInt(),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      AppText(
-                                        text:
-                                            '${data.chewieController.videoPlayerController.value.position.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.position.inSeconds % 60).toString().padLeft(2, '0')}',
-                                        styles: GoogleFonts.manrope(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 14,
-                                          color: AppColors.white,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: width * 0.6,
-                                      ),
-                                      AppText(
-                                        text:
-                                            '${data.chewieController.videoPlayerController.value.duration.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.duration.inSeconds % 60).toString().padLeft(2, '0')}',
-                                        styles: GoogleFonts.manrope(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 14,
-                                          color: AppColors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-              ListTile(
-                tileColor: Colors.blueGrey.withOpacity(0.1),
-                leading: CircleAvatar(
-                  backgroundColor: AppColors.dullBlack,
-                  backgroundImage: NetworkImage(widget.songData.artUri),
-                ),
-                title: AppText(
-                  text: widget.songData.title,
-                  textAlign: TextAlign.start,
-                  styles: GoogleFonts.manrope(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.white,
-                  ),
-                ),
-                subtitle: AppText(
-                  text: widget.songData.artist,
-                  textAlign: TextAlign.start,
-                  styles: GoogleFonts.manrope(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.white,
-                  ),
-                ),
-                trailing: IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.favorite_border,
-                      size: 21,
-                      color: AppColors.dullWhite,
-                    )),
-              ),
-            ],
-          );
-        });
+  Widget waiting() {
+    return const AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Center(
+        child: CupertinoActivityIndicator(),
+      ),
+    );
   }
 
-  Widget otherSongs() {
+  Widget otherSongs({required int playingSongId}) {
     return Column(
       children: [
-        ...widget.songs
-            .where((element) => element.songId != widget.songData.songId)
-            .map((e) {
-          return eachTile(e);
+        ...widget.songs.map((e) {
+          return eachTile(songData: e, playingSongId: playingSongId);
         }).toList(),
       ],
     );
   }
 
-  Widget eachTile(Song songData) {
+  Widget eachTile({required Song songData, required int playingSongId}) {
     return SizedBox(
       width: width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            decoration: BoxDecoration(
-              color: Colors.blueGrey.withOpacity(0.1),
-            ),
+            margin: const EdgeInsets.only(top: 8),
             child: ListTile(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
               leading: Container(
                 height: 80,
                 width: 100,
@@ -396,14 +486,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              trailing: playingSongId == songData.songId
+                  ? SizedBox(
+                      height: 30,
+                      width: 30,
+                      child: Lottie.asset(
+                        LottieAnimations.musicAnimation,
+                        controller: animationController,
+                      ),
+                    )
+                  : const SizedBox(),
               onTap: () async {
-                await VideoHandler(
-                  songData: songData,
-                  songs: widget.songs,
-                  globalVariables: globalVariables,
-                ).startTheVideo(
-                  videoUrl: songData.videoUrl,
-                );
+                final selectedSongIndex = widget.songs.indexOf(songData);
+                await BlocProvider.of<VideoPlayerCubit>(context)
+                    .setToInitialState();
+                await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
+                    songData: songData,
+                    songs: widget.songs,
+                    selectedSongIndex: selectedSongIndex);
               },
             ),
           ),
@@ -412,8 +512,54 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     );
   }
 
+  Future skipNext() async {
+    setState(() {
+      loading = true;
+    });
+    await BlocProvider.of<VideoPlayerCubit>(context).setToInitialState();
+    await BlocProvider.of<VideoPlayerCubit>(context).skipToNext(
+      songs: widget.songs,
+    );
+    setState(() {
+      loading = false;
+    });
+  }
+
+  Future skipPrevious() async {
+    setState(() {
+      loading = true;
+    });
+    await BlocProvider.of<VideoPlayerCubit>(context).setToInitialState();
+    await BlocProvider.of<VideoPlayerCubit>(context).skipToPrevious(
+      songs: widget.songs,
+    );
+    setState(() {
+      loading = false;
+    });
+  }
+
+  Future<bool> onFav() async {
+    var favourite = false;
+    if (appState.isSongFavourite) {
+      favourite = await appState.unFavourite(
+        songId: widget.songData.songId,
+      );
+    } else {
+      favourite = await appState.addFavourite(
+        songId: widget.songData.songId,
+      );
+    }
+    return favourite;
+  }
+
+  Future likedSongs() async {
+    await BlocProvider.of<LikedCubit>(context)
+        .likedSongs(appState.userData.userId);
+  }
+
   @override
   void dispose() {
+    animationController.dispose();
     super.dispose();
   }
 }

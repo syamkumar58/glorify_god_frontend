@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:glorify_god/config/helpers.dart';
-import 'package:glorify_god/models/get_favourites_model.dart';
 import 'package:glorify_god/models/profile_models/tracker_model.dart';
 import 'package:glorify_god/models/profile_models/user_reported_isses_model.dart';
 import 'package:glorify_god/models/search_model.dart';
@@ -199,11 +198,14 @@ class AppState with ChangeNotifier {
       songId: songId,
       userId: userData.userId,
     );
+    log('${data.statusCode} && ${data.body}',
+        name: 'checkFavourites status code');
     if (data.statusCode == 200) {
-      log(data.body, name: 'the res body');
       if (data.body.contains('false')) {
+        isSongFavourite = false;
         return false;
       } else {
+        isSongFavourite = true;
         return true;
       }
     } else {
@@ -211,25 +213,25 @@ class AppState with ChangeNotifier {
     }
   }
 
-  List<GetFavouritesModel> _likedSongsList = [];
+  // List<GetFavouritesModel> _likedSongsList = [];
+  //
+  // List<GetFavouritesModel> get likedSongsList => _likedSongsList;
+  //
+  // set likedSongsList(List<GetFavouritesModel> value) {
+  //   _likedSongsList = value;
+  //   notifyListeners();
+  // }
 
-  List<GetFavouritesModel> get likedSongsList => _likedSongsList;
-
-  set likedSongsList(List<GetFavouritesModel> value) {
-    _likedSongsList = value;
-    notifyListeners();
-  }
-
-  Future<void> likedSongs() async {
-    final data = await ApiCalls().getFavourites(userId: userData.userId);
-
-    if (data != null && data.statusCode == 200) {
-      final list = getFavouritesModelFromJson(data.body);
-      likedSongsList = list;
-    } else {
-      likedSongsList = <GetFavouritesModel>[];
-    }
-  }
+  // Future<void> likedSongs() async {
+  //   final data = await ApiCalls().getFavourites(userId: userData.userId);
+  //
+  //   if (data != null && data.statusCode == 200) {
+  //     final list = getFavouritesModelFromJson(data.body);
+  //
+  //   } else {
+  //
+  //   }
+  // }
 
   List<SearchModel> _searchList = [];
 

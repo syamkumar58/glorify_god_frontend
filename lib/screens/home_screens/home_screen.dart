@@ -2,14 +2,15 @@
 
 import 'dart:async';
 import 'dart:developer';
-import 'package:chewie/chewie.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/home_components/copy_right_text.dart';
 import 'package:glorify_god/components/home_components/home_loading_shimmer_effect.dart';
 import 'package:glorify_god/components/song_card_component.dart';
 import 'package:glorify_god/components/title_tile_component.dart';
+import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart' as app;
@@ -24,7 +25,6 @@ import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,53 +44,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool connectionError = false;
   List<int> showShimmers = [1, 2, 3, 4];
   late AnimationController lottieController;
-
-  List<Map<String, dynamic>> videos = [
-    {
-      'videoUrl':
-          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/thandri-deva-song/Thandri-Deva-video.mp4',
-      'videoThumbnail':
-          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/thandri-deva-song/thandri-deva-image.jpeg',
-      'videoId': 1,
-      'title': 'Thandri Deva',
-      'artist': 'Raj Prakash Paul',
-      'artistId': 1,
-      'createdAt': '',
-    },
-    {
-      'videoUrl':
-          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/mahonathuda-song/mahonathuda-video.mp4',
-      'videoThumbnail':
-          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/mahonathuda-song/mahonathuda-image.jpeg',
-      'videoId': 2,
-      'title': 'Mahonathuda',
-      'artist': 'Raj Prakash Paul',
-      'artistId': 1,
-      'createdAt': '',
-    },
-    {
-      'videoUrl':
-          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/thandri-deva-song/Thandri-Deva-video.mp4',
-      'videoThumbnail':
-          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/thandri-deva-song/thandri-deva-image.jpeg',
-      'videoId': 3,
-      'title': 'Thandri Deva 2',
-      'artist': 'Raj Prakash Paul',
-      'artistId': 1,
-      'createdAt': '',
-    },
-    {
-      'videoUrl':
-          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/mahonathuda-song/mahonathuda-video.mp4',
-      'videoThumbnail':
-          'https://glorifygod.s3.ap-south-1.amazonaws.com/Videos+Section/mahonathuda-song/mahonathuda-image.jpeg',
-      'videoId': 4,
-      'title': 'Mahonathuda 2',
-      'artist': 'Raj Prakash Paul',
-      'artistId': 1,
-      'createdAt': '',
-    },
-  ];
 
   @override
   void initState() {
@@ -203,53 +156,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 const BannerCard(),
                 const AdsCard(),
-
-                // SizedBox(
-                //   height: 220,
-                //   child: Column(
-                //     children: [
-                //       TitleTile(
-                //         title: 'Raj Prakash Paul',
-                //         showViewAll: false,
-                //         onPressViewAll: () {},
-                //         pastorImage: 'pastorImage',
-                //       ),
-                //       SingleChildScrollView(
-                //         scrollDirection: Axis.horizontal,
-                //         child: Row(
-                //           children: [
-                //             ...videos
-                //                 .map(
-                //                   (e) => Bounce(
-                //                     duration: const Duration(milliseconds: 50),
-                //                     onPressed: () async {
-                //                       Navigator.of(context).push(
-                //                         CupertinoPageRoute(
-                //                           builder: (_) => VideoPlayerScreen(
-                //                             allVideos: videos,
-                //                             songData: e,
-                //                           ),
-                //                         ),
-                //                       );
-                //                     },
-                //                     child: SongCard(
-                //                       image: e['videoThumbnail'].toString(),
-                //                       title: e['title'].toString(),
-                //                     ),
-                //                   ),
-                //                 )
-                //                 .toList()
-                //           ],
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-
-                // const SizedBox(
-                //   height: 30,
-                // ),
-                // const YoutubeVideoPlayerScreen(),
                 const SizedBox(
                   height: 30,
                 ),
@@ -303,19 +209,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 // letterSpacing: 0,
                 fontWeight: FontWeight.w400,
                 color: AppColors.white,
-                // fontStyle: FontStyle.italic,
-                // foreground: Paint()
-                //   ..shader = LinearGradient(
-                //     colors: [
-                //       AppColors.redAccent,
-                //       AppColors.blueAccent,
-                //       // AppColors.purple,
-                //     ],
-                //     begin: Alignment.bottomLeft,
-                //     end: Alignment.topRight,
-                //   ).createShader(
-                //     const Rect.fromLTWH(10, 30, 8, 18),
-                //   ),
               ),
             ),
             TextSpan(
@@ -357,19 +250,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               (e) => Bounce(
                 duration: const Duration(milliseconds: 50),
                 onPressed: () async {
-                  final initialId = songs.indexOf(e);
-                  log('${e.songId} , $initialId', name: 'on tap songId');
-                  // if (appState.audioPlayer.playing) {
-                  //   await appState.audioPlayer.pause();
-                  // }
-
-                  showMusicScreen(songData: e, songs: songs);
-
-                  await VideoHandler(
-                          songData: e,
-                          songs: songs,
-                          globalVariables: globalVariables)
-                      .startTheVideo(videoUrl: e.videoUrl);
+                  final selectedSongIndex = songs.indexOf(e);
+                  musicScreenNavigation(context, songData: e, songs: songs);
+                  await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
+                    songData: e,
+                    songs: songs,
+                    selectedSongIndex: selectedSongIndex,
+                  );
                 },
                 child: SongCard(
                   image: e.artUri,
@@ -413,82 +300,5 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void dispose() {
     lottieController.dispose();
     super.dispose();
-  }
-}
-
-class VideoHandler {
-  VideoHandler({
-    required this.songData,
-    required this.songs,
-    required this.globalVariables,
-  });
-
-  final Song songData;
-
-  final List<Song> songs;
-
-  final GlobalVariables globalVariables;
-
-  VideoPlayerController? videoPlayerController;
-  int currentVideoIndex = 0;
-
-  Future startTheVideo({required String videoUrl}) async {
-    if (videoPlayerController != null) {
-      log('did this came here');
-      await videoPlayerController!.dispose();
-    }
-
-    videoPlayerController =
-        VideoPlayerController.networkUrl(Uri.parse(videoUrl));
-
-    globalVariables.chewieController = ChewieController(
-      videoPlayerController: videoPlayerController!,
-      autoPlay: true,
-      showControls: false,
-      aspectRatio: 16 / 9,
-      allowFullScreen: true,
-      materialProgressColors: ChewieProgressColors(
-        playedColor: AppColors.white,
-        handleColor: Colors.transparent,
-      ),
-    );
-
-    final songStreamData = ControllerWithSongData(
-      chewieController: globalVariables.chewieController!,
-      songData: songData,
-      songs: songs,
-    );
-
-    globalVariables.chewieController!.videoPlayerController.addListener(() {
-      globalVariables.songStreamController.add(songStreamData);
-      if (globalVariables
-                  .chewieController!.videoPlayerController.value.position !=
-              Duration.zero &&
-          globalVariables
-                  .chewieController!.videoPlayerController.value.position >=
-              globalVariables
-                  .chewieController!.videoPlayerController.value.duration) {
-        log('The song completed');
-        skipToNext();
-      }
-    });
-  }
-
-  Future skipToNext() async {
-    if (currentVideoIndex < songs.length - 1) {
-      currentVideoIndex++;
-    } else {
-      currentVideoIndex = 0; // Loop back to the first video if at the end
-    }
-    startTheVideo(videoUrl: songs[currentVideoIndex].videoUrl);
-  }
-
-  Future skipToPrevious() async {
-    if (currentVideoIndex > 0) {
-      currentVideoIndex--;
-    } else {
-      currentVideoIndex = songs.length - 1;
-    }
-    startTheVideo(videoUrl: songs[currentVideoIndex].videoUrl);
   }
 }

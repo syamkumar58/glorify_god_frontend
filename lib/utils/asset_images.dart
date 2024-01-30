@@ -9,8 +9,7 @@ class AppImages {
 class LottieAnimations {
   static String path = 'assets/animations';
   static String searchMusicAni = '$path/music_search_animation.json';
-  static String musicSymbolAnimation = '$path/music_symbol_animation.json';
-  static String crossAnimation = '$path/cross_animation.json';
-  static String crossSlideAnimation = '$path/cross_slide_animation.json';
-  static String profileAnimation = '$path/profile_animation.json';
+  static String musicWavesAnimation = '$path/music_waves_animation.json';
+  static String musicAnimation = '$path/music_animation.json';
+
 }

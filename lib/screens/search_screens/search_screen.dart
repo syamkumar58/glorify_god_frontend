@@ -4,6 +4,8 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
@@ -12,7 +14,6 @@ import 'package:glorify_god/models/search_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
-import 'package:glorify_god/screens/home_screens/home_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:flutter/material.dart';
@@ -223,23 +224,28 @@ class _SearchScreenState extends State<SearchScreen>
                 );
                 collectedSongs.add(eachSong);
               }
-              await VideoHandler(
-                      songData: Song(
-                        artistUID: songDetails.artistUID,
-                        videoUrl: songDetails.videoUrl,
-                        title: songDetails.title,
-                        artist: songDetails.artist,
-                        artUri: songDetails.artUri,
-                        lyricist: songDetails.lyricist,
-                        ytTitle: songDetails.ytTitle,
-                        ytUrl: songDetails.ytUrl,
-                        ytImage: songDetails.ytImage,
-                        createdAt: songDetails.createdAt,
-                        songId: songDetails.songId,
-                      ),
-                      songs: collectedSongs,
-                      globalVariables: globalVariables)
-                  .startTheVideo(videoUrl: songDetails.videoUrl);
+
+              await cancelTimer();
+
+              await BlocProvider.of<VideoPlayerCubit>(context)
+                  .setToInitialState();
+              await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
+                songData: Song(
+                  artistUID: songDetails.artistUID,
+                  videoUrl: songDetails.videoUrl,
+                  title: songDetails.title,
+                  artist: songDetails.artist,
+                  artUri: songDetails.artUri,
+                  lyricist: songDetails.lyricist,
+                  ytTitle: songDetails.ytTitle,
+                  ytUrl: songDetails.ytUrl,
+                  ytImage: songDetails.ytImage,
+                  createdAt: songDetails.createdAt,
+                  songId: songDetails.songId,
+                ),
+                songs: collectedSongs,
+                selectedSongIndex: index,
+              );
             },
             child: SongsLikesTile(
               songTitle: songDetails.title,
@@ -265,7 +271,7 @@ class _SearchScreenState extends State<SearchScreen>
     });
   }
 
-  void cancelTimer() {
+  Future cancelTimer() async {
     if (_searchDelay != null) {
       _searchDelay!.cancel();
     }
