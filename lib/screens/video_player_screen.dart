@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/custom_nav_bar_ad.dart';
@@ -101,42 +102,63 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 icon: Icon(
                   Icons.keyboard_arrow_left,
                   size: 32,
-                  color: AppColors.dullWhite,
+                  color: AppColors.white,
                 ),
               ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 20),
+                  child: TextButton.icon(
+                    label: AppText(
+                      text: 'Close',
+                      styles: GoogleFonts.manrope(
+                        color: AppColors.white,
+                      ),
+                    ),
+                    onPressed: () async {
+                      Navigator.pop(context);
+                      await BlocProvider.of<VideoPlayerCubit>(context)
+                          .stopVideoPlayer();
+                    },
+                    icon: Icon(
+                      Icons.close,
+                      size: 21,
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+              ],
             )
           : const PreferredSize(
               preferredSize: Size.fromHeight(0), child: SizedBox()),
-      body: SafeArea(
-        child: SizedBox(
-          width: double.infinity,
-          height: double.infinity,
-          child: BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
-            builder: (context, state) {
-              if (state is! VideoPlayerInitialised) {
-                return waiting();
-              }
+      body: SizedBox(
+        width: double.infinity,
+        height: double.infinity,
+        child: BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
+          builder: (context, state) {
+            if (state is! VideoPlayerInitialised) {
+              return waiting();
+            }
 
-              final data = state;
-              return MediaQuery.of(context).orientation == Orientation.portrait
-                  ? SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          videoPortion(data: data),
-                          if (MediaQuery.of(context).orientation ==
-                              Orientation.portrait)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: otherSongs(
-                                playingSongId: data.songData.songId,
-                              ),
+            final data = state;
+            return MediaQuery.of(context).orientation == Orientation.portrait
+                ? SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        videoPortion(data: data),
+                        if (MediaQuery.of(context).orientation ==
+                            Orientation.portrait)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: otherSongs(
+                              playingSongId: data.songData.songId,
                             ),
-                        ],
-                      ),
-                    )
-                  : videoAspect(data: data);
-            },
-          ),
+                          ),
+                      ],
+                    ),
+                  )
+                : videoAspect(data: data);
+          },
         ),
       ),
       bottomNavigationBar:
@@ -273,127 +295,112 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               ),
             if (showControls && !loading)
               Positioned(
-                bottom: 12,
+                bottom:
+                    MediaQuery.of(context).orientation == Orientation.portrait
+                        ? 0
+                        : 15,
                 child: Center(
                   child: SizedBox(
                     width: width,
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: MediaQuery.of(context).orientation ==
-                                      Orientation.portrait
-                                  ? width * 0.85
-                                  : width * 0.72,
-                              height: 20,
-                              child: SliderTheme(
-                                data: SliderThemeData(
-                                  trackHeight: 6,
-                                  thumbShape: SliderComponentShape.noThumb,
-                                  thumbColor: Colors.transparent,
-                                  inactiveTrackColor: AppColors.dullWhite,
-                                  activeTrackColor: AppColors.redAccent,
+                        Container(
+                          width: width * 0.9,
+                          color: Colors.transparent,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal:
+                                    MediaQuery.of(context).orientation ==
+                                            Orientation.portrait
+                                        ? 0
+                                        : 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                AppText(
+                                  text:
+                                      '${data.chewieController.videoPlayerController.value.position.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.position.inSeconds % 60).toString().padLeft(2, '0')}'
+                                      ' / ${data.chewieController.videoPlayerController.value.duration.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.duration.inSeconds % 60).toString().padLeft(2, '0')}',
+                                  styles: GoogleFonts.manrope(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: AppColors.white,
+                                  ),
                                 ),
-                                child: Slider(
-                                  min: 0,
-                                  value: data
-                                      .chewieController
-                                      .videoPlayerController
-                                      .value
-                                      .position
-                                      .inSeconds
-                                      .toDouble(),
-                                  max: data
-                                      .chewieController
-                                      .videoPlayerController
-                                      .value
-                                      .duration
-                                      .inSeconds
-                                      .toDouble(),
-                                  onChanged: (val) {
-                                    data.chewieController.videoPlayerController
-                                        .seekTo(
-                                      Duration(
-                                        seconds: val.toInt(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 12, right: 12),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  AppText(
-                                    text:
-                                        '${data.chewieController.videoPlayerController.value.position.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.position.inSeconds % 60).toString().padLeft(2, '0')}',
-                                    styles: GoogleFonts.manrope(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 0),
+                                  child: Bounce(
+                                    duration: const Duration(milliseconds: 50),
+                                    onPressed: () {
+                                      log(
+                                        '${MediaQuery.of(context).orientation == Orientation.portrait}',
+                                        name: 'The orientation',
+                                      );
+                                      if (MediaQuery.of(context).orientation ==
+                                          Orientation.portrait) {
+                                        SystemChrome.setPreferredOrientations(
+                                          [
+                                            DeviceOrientation.landscapeRight,
+                                            DeviceOrientation.landscapeLeft,
+                                          ],
+                                        );
+                                      } else {
+                                        SystemChrome.setPreferredOrientations(
+                                          [DeviceOrientation.portraitUp],
+                                        );
+                                      }
+                                    },
+                                    child: Icon(
+                                      !landScopeMode
+                                          ? Icons.fullscreen
+                                          : Icons.fullscreen_exit,
+                                      size: 22,
                                       color: AppColors.white,
                                     ),
                                   ),
-                                  SizedBox(
-                                    width: width * 0.6,
-                                  ),
-                                  AppText(
-                                    text:
-                                        '${data.chewieController.videoPlayerController.value.duration.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.duration.inSeconds % 60).toString().padLeft(2, '0')}',
-                                    styles: GoogleFonts.manrope(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
-                                      color: AppColors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              left: MediaQuery.of(context).orientation ==
-                                      Orientation.portrait
-                                  ? 0
-                                  : 20,
-                              bottom: MediaQuery.of(context).orientation ==
-                                      Orientation.portrait
-                                  ? 0
-                                  : 20),
-                          child: IconButton(
-                              padding: EdgeInsets.zero,
-                              onPressed: () {
-                                log(
-                                  '${MediaQuery.of(context).orientation == Orientation.portrait}',
-                                  name: 'The orientation',
+                        Container(
+                          width: MediaQuery.of(context).orientation ==
+                                  Orientation.portrait
+                              ? width
+                              : width * 0.9,
+                          height: 15,
+                          color: Colors.transparent,
+                          child: SliderTheme(
+                            data: SliderThemeData(
+                              trackHeight: 6,
+                              trackShape: const RectangularSliderTrackShape(),
+                              thumbShape: SliderComponentShape.noThumb,
+                              thumbColor: Colors.transparent,
+                              inactiveTrackColor: AppColors.dullWhite,
+                              activeTrackColor: AppColors.redAccent,
+                            ),
+                            child: Slider(
+                              min: 0,
+                              value: data.chewieController.videoPlayerController
+                                  .value.position.inSeconds
+                                  .toDouble(),
+                              max: data.chewieController.videoPlayerController
+                                  .value.duration.inSeconds
+                                  .toDouble(),
+                              divisions: 100,
+                              onChanged: (val) {
+                                data.chewieController.videoPlayerController
+                                    .seekTo(
+                                  Duration(
+                                    seconds: val.toInt(),
+                                  ),
                                 );
-                                if (MediaQuery.of(context).orientation ==
-                                    Orientation.portrait) {
-                                  SystemChrome.setPreferredOrientations(
-                                    [
-                                      DeviceOrientation.landscapeRight,
-                                      DeviceOrientation.landscapeLeft,
-                                    ],
-                                  );
-                                } else {
-                                  SystemChrome.setPreferredOrientations(
-                                    [DeviceOrientation.portraitUp],
-                                  );
-                                }
                               },
-                              icon: Icon(
-                                !landScopeMode
-                                    ? Icons.fullscreen
-                                    : Icons.fullscreen_exit,
-                                size: 22,
-                                color: AppColors.white,
-                              )),
-                        )
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

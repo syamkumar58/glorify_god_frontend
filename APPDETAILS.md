@@ -163,3 +163,7 @@
     While playing audio if user locks the screen, or he puts the app in background the audio stops playing
   - Changed the ad portion to show in the home screen now came to on top of nav bar in place of video player section
     If video is playing that will goes off and when disposed it will  show again in that place
+
+- 31/1/2024
+  - Video player Controls UI changes and fixes
+  - Added close option in the video player screen for user can stop the audio from there
