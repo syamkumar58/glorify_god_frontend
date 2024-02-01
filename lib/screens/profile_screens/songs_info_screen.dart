@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +8,10 @@ import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/models/profile_models/tracker_model.dart';
 import 'package:glorify_god/models/song_models/artists_song_data_by_id.dart';
 import 'package:glorify_god/provider/app_state.dart';
-import 'package:glorify_god/src/api/api_calls.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class SongsInfoScreen extends StatefulWidget {

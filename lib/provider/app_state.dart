@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:glorify_god/config/helpers.dart';
-import 'package:glorify_god/models/profile_models/tracker_model.dart';
 import 'package:glorify_god/models/profile_models/user_reported_isses_model.dart';
 import 'package:glorify_god/models/search_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
