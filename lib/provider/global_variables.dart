@@ -23,15 +23,6 @@ class GlobalVariables extends ChangeNotifier {
     notifyListeners();
   }
 
-  ChewieController? _chewieController;
-
-  ChewieController? get chewieController => _chewieController!;
-
-  set chewieController(ChewieController? value) {
-    _chewieController = value;
-    notifyListeners();
-  }
-
   StreamController<ControllerWithSongData> _songStreamController =
       StreamController<ControllerWithSongData>.broadcast();
 

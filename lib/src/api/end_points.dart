@@ -1,6 +1,6 @@
-const bool useLocalHost = true;
+const bool useLocalHost = false;
 
-const String localHost = 'localhost'; //'10.0.2.2'; //
+const String localHost = '10.0.2.2'; //'localhost'; //
 // < If platform is Android use '10.0.2.2' as host and IOS uses 'localhost'>/
 const String hostUrl =
     useLocalHost ? 'http://$localHost:8000' : 'http://api.glorifygod.in';
@@ -26,4 +26,6 @@ const String privacyPolicyAcceptedUrl =
 const String removeUserFromPrivacyPolicyUrl = '$hostUrl/privacyPolicy/removePrivacyPolicy';
 const String updateTrackerDetailsUrl = '$hostUrl/tracker/updateTracker';
 const String getTrackerDetailsByIdUrl = '$hostUrl/tracker/trackerDetailsById';
+const String addArtistsSongDataByIdUrl = '$hostUrl/artistsSongData/addArtistsSongData';
+const String getArtistsSongDataByIdUrl = '$hostUrl/artistsSongData/artistsSongDataById';
 

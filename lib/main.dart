@@ -4,6 +4,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
+import 'package:glorify_god/bloc/profile_bloc/songs_info_cubit/songs_data_info_cubit.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
@@ -76,8 +77,12 @@ class _MainState extends State<Main> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
+          create: (_) => SongsDataInfoCubit(),
+        ),
+        BlocProvider(
           create: (context) => VideoPlayerCubit(
             appState: appState,
+            songsDataInfoCubit: BlocProvider.of<SongsDataInfoCubit>(context),
           ),
         ),
         BlocProvider(

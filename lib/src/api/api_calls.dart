@@ -7,6 +7,7 @@ import 'package:glorify_god/src/api/end_points.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class ApiCalls {
   String authorization = 'Authorization';
@@ -400,42 +401,63 @@ class ApiCalls {
     }
   }
 
-  Future<http.Response> updateTrackerDetails({required int artistId}) async {
-    const url = updateTrackerDetailsUrl;
+  Future<http.Response> createArtistsSongData({
+    required int artistId,
+    required DateTime createdAt,
+  }) async {
+    const url = addArtistsSongDataByIdUrl;
     final token = await getToken();
 
-    final Map<String, dynamic> body = {
-      "artistId": '$artistId',
-      "totalSongsCompleted": 1,
+    String formattedDate =
+        '${DateFormat('yyyy-MM-ddTHH:mm:ss.SSSZ').format(createdAt.toUtc())}Z';
+
+    final body = {
+      "artistsId": artistId,
+      "createdAt": formattedDate,
+      "streamCount": 1
     };
+    final jsonBody = json.encode(body);
+
+    log('$body\n$jsonBody', name: 'createArtistsSongData request body');
 
     try {
-      final res = await http.post(
+      final data = await http.post(
         Uri.parse(url),
+        body: jsonBody,
         headers: {'Content-Type': 'application/json', authorization: token},
-        body: json.encode(body),
       );
-
-      return res;
+      log(data.body, name: 'createArtistsSongData response');
+      return data;
     } catch (e) {
-      log('$e', name: 'updateTrackerDetails error');
+      log('$e', name: 'createArtistsSongData error');
       rethrow;
     }
   }
 
-  Future<http.Response> getTrackerDetailsById({required int artistId}) async {
-    var url = '$getTrackerDetailsByIdUrl?artistId=$artistId';
+  Future<http.Response> getArtistsSongDataById({
+    required int artistId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    String formattedStartDate =
+        DateFormat('yyyy-MM-ddTHH:mm:ss.SSSZ').format(startDate);
+    String formattedEndDate =
+        DateFormat('yyyy-MM-ddTHH:mm:ss.SSSZ').format(endDate);
+    final url =
+        '$getArtistsSongDataByIdUrl?artistId=$artistId&startDate=$formattedStartDate&endDate=$formattedEndDate';
+
+    log(url, name: 'getArtistsSongDataById request url');
+
     final token = await getToken();
 
     try {
-      final res = http.get(
+      final data = await http.get(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json', authorization: token},
       );
-
-      return res;
+      return data;
     } catch (e) {
-      log('$e', name: 'getTrackerDetailsById error');
+      log('$e', name: 'getArtistsSongDataById error');
       rethrow;
     }
   }

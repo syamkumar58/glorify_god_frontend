@@ -387,28 +387,5 @@ class AppState with ChangeNotifier {
     }
   }
 
-  Future updateTrackerDetails({required int artistId}) async {
-    final res = await ApiCalls().updateTrackerDetails(
-      artistId: artistId,
-    );
 
-    if (res.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  Future<TrackerModel?> getTrackerDetails({required int artistId}) async {
-    final res = await ApiCalls().getTrackerDetailsById(artistId: artistId);
-
-    if (res.statusCode == 200) {
-      final trackerDetails = trackerModelFromJson(res.body);
-      log('${trackerDetails.artistId} && ${trackerDetails.totalSongsCompleted}',
-          name: 'getTrackerDetails response');
-      return trackerDetails;
-    } else {
-      return null;
-    }
-  }
 }

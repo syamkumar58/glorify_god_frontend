@@ -50,7 +50,6 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   int _screenIndex = 0;
   late Box box;
   bool checkItOnce = false;
-  StreamSubscription<Duration>? positionStreamSubscription;
   List<Widget> screens = const [
     HomeScreen(),
     SearchScreen(),
@@ -71,47 +70,53 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    VideoPlayerCubit videoPlayerCubit = BlocProvider.of<VideoPlayerCubit>(context);
+    if(mounted){
+      VideoPlayerCubit videoPlayerCubit =
+      BlocProvider.of<VideoPlayerCubit>(context);
 
-    if(videoPlayerCubit.playerController != null && videoPlayerCubit.playerController!.videoPlayerController.value.isInitialized){
-      chewieController = BlocProvider.of<VideoPlayerCubit>(context)
-          .playerController!
-          .videoPlayerController
-          .value
-          .isInitialized
-          ? BlocProvider.of<VideoPlayerCubit>(context).playerController
-          : null;
-      log('$chewieController && state - $state',
-          name: 'checking the state and the controller');
-      switch (state) {
-        case AppLifecycleState.detached:
-          if (chewieController != null &&
-              chewieController!.videoPlayerController.value.isInitialized) {
-            chewieController!.dispose();
-            BlocProvider.of<VideoPlayerCubit>(context).pause();
-          }
-        case AppLifecycleState.resumed:
-          if (chewieController != null &&
-              chewieController!.videoPlayerController.value.isInitialized) {
-            BlocProvider.of<VideoPlayerCubit>(context).pause();
-          }
-        case AppLifecycleState.inactive:
-          if (chewieController != null &&
-              chewieController!.videoPlayerController.value.isInitialized) {
-            BlocProvider.of<VideoPlayerCubit>(context).pause();
-          }
-        case AppLifecycleState.hidden:
-          if (chewieController != null &&
-              chewieController!.videoPlayerController.value.isInitialized) {
-            BlocProvider.of<VideoPlayerCubit>(context).pause();
-          }
-        case AppLifecycleState.paused:
-          if (chewieController != null &&
-              chewieController!.videoPlayerController.value.isInitialized) {
-            BlocProvider.of<VideoPlayerCubit>(context).pause();
-          }
+      if (videoPlayerCubit.playerController != null &&
+          videoPlayerCubit
+              .playerController!.videoPlayerController.value.isInitialized) {
+        chewieController = BlocProvider.of<VideoPlayerCubit>(context)
+            .playerController!
+            .videoPlayerController
+            .value
+            .isInitialized
+            ? BlocProvider.of<VideoPlayerCubit>(context).playerController
+            : null;
+        log('$chewieController && state - $state',
+            name: 'checking the state and the controller');
+        switch (state) {
+          case AppLifecycleState.detached:
+            if (chewieController != null &&
+                chewieController!.videoPlayerController.value.isInitialized) {
+              chewieController!.dispose();
+              BlocProvider.of<VideoPlayerCubit>(context).pause();
+            }
+          case AppLifecycleState.resumed:
+            if (chewieController != null &&
+                chewieController!.videoPlayerController.value.isInitialized) {
+              BlocProvider.of<VideoPlayerCubit>(context).pause();
+            }
+          case AppLifecycleState.inactive:
+            if (chewieController != null &&
+                chewieController!.videoPlayerController.value.isInitialized) {
+              BlocProvider.of<VideoPlayerCubit>(context).pause();
+            }
+          case AppLifecycleState.hidden:
+            if (chewieController != null &&
+                chewieController!.videoPlayerController.value.isInitialized) {
+              BlocProvider.of<VideoPlayerCubit>(context).pause();
+            }
+          case AppLifecycleState.paused:
+            if (chewieController != null &&
+                chewieController!.videoPlayerController.value.isInitialized) {
+              BlocProvider.of<VideoPlayerCubit>(context).pause();
+            }
+        }
       }
     }
+
   }
 
   Future initialUserCall() async {
@@ -205,9 +210,11 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      AppText(
-                        text: data.songData.title,
-                        styles: GoogleFonts.manrope(
+                      Text(
+                        data.songData.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.manrope(
                           fontSize: 16,
                           color: AppColors.white,
                           fontWeight: FontWeight.w600,
@@ -218,7 +225,7 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
                         styles: GoogleFonts.manrope(
                           fontSize: 14,
                           color: AppColors.white,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ],
@@ -350,12 +357,6 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    appState.audioPlayer.stop();
-    if (positionStreamSubscription != null) {
-      positionStreamSubscription!.cancel();
-    }
-    globalVariables.chewieController!.dispose();
-    globalVariables.songStreamController.close();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

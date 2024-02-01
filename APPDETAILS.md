@@ -167,3 +167,9 @@
 - 31/1/2024
   - Video player Controls UI changes and fixes
   - Added close option in the video player screen for user can stop the audio from there
+
+- 1/2/2024
+  - Implemented artists songs data per month how many songs are playing
+    BackEnd api calls with frond end implementation is done
+  - UI need to be refined in songs info
+  - Condition to show Songs info tile to the artist

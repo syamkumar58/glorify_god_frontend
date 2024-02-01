@@ -4,7 +4,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
@@ -22,6 +24,7 @@ import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
@@ -234,8 +237,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onLogout = true;
                   });
                   // await appState.removeUserFromPrivacyPolicyById();
-                  await appState.audioPlayer.pause();
-                  await appState.audioPlayer.stop();
+                  await BlocProvider.of<VideoPlayerCubit>(context).stopVideoPlayer();
                   await GoogleSignIn().signOut();
                   await hiveBox!.clear();
                   Future.delayed(const Duration(seconds: 2), () async {
@@ -252,15 +254,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.telegram,
                 text: 'Test Bu',
                 onTap: () async {
-                  // final check = await appState.checkUserAcceptedPolicyById();
-                  // log('$check',name:'Check from profile screen test bu');
-                  // if (check) {
-                  //   log('$check',name:'Check from profile screen test bu 1');
-                  //   await appState.removeUserFromPrivacyPolicyById();
-                  // } else {
-                  //   log('$check',name:'Check from profile screen test bu 2');
-                  //   await appState.acceptedPolicyById(check: true);
-                  // }
+                  final date1 = "2024-02-01T12:27:38.441Z";
+                  final date2 = "2024-02-01T14:39:52.696Z";
+
+                  final date3 =
+                      '${DateFormat('yyyy-MM-ddTHH:mm:ss.SSSZ').format(DateTime.parse(date1).toUtc())}Z';
+                  final date4 =
+                      '${DateFormat('yyyy-MM-ddTHH:mm:ss.SSSZ').format(DateTime.parse(date2).toUtc())}Z';
+
+                  final date5 = DateTime.now().toUtc();
+                  // final date6 = DateTime.parse(date2).toUtc();
+
+                  log('${DateTime.parse(date1)} && ${DateTime.parse(date2)}\n$date3 && $date4'
+                      '\n$date5 && ',
+                      name: 'Test test bu');
                 },
               ),
           ],
