@@ -13,7 +13,6 @@ import 'package:glorify_god/components/songs_tile.dart';
 import 'package:glorify_god/models/search_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
-import 'package:glorify_god/provider/global_variables.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +44,6 @@ class _SearchScreenState extends State<SearchScreen>
   List<dynamic> theData = [];
 
   AppState appState = AppState();
-  GlobalVariables globalVariables = GlobalVariables();
 
   List<Song> collectedSongs = [];
 
@@ -66,68 +64,72 @@ class _SearchScreenState extends State<SearchScreen>
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
-    globalVariables = Provider.of<GlobalVariables>(context);
     return Scaffold(
       appBar: customAppbar('SEARCH'),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 200),
-        child: SizedBox(
-          width: width,
-          height: height,
-          child: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: SafeArea(
-              child: Column(
-                children: [
-                  const AdsCard(),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  searchField(),
-                  if (searchedList.isNotEmpty)
-                    searchedSongs()
-                  else if (searchedList.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 50),
-                      child: Center(
-                        child: Column(
-                          children: [
-                            if (searchController.text.isNotEmpty)
-                              Lottie.asset(
-                                LottieAnimations.searchMusicAni,
-                                controller: animationController,
-                                animate: true,
-                                width: 120,
-                                height: 120,
-                                fit: BoxFit.fill,
-                                filterQuality: FilterQuality.high,
-                              )
-                            else
-                              Icon(
-                                Icons.search,
-                                color: AppColors.dullBlack,
-                                size: 40,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 300),
+          child: SizedBox(
+            width: width,
+            height: height,
+            child: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    const AdsCard(),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    searchField(),
+                    if (searchedList.isNotEmpty)
+                      searchedSongs()
+                    else if (searchedList.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 50),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              if (searchController.text.isNotEmpty)
+                                Lottie.asset(
+                                  LottieAnimations.searchMusicAni,
+                                  controller: animationController,
+                                  animate: true,
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.fill,
+                                  filterQuality: FilterQuality.high,
+                                )
+                              else
+                                Icon(
+                                  Icons.search,
+                                  color: AppColors.dullBlack,
+                                  size: 40,
+                                ),
+                              const SizedBox(
+                                height: 12,
                               ),
-                            const SizedBox(
-                              height: 12,
-                            ),
-                            AppText(
-                              text: searchController.text.isEmpty
-                                  ? AppStrings.searchForYourFavouriteMusic
-                                  : AppStrings.searchingForYourFavouriteMusic,
-                              styles: GoogleFonts.manrope(
-                                fontSize: 16,
-                                color: AppColors.dullWhite,
-                                fontWeight: FontWeight.w600,
+                              AppText(
+                                text: searchController.text.isEmpty
+                                    ? AppStrings.searchForYourFavouriteMusic
+                                    : AppStrings.searchingForYourFavouriteMusic,
+                                styles: GoogleFonts.manrope(
+                                  fontSize: 16,
+                                  color: AppColors.dullWhite,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -141,17 +143,26 @@ class _SearchScreenState extends State<SearchScreen>
       width: width * 0.9,
       child: TextFormField(
         controller: searchController,
-        cursorColor: Colors.blueGrey.shade300,
+        cursorColor: AppColors.white,
         decoration: InputDecoration(
           hintText: AppStrings.searchSongs,
           hintStyle: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: AppColors.dullWhite,
+            color: AppColors.dullWhite.withOpacity(0.4),
           ),
-          border: InputBorder.none,
-          disabledBorder: InputBorder.none,
-          enabledBorder: InputBorder.none,
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: AppColors.dullWhite),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: AppColors.dullWhite),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: AppColors.dullWhite),
+            borderRadius: BorderRadius.circular(8),
+          ),
           prefixIcon: const Icon(
             Icons.search,
             size: 30,

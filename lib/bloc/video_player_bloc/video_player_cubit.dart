@@ -66,10 +66,11 @@ class VideoPlayerCubit extends Cubit<VideoPlayerState> {
         currentSongIndex: currentSongIndex,
       ));
 
-      log('${playerController!.videoPlayerController.value.position} // ${playerController!.videoPlayerController.value.duration}'
+      log(
+          '${playerController!.videoPlayerController.value.position} // ${playerController!.videoPlayerController.value.duration}'
           '\n1.${playerController!.videoPlayerController.value.position != Duration.zero}'
           '\n2.${playerController!.videoPlayerController.value.position >= playerController!.videoPlayerController.value.duration}',
-          name:'The nme from the cubit');
+          name: 'The nme from the cubit');
 
       if (playerController!.videoPlayerController.value.position !=
               Duration.zero &&
@@ -127,7 +128,8 @@ class VideoPlayerCubit extends Cubit<VideoPlayerState> {
   }
 
   Future stopVideoPlayer() async {
-    if (playerController!.videoPlayerController.value.isInitialized) {
+    if (playerController != null &&
+        playerController!.videoPlayerController.value.isInitialized) {
       videoPlayerController!.dispose();
       playerController!.dispose();
     }

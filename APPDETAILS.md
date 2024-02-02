@@ -173,3 +173,9 @@
     BackEnd api calls with frond end implementation is done
   - UI need to be refined in songs info
   - Condition to show Songs info tile to the artist
+
+- 2/2/2024
+  - Changed ad floating height adjustment and added loading while ad loads
+  - Changed favourites screen ui and added text for user to understand
+  - Search screen field added border for users intimation
+  - Video player cubit added null check while disposing the video player on logout and removal

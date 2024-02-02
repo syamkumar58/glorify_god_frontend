@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
-import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
@@ -16,6 +15,7 @@ import 'package:glorify_god/utils/app_strings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
+import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -31,6 +31,9 @@ class _LikedScreenState extends State<LikedScreen> {
   AppState appState = AppState();
   bool isLoading = true;
   List<Song> collectedSongs = [];
+  double get width => MediaQuery.of(context).size.width;
+
+  double get height => MediaQuery.of(context).size.height;
 
   Future<void> getLikedSongs() async {
     await BlocProvider.of<LikedCubit>(context)
@@ -74,16 +77,27 @@ class _LikedScreenState extends State<LikedScreen> {
 
           return Column(
             children: [
-              const BannerCard(),
+              const AdsCard(),
+              // const BannerCard(),
               if (!isLoading && likedSongsList.isNotEmpty)
                 playAllButton(likedSongsList)
               else if (!isLoading && likedSongsList.isEmpty)
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 50, bottom: 50),
-                      child: Center(
-                        child: AppText(
+                Padding(
+                  padding: EdgeInsets.only(top: height * 0.2 , bottom: 50),
+                  child: Center(
+                    child: Column(
+                      children: [
+
+                        Image.asset(
+                          AppImages.appWhiteIcon,
+                          width: 45,
+                          height: 40,
+                          fit: BoxFit.contain,
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        AppText(
                           styles: GoogleFonts.manrope(
                             fontSize: 18,
                             color: AppColors.white,
@@ -91,10 +105,19 @@ class _LikedScreenState extends State<LikedScreen> {
                           ),
                           text: AppStrings.noFavourites,
                         ),
-                      ),
+                        const SizedBox(height: 8),
+                        AppText(
+                          text: AppStrings.youCanAddFavourites,
+                          maxLines: 5,
+                          styles: GoogleFonts.manrope(
+                            fontSize: 12,
+                            color: AppColors.white,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
                     ),
-                    const AdsCard(),
-                  ],
+                  ),
                 ),
               Expanded(child: songs(likedSongsList)),
             ],

@@ -70,18 +70,18 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    if(mounted){
+    if (mounted) {
       VideoPlayerCubit videoPlayerCubit =
-      BlocProvider.of<VideoPlayerCubit>(context);
+          BlocProvider.of<VideoPlayerCubit>(context);
 
       if (videoPlayerCubit.playerController != null &&
           videoPlayerCubit
               .playerController!.videoPlayerController.value.isInitialized) {
         chewieController = BlocProvider.of<VideoPlayerCubit>(context)
-            .playerController!
-            .videoPlayerController
-            .value
-            .isInitialized
+                .playerController!
+                .videoPlayerController
+                .value
+                .isInitialized
             ? BlocProvider.of<VideoPlayerCubit>(context).playerController
             : null;
         log('$chewieController && state - $state',
@@ -116,7 +116,6 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
         }
       }
     }
-
   }
 
   Future initialUserCall() async {
@@ -153,11 +152,7 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
 
         return Container(
           color: Colors.transparent,
-          height: data != null &&
-                  data.chewieController.videoPlayerController.value
-                      .isInitialized
-              ? 150
-              : 160,
+          height: height * 0.15,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

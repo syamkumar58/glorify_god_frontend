@@ -21,7 +21,8 @@ class AppStrings {
   static const rateUsQuote =
       'Your feedback is the compass guiding our journey. Rate our app to help us chart a course toward constant improvement and a better experience for you.';
   static const reportIssue = 'Report a Problem';
-  static const noFavourites = 'No favourites';
+  static const noFavourites = 'Not chosen any favourites';
+  static const youCanAddFavourites = 'You can still add your favourites\nby liking your favourite songs\nwhile playing';
   static const noSearchDetails = 'No search found';
   static const searchForYourFavouriteMusic = 'Search for your favourite music';
   static const searchingForYourFavouriteMusic =
