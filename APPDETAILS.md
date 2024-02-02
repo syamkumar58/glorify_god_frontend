@@ -179,3 +179,4 @@
   - Changed favourites screen ui and added text for user to understand
   - Search screen field added border for users intimation
   - Video player cubit added null check while disposing the video player on logout and removal
+  - End point changed to server
