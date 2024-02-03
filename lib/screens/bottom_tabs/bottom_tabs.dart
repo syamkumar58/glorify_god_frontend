@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
@@ -46,7 +47,9 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   bool isLoading = false;
   ChewieController? chewieController;
 
-  // bool closeTheStream = false;
+  ad.InterstitialAd? _interstitialAd;
+  String interstitialAdUnitId = 'ca-app-pub-3940256099942544/1033173712';
+  bool interstitialAdClosed = false;
   int _screenIndex = 0;
   late Box box;
   bool checkItOnce = false;
@@ -61,6 +64,7 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   void initState() {
     box = Hive.box(HiveKeys.openBox);
     appState = context.read<AppState>();
+    interstitialAdLogic();
     WidgetsBinding.instance.addObserver(this);
     super.initState();
     initialUserCall();
@@ -123,8 +127,6 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
     await appState.getRatings();
   }
 
-  Future checkVideoInitialisation() async {}
-
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
@@ -152,7 +154,7 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
 
         return Container(
           color: Colors.transparent,
-          height: height * 0.15,
+          height: Platform.isIOS ? height * 0.18 : height * 0.15,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -343,12 +345,76 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
     );
   }
 
-  // AspectRatio(
-  // aspectRatio: 16 / 9,
-  // child: Chewie(
-  // controller: globalVariables.chewieController,
-  // ),
-  // ),
+  Future interstitialAdLogic() async {
+    final dynamic getStoredAdShownTime =
+        await box.get(HiveKeys.storeInterstitialAdLoadedTime);
+
+    if (getStoredAdShownTime == null) {
+      //<-- If the stored value is null then will put the value to the
+      // hive when the add loaded and closed like on dismissed the ad will assign
+      // the key and value to it
+      // adDismissed Call will inside  the loadInterstitialAds Function
+      // -->/
+      log('', name: 'Stored value is null');
+      showInterstitialAd();
+    } else {
+      final presentTime = DateTime.now();
+      final convertStoredValueToDateTime =
+          DateTime.parse(getStoredAdShownTime.toString());
+
+      log('$getStoredAdShownTime && $convertStoredValueToDateTime && $presentTime',
+          name: 'Stored value');
+
+      if (presentTime.isAfter(
+          convertStoredValueToDateTime.add(const Duration(hours: 2)))) {
+        log('did ir came here after 2 mins when i launch the app');
+        await box.delete(HiveKeys.storeInterstitialAdLoadedTime);
+        showInterstitialAd();
+      }
+    }
+  }
+
+  Future showInterstitialAd() async {
+    loadInterstitialAds().then((_) {
+      Future.delayed(const Duration(seconds: 2), () async {
+        if (_interstitialAd != null) {
+          await _interstitialAd!.show();
+        } else {
+          log('Ad not loaded due to null ');
+        }
+      });
+    });
+  }
+
+  Future loadInterstitialAds() async {
+    await ad.InterstitialAd.load(
+      adUnitId: interstitialAdUnitId,
+      request: const ad.AdRequest(),
+      adLoadCallback: ad.InterstitialAdLoadCallback(
+        onAdLoaded: (ad.InterstitialAd advertisement) {
+          _interstitialAd = advertisement;
+          _interstitialAd!.fullScreenContentCallback =
+              ad.FullScreenContentCallback(
+                  onAdDismissedFullScreenContent: (advertisement) async {
+            advertisement.dispose();
+            await box.put(HiveKeys.storeInterstitialAdLoadedTime,
+                DateTime.now().toString());
+            //<-- Store a key value of date time and again fetch and check the that when to load the
+            // interstitial ad
+            // -->/
+          }, onAdFailedToShowFullScreenContent: (advertisement, error) {
+            log('$error',
+                name: 'onAdFailedToShowFullScreenContent ad failed to load');
+            advertisement.dispose();
+          });
+        },
+        onAdFailedToLoad: (ad.LoadAdError error) {
+          _interstitialAd!.dispose();
+          log('$error', name: 'Failed to load the Interstitial ad');
+        },
+      ),
+    );
+  }
 
   @override
   void dispose() {

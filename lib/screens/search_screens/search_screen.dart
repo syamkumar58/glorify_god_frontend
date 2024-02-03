@@ -19,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -71,7 +70,7 @@ class _SearchScreenState extends State<SearchScreen>
           FocusScope.of(context).unfocus();
         },
         child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 300),
+          padding: const EdgeInsets.only(bottom: 200),
           child: SizedBox(
             width: width,
             height: height,
@@ -173,8 +172,10 @@ class _SearchScreenState extends State<SearchScreen>
               if (kDebugMode) {
                 FocusScope.of(context).unfocus();
               }
-              searchController.clear();
-              searchedList.clear();
+              setState(() {
+                searchController.clear();
+                searchedList.clear();
+              });
               cancelTimer();
             },
             icon: Icon(
@@ -203,13 +204,8 @@ class _SearchScreenState extends State<SearchScreen>
   Widget searchedSongs() {
     return Expanded(
       child: ListView.separated(
-        padding: EdgeInsets.only(
-            bottom: appState.audioPlayer.processingState == ProcessingState.idle
-                ? 200
-                : 280,
-            top: 15,
-            left: 12,
-            right: 12),
+        padding:
+            const EdgeInsets.only(bottom: 280, top: 15, left: 12, right: 12),
         itemCount: searchedList.length,
         itemBuilder: (context, index) {
           log('$searchedList', name: 'The searchedList from the widget');

@@ -180,3 +180,7 @@
   - Search screen field added border for users intimation
   - Video player cubit added null check while disposing the video player on logout and removal
   - End point changed to server
+
+- 3/2/2024
+  - Interstitial ad added to home screen which comes for every 2 hours of closing it
+  - Search screen render issue fixes
