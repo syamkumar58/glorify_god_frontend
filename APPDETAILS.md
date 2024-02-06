@@ -184,3 +184,7 @@
 - 3/2/2024
   - Interstitial ad added to home screen which comes for every 2 hours of closing it
   - Search screen render issue fixes
+
+- 5/2/2024
+  - Fixing video player and tested bugs
+  - testing is undergoing

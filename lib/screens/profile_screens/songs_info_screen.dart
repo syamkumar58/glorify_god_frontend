@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,8 +47,12 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
   void initState() {
     appState = context.read<AppState>();
     super.initState();
-    // initialCalls();
-    BlocProvider.of<SongsDataInfoCubit>(context).getData(artistId: 1);
+    initialCall();
+  }
+
+  Future initialCall() async {
+    await BlocProvider.of<SongsDataInfoCubit>(context)
+        .getData(artistId: appState.artistLoginDataByEmail!.artistUid);
   }
 
   @override
@@ -83,9 +86,8 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
             Padding(
               padding: const EdgeInsets.only(right: 12),
               child: IconButton(
-                  onPressed: () {
-                    BlocProvider.of<SongsDataInfoCubit>(context)
-                        .getData(artistId: 1);
+                  onPressed: () async {
+                    await initialCall();
                   },
                   icon: Icon(
                     Icons.sync,
@@ -213,14 +215,15 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
 
   Widget dayGraphData() {
     return BlocBuilder<SongsDataInfoCubit, SongsDataInfoState>(
-      bloc: BlocProvider.of(context)..getData(artistId: 1),
+      bloc: BlocProvider.of(context)
+        ..getData(artistId: appState.artistLoginDataByEmail!.artistUid),
       builder: (context, state) {
         if (state is! SongsDataInfoLoaded) {
           return const SizedBox();
         }
 
         final songsInfo = state.songsInformation;
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

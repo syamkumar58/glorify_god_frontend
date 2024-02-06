@@ -124,6 +124,7 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
 
   Future initialUserCall() async {
     await appState.initiallySetUserDataGlobally();
+    await appState.checkArtistLoginDataByEmail();
     await appState.getRatings();
   }
 
@@ -193,9 +194,12 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
               height: 60,
               width: width * 0.3,
               color: Colors.transparent,
-              child: Chewie(
-                controller: data.chewieController,
-              ),
+              child: data.chewieController.videoPlayerController.value
+                      .isInitialized
+                  ? Chewie(
+                      controller: data.chewieController,
+                    )
+                  : const SizedBox(),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 3),

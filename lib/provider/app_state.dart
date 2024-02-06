@@ -5,6 +5,7 @@ import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/profile_models/user_reported_isses_model.dart';
 import 'package:glorify_god/models/search_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
+import 'package:glorify_god/models/song_models/check_artist_login_with_email_model.dart';
 import 'package:glorify_god/models/songs_modal.dart';
 import 'package:glorify_god/models/user_models/user_login_response_model.dart';
 import 'package:glorify_god/src/api/api_calls.dart';
@@ -386,5 +387,28 @@ class AppState with ChangeNotifier {
     }
   }
 
+  CheckArtistLoginDataByEmailModel? _artistLoginDataByEmail;
 
+  CheckArtistLoginDataByEmailModel? get artistLoginDataByEmail =>
+      _artistLoginDataByEmail;
+
+  set artistLoginDataByEmail(CheckArtistLoginDataByEmailModel? value) {
+    _artistLoginDataByEmail = value;
+    notifyListeners();
+  }
+
+  Future checkArtistLoginDataByEmail() async {
+    final data = await ApiCalls().checkArtistLoginDataByEmail(
+      email: userData.email,
+    );
+
+    if (data != null) {
+      log('Is this coming here 21');
+      final artistsData = checkArtistLoginDataByEmailModelFromJson(data.body);
+      artistLoginDataByEmail = artistsData;
+    } else {
+      log('Is this coming here 22');
+      artistLoginDataByEmail = null;
+    }
+  }
 }

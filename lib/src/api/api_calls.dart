@@ -461,4 +461,33 @@ class ApiCalls {
       rethrow;
     }
   }
+
+  Future<http.Response?> checkArtistLoginDataByEmail(
+      {required String email}) async {
+    const url = checkArtistLoginDataByIdUrl;
+    final token = await getToken();
+
+    final body = {"email": email};
+
+    log('$body', name: 'checkArtistLoginDataByEmail request');
+
+    try {
+      final data = await http.post(
+        Uri.parse(url),
+        body: json.encode(body),
+        headers: {'Content-Type': 'application/json', authorization: token},
+      );
+
+      log(data.body, name: 'checkArtistLoginDataByEmail response');
+      log('Is this coming here 23 ${data.statusCode}');
+      if (data.statusCode == 200) {
+        return data;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      log('$e', name: 'checkArtistLoginDataByEmail error');
+      rethrow;
+    }
+  }
 }

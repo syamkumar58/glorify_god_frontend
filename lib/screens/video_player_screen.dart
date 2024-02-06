@@ -227,9 +227,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         child: Stack(
           // alignment: Alignment.center,
           children: [
-            Chewie(
-              controller: data.chewieController,
-            ),
+            if (data.chewieController.videoPlayerController.value.isInitialized)
+              Chewie(
+                controller: data.chewieController,
+              ),
             if (showControls && !loading)
               Container(
                 decoration: BoxDecoration(

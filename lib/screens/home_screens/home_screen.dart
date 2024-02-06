@@ -249,6 +249,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 onPressed: () async {
                   final selectedSongIndex = songs.indexOf(e);
                   musicScreenNavigation(context, songData: e, songs: songs);
+                  await BlocProvider.of<VideoPlayerCubit>(context)
+                      .setToInitialState();
                   await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
                     songData: e,
                     songs: songs,

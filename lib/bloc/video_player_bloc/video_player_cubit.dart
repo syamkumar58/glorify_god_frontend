@@ -38,6 +38,7 @@ class VideoPlayerCubit extends Cubit<VideoPlayerState> {
 
     if (videoPlayerController != null) {
       videoPlayerController!.dispose();
+      playerController?.dispose();
     }
 
     videoPlayerController = VideoPlayerController.networkUrl(

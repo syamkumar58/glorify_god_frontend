@@ -6,17 +6,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:glorify_god/bloc/profile_bloc/songs_info_cubit/songs_data_info_cubit.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/helpers.dart';
+import 'package:glorify_god/models/song_models/check_artist_login_with_email_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/screens/login_pages/login_page.dart';
 import 'package:glorify_god/screens/profile_screens/songs_info_screen.dart';
 import 'package:glorify_god/screens/profile_screens/contact_support_screen.dart';
 import 'package:glorify_god/screens/profile_screens/privacy_policy_screen.dart';
 import 'package:glorify_god/screens/profile_screens/report_a_problem.dart';
+import 'package:glorify_god/src/api/api_calls.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +27,6 @@ import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
-import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
@@ -70,29 +72,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   height: 20,
                 ),
                 profileData(),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20, bottom: 20),
-                  child: Center(
-                    child: Container(
-                      width: width * 0.9,
-                      decoration: BoxDecoration(
-                        color: AppColors.dullBlack.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: tile(
-                        icon: Icons.diamond_outlined,
-                        text: AppStrings.songInfo,
-                        onTap: () {
-                          Navigator.of(context).push(
-                            CupertinoPageRoute(
-                              builder: (_) => const SongsInfoScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
+                if (appState.artistLoginDataByEmail != null)
+                  songsInformationTile(),
                 restOfScreen(),
                 // quoteBackgroundWithProfileImage(),
                 // name(),
@@ -181,11 +162,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget songsInformationTile() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, bottom: 20),
+      child: Center(
+        child: Container(
+          width: width * 0.9,
+          decoration: BoxDecoration(
+            color: AppColors.dullBlack.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: tile(
+            icon: Icons.diamond_outlined,
+            text: AppStrings.songInfo,
+            onTap: () {
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (_) => const SongsInfoScreen(),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget restOfScreen() {
     return Center(
       child: Container(
         width: width * 0.9,
         padding: const EdgeInsets.only(top: 12),
+        margin: EdgeInsets.only(
+            top: appState.artistLoginDataByEmail != null ? 0 : 20),
         decoration: BoxDecoration(
           color: AppColors.dullBlack.withOpacity(0.3),
           borderRadius: BorderRadius.circular(15),
@@ -237,7 +246,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onLogout = true;
                   });
                   // await appState.removeUserFromPrivacyPolicyById();
-                  await BlocProvider.of<VideoPlayerCubit>(context).stopVideoPlayer();
+                  await BlocProvider.of<VideoPlayerCubit>(context)
+                      .stopVideoPlayer();
                   await GoogleSignIn().signOut();
                   await hiveBox!.clear();
                   Future.delayed(const Duration(seconds: 2), () async {
@@ -254,20 +264,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.telegram,
                 text: 'Test Bu',
                 onTap: () async {
-                  final date1 = "2024-02-01T12:27:38.441Z";
-                  final date2 = "2024-02-01T14:39:52.696Z";
+                  final data = await ApiCalls().checkArtistLoginDataByEmail(
+                      email: 'syam.kumar@codeprism.in');
 
-                  final date3 =
-                      '${DateFormat('yyyy-MM-ddTHH:mm:ss.SSSZ').format(DateTime.parse(date1).toUtc())}Z';
-                  final date4 =
-                      '${DateFormat('yyyy-MM-ddTHH:mm:ss.SSSZ').format(DateTime.parse(date2).toUtc())}Z';
+                  if (data != null) {
+                    final artistsData =
+                        checkArtistLoginDataByEmailModelFromJson(data.body);
 
-                  final date5 = DateTime.now().toUtc();
-                  // final date6 = DateTime.parse(date2).toUtc();
-
-                  log('${DateTime.parse(date1)} && ${DateTime.parse(date2)}\n$date3 && $date4'
-                      '\n$date5 && ',
-                      name: 'Test test bu');
+                    await BlocProvider.of<SongsDataInfoCubit>(context).getData(
+                      artistId: artistsData.artistUid,
+                    );
+                  }
                 },
               ),
           ],
