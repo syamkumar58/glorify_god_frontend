@@ -6,7 +6,6 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
-import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
@@ -81,7 +80,7 @@ class _SearchScreenState extends State<SearchScreen>
               child: SafeArea(
                 child: Column(
                   children: [
-                    const AdsCard(),
+                    // const AdsCard(),
                     const SizedBox(
                       height: 12,
                     ),

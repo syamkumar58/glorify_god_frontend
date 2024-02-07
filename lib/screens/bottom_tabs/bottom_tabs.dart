@@ -370,7 +370,7 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
           name: 'Stored value');
 
       if (presentTime.isAfter(
-          convertStoredValueToDateTime.add(const Duration(hours: 2)))) {
+          convertStoredValueToDateTime.add(const Duration(minutes: 30)))) {
         log('did ir came here after 2 mins when i launch the app');
         await box.delete(HiveKeys.storeInterstitialAdLoadedTime);
         showInterstitialAd();

@@ -188,3 +188,10 @@
 - 5/2/2024
   - Fixing video player and tested bugs
   - testing is undergoing
+
+- 7/2/2024
+  - Banner card Design changes
+  - Removed adCard from top of search and liked screens
+  - Added bannerCard in liked screen
+  - Songs information now added more a=information about monetization and total songs played after monetization
+   

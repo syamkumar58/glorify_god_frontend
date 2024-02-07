@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/banner_card.dart';
+import 'package:glorify_god/components/custom_nav_bar_ad.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/utils/app_colors.dart';
@@ -53,15 +53,17 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
         child: Column(
           children: [
             const BannerCard(),
-            helpLine(),
-            const AdsCard(),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+              child: helpLine(),
+            ),
           ],
         ),
       ),
+      bottomNavigationBar: const CustomNavBarAd(),
     );
   }
 

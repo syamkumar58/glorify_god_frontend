@@ -106,26 +106,45 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 ),
               ),
               actions: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 20),
-                  child: TextButton.icon(
-                    label: AppText(
-                      text: 'Close',
-                      styles: GoogleFonts.manrope(
-                        color: AppColors.white,
+                BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
+                  builder: (context, state) {
+                    if (state is! VideoPlayerInitialised) {
+                      return const SizedBox();
+                    }
+
+                    final data = state;
+
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: TextButton.icon(
+                        label: AppText(
+                          text: 'Close',
+                          styles: GoogleFonts.manrope(
+                            color: data.chewieController.videoPlayerController
+                                    .value.isInitialized
+                                ? AppColors.white
+                                : AppColors.dullWhite,
+                          ),
+                        ),
+                        onPressed: data.chewieController.videoPlayerController
+                                .value.isInitialized
+                            ? () async {
+                                Navigator.pop(context);
+                                await BlocProvider.of<VideoPlayerCubit>(context)
+                                    .stopVideoPlayer();
+                              }
+                            : null,
+                        icon: Icon(
+                          Icons.close,
+                          size: 21,
+                          color: data.chewieController.videoPlayerController
+                                  .value.isInitialized
+                              ? AppColors.white
+                              : AppColors.dullWhite,
+                        ),
                       ),
-                    ),
-                    onPressed: () async {
-                      Navigator.pop(context);
-                      await BlocProvider.of<VideoPlayerCubit>(context)
-                          .stopVideoPlayer();
-                    },
-                    icon: Icon(
-                      Icons.close,
-                      size: 21,
-                      color: AppColors.white,
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ],
             )

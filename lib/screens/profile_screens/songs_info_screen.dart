@@ -27,21 +27,8 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
   AppState appState = AppState();
   bool loading = false;
   TrackerModel? trackerDetails;
-
-  // List<_SalesData> data = [
-  //   _SalesData('Jan', 35),
-  //   _SalesData('Feb', 28),
-  //   _SalesData('Mar', 34),
-  //   _SalesData('Apr', 32),
-  //   _SalesData('May', 40),
-  //   _SalesData('Jun', 10),
-  //   _SalesData('Jul', 23),
-  //   _SalesData('Aug', 49),
-  //   _SalesData('Sep', 47),
-  //   _SalesData('Oct', 50),
-  //   _SalesData('Nov', 60),
-  //   _SalesData('Dec', 90),
-  // ];
+  int monetizationCount = 10000;
+  String monetizationCountString = '10,000';
 
   @override
   void initState() {
@@ -112,13 +99,60 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 40),
+                      padding: const EdgeInsets.only(top: 40, bottom: 0),
+                      child: ListTile(
+                        title: AppText(
+                          text: 'Monetization',
+                          textAlign: TextAlign.start,
+                          styles: GoogleFonts.manrope(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: AppText(
+                          text:
+                              'Once the monetization is completed the check on right side will turn on',
+                          textAlign: TextAlign.start,
+                          styles: GoogleFonts.manrope(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        trailing: Icon(
+                          totalStreamCount >= monetizationCount
+                              ? Icons.check_circle
+                              : Icons.radio_button_off,
+                          color: totalStreamCount >= monetizationCount
+                              ? AppColors.red
+                              : AppColors.dullBlack,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: ListTile(
+                        title: AppText(
+                          text:
+                              'Need to complete $monetizationCountString songs to complete monetization\nOnce the monetization completes will start the revenue based on the songs that are played on top of monetization count',
+                          textAlign: TextAlign.start,
+                          maxLines: 5,
+                          styles: GoogleFonts.manrope(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
                       child: ListTile(
                         title: AppText(
                           text: 'Total Songs Completed',
                           textAlign: TextAlign.start,
                           styles: GoogleFonts.manrope(
                             fontSize: 14,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         trailing: AppText(
@@ -129,24 +163,40 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
                         ),
                       ),
                     ),
-                    // Padding(
-                    //   padding: const EdgeInsets.only(top: 20, bottom: 60),
-                    //   child: ListTile(
-                    //     title: AppText(
-                    //       text: 'Today Completed Songs',
-                    //       textAlign: TextAlign.start,
-                    //       styles: GoogleFonts.manrope(
-                    //         fontSize: 18,
-                    //       ),
-                    //     ),
-                    //     trailing: AppText(
-                    //       text: '0',
-                    //       styles: GoogleFonts.manrope(
-                    //         fontSize: 22,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
+                    if (totalStreamCount >= monetizationCount)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: ListTile(
+                          title: AppText(
+                            text: 'Total Songs Completed\nafter monetization',
+                            textAlign: TextAlign.start,
+                            styles: GoogleFonts.manrope(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          trailing: Text(
+                            '$totalStreamCount\n - $monetizationCount',
+                            maxLines: 5,
+                            textAlign: TextAlign.right,
+                            style: GoogleFonts.manrope(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    if (totalStreamCount >= monetizationCount)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: ListTile(
+                          trailing: Text(
+                            '${totalStreamCount - monetizationCount}',
+                            maxLines: 5,
+                            textAlign: TextAlign.right,
+                            style: GoogleFonts.manrope(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
 
                     //<-- Graph system -->/
                     graphData(songsInfo),
@@ -169,7 +219,10 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
           padding: const EdgeInsets.only(left: 15, top: 30),
           child: AppText(
             text: 'Monthly data',
-            styles: GoogleFonts.manrope(),
+            styles: GoogleFonts.manrope(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         Container(
