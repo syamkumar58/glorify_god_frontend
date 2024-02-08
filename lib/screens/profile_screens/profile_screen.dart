@@ -6,19 +6,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:glorify_god/bloc/profile_bloc/songs_info_cubit/songs_data_info_cubit.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/helpers.dart';
-import 'package:glorify_god/models/song_models/check_artist_login_with_email_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/screens/login_pages/login_page.dart';
 import 'package:glorify_god/screens/profile_screens/songs_info_screen.dart';
 import 'package:glorify_god/screens/profile_screens/contact_support_screen.dart';
 import 'package:glorify_god/screens/profile_screens/privacy_policy_screen.dart';
 import 'package:glorify_god/screens/profile_screens/report_a_problem.dart';
-import 'package:glorify_god/src/api/api_calls.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:flutter/material.dart';
@@ -259,19 +256,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               tile(
                 icon: Icons.telegram,
                 text: 'Test Bu',
-                onTap: () async {
-                  final data = await ApiCalls().checkArtistLoginDataByEmail(
-                      email: 'syam.kumar@codeprism.in');
-
-                  if (data != null) {
-                    final artistsData =
-                        checkArtistLoginDataByEmailModelFromJson(data.body);
-
-                    await BlocProvider.of<SongsDataInfoCubit>(context).getData(
-                      artistId: artistsData.artistUid,
-                    );
-                  }
-                },
+                onTap: () async {},
               ),
           ],
         ),

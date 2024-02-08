@@ -194,4 +194,6 @@
   - Removed adCard from top of search and liked screens
   - Added bannerCard in liked screen
   - Songs information now added more a=information about monetization and total songs played after monetization
-   
+
+- 8/2/2024
+  -Songs information monetization logic moved to backend from front end  

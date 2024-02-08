@@ -33,4 +33,10 @@ class AppStrings {
   static const copyRightText =
       "Copyright ©2023 Korapati Syam Kumar.All rights reserved";
   static const songInfo = 'Songs Information';
+  static const songInfo2 = 'SONGS INFO';
+  static const monetizationHeading = 'Monetization';
+  static const monetizationSubText = 'Once the monetization is completed the check on right side will turn on';
+
+
+
 }

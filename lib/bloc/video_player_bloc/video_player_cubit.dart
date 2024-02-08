@@ -78,7 +78,11 @@ class VideoPlayerCubit extends Cubit<VideoPlayerState> {
           playerController!.videoPlayerController.value.position >=
               playerController!.videoPlayerController.value.duration) {
         log('message 12345');
-        songsDataInfoCubit.addSongStreamData(artistId: songData.artistUID);
+        songsDataInfoCubit.addSongStreamData(
+          artistId: songData.artistUID,
+          startDate: DateTime(DateTime.now().year, 1, 1),
+          endDate: DateTime.now(),
+        );
         setToInitialState();
         skipToNext(songs: songs);
       }

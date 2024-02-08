@@ -1,6 +1,6 @@
 const bool useLocalHost = true;
 
-const String localHost = '10.0.2.2'; //'localhost'; //
+const String localHost = 'localhost'; //'10.0.2.2'; //
 // < If platform is Android use '10.0.2.2' as host and IOS uses 'localhost'>/
 const String hostUrl =
     useLocalHost ? 'http://$localHost:8000' : 'http://api.glorifygod.in';

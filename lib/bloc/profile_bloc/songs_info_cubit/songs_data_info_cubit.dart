@@ -10,26 +10,34 @@ part 'songs_data_info_state.dart';
 class SongsDataInfoCubit extends Cubit<SongsDataInfoState> {
   SongsDataInfoCubit() : super(SongsDataInfoInitial());
 
-  Future addSongStreamData({required int artistId}) async {
+  Future addSongStreamData(
+      {required int artistId,
+      required DateTime startDate,
+      required DateTime endDate}) async {
     final res = await ApiCalls().createArtistsSongData(
       artistId: artistId,
       createdAt: DateTime.now(),
     );
 
     if (res.statusCode == 200) {
-      getData(artistId: artistId);
+      getData(
+        artistId: artistId,
+        startDate: startDate,
+        endDate: endDate,
+      );
     } else {
       log('${res.statusCode}', name: 'addSongStreamData failed from cubit');
     }
   }
 
-  Future getData({required int artistId}) async {
+  Future getData(
+      {required int artistId,
+      required DateTime startDate,
+      required DateTime endDate}) async {
     final data = await ApiCalls().getArtistsSongDataById(
       artistId: artistId,
-      startDate: DateTime(DateTime
-          .now()
-          .year, 1, 1),
-      endDate: DateTime.now(),
+      startDate: startDate,
+      endDate: endDate,
     );
 
     log(data.body, name: 'The Data');
@@ -41,41 +49,17 @@ class SongsDataInfoCubit extends Cubit<SongsDataInfoState> {
       emit(SongsDataInfoLoaded(
         songsInformation: songsInformation.data,
         totalStreamCount: songsInformation.totalStreamCount,
+        monetization: songsInformation.monetization,
+        streamsCompletedAfterMonetization:
+            songsInformation.streamsCompletedAfterMonetization,
       ));
     } else {
       emit(SongsDataInfoLoaded(
         songsInformation: const [],
         totalStreamCount: 0,
+        monetization: false,
+        streamsCompletedAfterMonetization: 0,
       ));
     }
   }
-
-  Future getDayData(
-      {required int artistId}) async {
-    final data = await ApiCalls().getArtistsSongDataById(
-      artistId: artistId,
-      startDate: DateTime(DateTime
-          .now()
-          .year, 1, 1),
-      endDate: DateTime.now(),
-    );
-
-    log(data.body, name: 'The Data');
-
-    if (data.statusCode == 200) {
-      final songsInformation = getArtistSongsDataByIdModelFromJson(data.body);
-      log('${songsInformation.totalStreamCount}',
-          name: 'songs onfo from cubit');
-      emit(SongsDataInfoLoaded(
-        songsInformation: songsInformation.data,
-        totalStreamCount: songsInformation.totalStreamCount,
-      ));
-    } else {
-      emit(SongsDataInfoLoaded(
-        songsInformation: const [],
-        totalStreamCount: 0,
-      ));
-    }
-  }
-
 }
