@@ -200,3 +200,4 @@
 
 - 9/2/2024
   - Removed slider on change method for sliding the song
+  - Added video player navigation screen to search and liked on tap songs

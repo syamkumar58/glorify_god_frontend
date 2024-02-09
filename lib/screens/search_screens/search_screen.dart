@@ -9,6 +9,7 @@ import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
+import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/search_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
@@ -233,22 +234,27 @@ class _SearchScreenState extends State<SearchScreen>
 
               await cancelTimer();
 
+              final songData = Song(
+                artistUID: songDetails.artistUID,
+                videoUrl: songDetails.videoUrl,
+                title: songDetails.title,
+                artist: songDetails.artist,
+                artUri: songDetails.artUri,
+                lyricist: songDetails.lyricist,
+                ytTitle: songDetails.ytTitle,
+                ytUrl: songDetails.ytUrl,
+                ytImage: songDetails.ytImage,
+                createdAt: songDetails.createdAt,
+                songId: songDetails.songId,
+              );
+
+              musicScreenNavigation(context,
+                  songData: songData, songs: collectedSongs);
+
               await BlocProvider.of<VideoPlayerCubit>(context)
                   .setToInitialState();
               await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
-                songData: Song(
-                  artistUID: songDetails.artistUID,
-                  videoUrl: songDetails.videoUrl,
-                  title: songDetails.title,
-                  artist: songDetails.artist,
-                  artUri: songDetails.artUri,
-                  lyricist: songDetails.lyricist,
-                  ytTitle: songDetails.ytTitle,
-                  ytUrl: songDetails.ytUrl,
-                  ytImage: songDetails.ytImage,
-                  createdAt: songDetails.createdAt,
-                  songId: songDetails.songId,
-                ),
+                songData: songData,
                 songs: collectedSongs,
                 selectedSongIndex: index,
               );

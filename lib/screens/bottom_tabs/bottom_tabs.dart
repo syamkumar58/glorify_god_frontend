@@ -366,7 +366,9 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
       final convertStoredValueToDateTime =
           DateTime.parse(getStoredAdShownTime.toString());
 
-      log('$getStoredAdShownTime && $convertStoredValueToDateTime && $presentTime',
+      log(
+          '${presentTime.isAfter(convertStoredValueToDateTime.add(const Duration(minutes: 30)))}'
+          '\n$getStoredAdShownTime && $convertStoredValueToDateTime && $presentTime',
           name: 'Stored value');
 
       if (presentTime.isAfter(

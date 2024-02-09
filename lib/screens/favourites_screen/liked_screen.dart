@@ -7,6 +7,7 @@ import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
+import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/get_favourites_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
@@ -31,6 +32,7 @@ class _LikedScreenState extends State<LikedScreen> {
   AppState appState = AppState();
   bool isLoading = true;
   List<Song> collectedSongs = [];
+
   double get width => MediaQuery.of(context).size.width;
 
   double get height => MediaQuery.of(context).size.height;
@@ -83,20 +85,17 @@ class _LikedScreenState extends State<LikedScreen> {
                 playAllButton(likedSongsList)
               else if (!isLoading && likedSongsList.isEmpty)
                 Padding(
-                  padding: EdgeInsets.only(top: height * 0.2 , bottom: 50),
+                  padding: EdgeInsets.only(top: height * 0.2, bottom: 50),
                   child: Center(
                     child: Column(
                       children: [
-
                         Image.asset(
                           AppImages.appWhiteIcon,
                           width: 45,
                           height: 40,
                           fit: BoxFit.contain,
                         ),
-
                         const SizedBox(height: 8),
-
                         AppText(
                           styles: GoogleFonts.manrope(
                             fontSize: 18,
@@ -221,21 +220,25 @@ class _LikedScreenState extends State<LikedScreen> {
       collectedSongs.add(eachSong);
     }
 
+    final songData = Song(
+      artistUID: songDetails.artistUID,
+      videoUrl: songDetails.videoUrl,
+      title: songDetails.title,
+      artist: songDetails.artist,
+      artUri: songDetails.artUri,
+      lyricist: songDetails.lyricist,
+      ytTitle: songDetails.ytTitle,
+      ytUrl: songDetails.ytUrl,
+      ytImage: songDetails.ytImage,
+      createdAt: songDetails.createdAt,
+      songId: songDetails.songId,
+    );
+
+    musicScreenNavigation(context, songData: songData, songs: collectedSongs);
+
     await BlocProvider.of<VideoPlayerCubit>(context).setToInitialState();
     await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
-      songData: Song(
-        artistUID: songDetails.artistUID,
-        videoUrl: songDetails.videoUrl,
-        title: songDetails.title,
-        artist: songDetails.artist,
-        artUri: songDetails.artUri,
-        lyricist: songDetails.lyricist,
-        ytTitle: songDetails.ytTitle,
-        ytUrl: songDetails.ytUrl,
-        ytImage: songDetails.ytImage,
-        createdAt: songDetails.createdAt,
-        songId: songDetails.songId,
-      ),
+      songData: songData,
       songs: collectedSongs,
       selectedSongIndex: initialId,
     );
