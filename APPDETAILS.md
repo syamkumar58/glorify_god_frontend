@@ -196,4 +196,7 @@
   - Songs information now added more a=information about monetization and total songs played after monetization
 
 - 8/2/2024
-  -Songs information monetization logic moved to backend from front end  
+  -Songs information monetization logic moved to backend from front end
+
+- 9/2/2024
+  - Removed slider on change method for sliding the song

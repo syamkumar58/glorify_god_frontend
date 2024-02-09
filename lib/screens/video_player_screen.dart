@@ -399,7 +399,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                               thumbShape: SliderComponentShape.noThumb,
                               thumbColor: Colors.transparent,
                               inactiveTrackColor: AppColors.dullWhite,
-                              activeTrackColor: AppColors.redAccent,
+                              activeTrackColor: AppColors.white,
                             ),
                             child: Slider(
                               min: 0,
@@ -411,12 +411,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                                   .toDouble(),
                               divisions: 100,
                               onChanged: (val) {
-                                data.chewieController.videoPlayerController
-                                    .seekTo(
-                                  Duration(
-                                    seconds: val.toInt(),
-                                  ),
-                                );
+                                // data.chewieController.videoPlayerController
+                                //     .seekTo(
+                                //   Duration(
+                                //     seconds: val.toInt(),
+                                //   ),
+                                // );
                               },
                             ),
                           ),
