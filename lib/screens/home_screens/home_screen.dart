@@ -238,33 +238,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget songCard(List<Song> songs) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.only(right: 20),
-      child: Row(
-        children: songs
-            .map(
-              (e) => Bounce(
-                duration: const Duration(milliseconds: 50),
-                onPressed: () async {
-                  final selectedSongIndex = songs.indexOf(e);
-                  musicScreenNavigation(context, songData: e, songs: songs);
-                  await BlocProvider.of<VideoPlayerCubit>(context)
-                      .setToInitialState();
-                  await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
-                    songData: e,
-                    songs: songs,
-                    selectedSongIndex: selectedSongIndex,
-                  );
-                },
-                child: SongCard(
-                  image: e.artUri,
-                  title: e.title,
-                ),
+    return Wrap(
+      children: songs
+          .map(
+            (e) => Bounce(
+              duration: const Duration(milliseconds: 50),
+              onPressed: () async {
+                log(e.videoUrl,name:'tapped video url');
+                final selectedSongIndex = songs.indexOf(e);
+                musicScreenNavigation(context, songData: e, songs: songs);
+                await BlocProvider.of<VideoPlayerCubit>(context)
+                    .setToInitialState();
+                await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
+                  songData: e,
+                  songs: songs,
+                  selectedSongIndex: selectedSongIndex,
+                );
+              },
+              child: SongCard(
+                image: e.artUri,
+                title: e.title,
               ),
-            )
-            .toList(),
-      ),
+            ),
+          )
+          .toList(),
     );
   }
 

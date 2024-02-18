@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -22,7 +24,11 @@ class _AdsCardState extends State<AdsCard> {
   bool adLoaded = false;
 
   Future<void> initializeAd() async {
-    final adUnitId = remoteConfigData.adUnitId;
+    final adUnitId = kDebugMode
+        ? remoteConfigData.testAdUnitId
+        : Platform.isAndroid
+            ? remoteConfigData.androidAdUnitId
+            : remoteConfigData.iosAdUniId;
     bannerAd = BannerAd(
       size: widget.adSize,
       adUnitId: adUnitId,
