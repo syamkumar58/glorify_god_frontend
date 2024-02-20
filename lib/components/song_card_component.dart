@@ -23,15 +23,22 @@ class _SongCardState extends State<SongCard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 12, bottom: 0),
-      child: SizedBox(
-        width: 120,
-        height: 160,
+      padding: const EdgeInsets.only(left: 0, bottom: 0),
+      // <Grid view changed to 0>
+      // padding: const EdgeInsets.only(left: 12, bottom: 0),
+      child: Container(
+        color: Colors.transparent,
+        margin: const EdgeInsets.only(left: 2, right: 2),
+        // Added due to grid view can remove this line when it comes to normal flow
+        width: 110,
+        // 120 for non grid view
+        height: 150,
+        // 160 for non grid view
         child: Column(
           children: [
             Container(
-              width: 110,
-              height: 110,
+              width: 100, // 110 for non grid view
+              height: 100, // 110 for non grid view
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 color: AppColors.dullBlack,

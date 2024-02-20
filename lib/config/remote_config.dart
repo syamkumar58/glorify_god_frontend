@@ -8,6 +8,9 @@ RemoteConfig remoteConfigData = RemoteConfig(
   iosAdUniId: 'ca-app-pub-3940256099942544/6300978111',
   // Fall back test id
   showUpdateBanner: false,
+  interstitialAdTestId: 'ca-app-pub-3940256099942544/1033173712',
+  androidInterstitialAdUnitId: 'ca-app-pub-3940256099942544/1033173712',
+  iosInterstitialAdUnitId: 'ca-app-pub-3940256099942544/1033173712',
 );
 
 //<--

@@ -13,6 +13,9 @@ class RemoteConfig {
   final String testAdUnitId;
   final String androidAdUnitId;
   final String iosAdUniId;
+  final String interstitialAdTestId;
+  final String androidInterstitialAdUnitId;
+  final String iosInterstitialAdUnitId;
   final List<BannerMessage> bannerMessages;
   final bool showUpdateBanner;
 
@@ -20,6 +23,9 @@ class RemoteConfig {
     required this.testAdUnitId,
     required this.androidAdUnitId,
     required this.iosAdUniId,
+    required this.interstitialAdTestId,
+    required this.androidInterstitialAdUnitId,
+    required this.iosInterstitialAdUnitId,
     required this.bannerMessages,
     required this.showUpdateBanner,
   });
@@ -28,6 +34,10 @@ class RemoteConfig {
         testAdUnitId: json["testAdUnitId"].toString(),
         androidAdUnitId: json["androidAdUnitId"].toString(),
         iosAdUniId: json["iosAdUniId"].toString(),
+        interstitialAdTestId: json["interstitialAdTestId"].toString(),
+        androidInterstitialAdUnitId:
+            json["androidInterstitialAdUnitId"].toString(),
+        iosInterstitialAdUnitId: json["iosInterstitialAdUnitId"].toString(),
         showUpdateBanner: json["showUpdateBanner"] ?? false,
         bannerMessages: List<BannerMessage>.from(
             json["bannerMessages"].map((x) => BannerMessage.fromJson(x))),
@@ -37,6 +47,9 @@ class RemoteConfig {
         "testAdUnitId": testAdUnitId,
         "androidAdUnitId": androidAdUnitId,
         "iosAdUniId": iosAdUniId,
+        "interstitialAdTestId": interstitialAdTestId,
+        "androidInterstitialAdUnitId": androidInterstitialAdUnitId,
+        "iosInterstitialAdUnitId": iosInterstitialAdUnitId,
         "showUpdateBanner": showUpdateBanner,
         "bannerMessages":
             List<dynamic>.from(bannerMessages.map((x) => x.toJson())),

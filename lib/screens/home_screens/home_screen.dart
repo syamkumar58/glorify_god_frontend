@@ -172,7 +172,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               onPressViewAll: () {},
                               pastorImage: e.artistImage,
                             ),
-                          if (e.songs.isNotEmpty) songCard(e.songs),
+                          if (e.songs.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: 12,
+                                left: 5,
+                                right: 5,
+                              ),
+                              child: songCard(e.songs),
+                            ),
                         ],
                       ),
                     );
@@ -238,13 +246,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget songCard(List<Song> songs) {
-    return Wrap(
-      children: songs
-          .map(
-            (e) => Bounce(
+    return SizedBox(
+      height: height * 0.8,
+      child: GridView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: songs.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 2 / 3,
+            crossAxisSpacing: 0,
+            mainAxisSpacing: 0,
+          ),
+          itemBuilder: (context, index) {
+            final e = songs[index];
+            return Bounce(
               duration: const Duration(milliseconds: 50),
               onPressed: () async {
-                log(e.videoUrl,name:'tapped video url');
+                log(e.videoUrl, name: 'tapped video url');
                 final selectedSongIndex = songs.indexOf(e);
                 musicScreenNavigation(context, songData: e, songs: songs);
                 await BlocProvider.of<VideoPlayerCubit>(context)
@@ -259,11 +277,41 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 image: e.artUri,
                 title: e.title,
               ),
-            ),
-          )
-          .toList(),
+            );
+          }),
     );
   }
+
+  // Widget songCard(List<Song> songs) {
+  //   return SingleChildScrollView(
+  //     scrollDirection: Axis.horizontal,
+  //     child: Row(
+  //       children: songs
+  //           .map(
+  //             (e) => Bounce(
+  //               duration: const Duration(milliseconds: 50),
+  //               onPressed: () async {
+  //                 log(e.videoUrl,name:'tapped video url');
+  //                 final selectedSongIndex = songs.indexOf(e);
+  //                 musicScreenNavigation(context, songData: e, songs: songs);
+  //                 await BlocProvider.of<VideoPlayerCubit>(context)
+  //                     .setToInitialState();
+  //                 await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
+  //                   songData: e,
+  //                   songs: songs,
+  //                   selectedSongIndex: selectedSongIndex,
+  //                 );
+  //               },
+  //               child: SongCard(
+  //                 image: e.artUri,
+  //                 title: e.title,
+  //               ),
+  //             ),
+  //           )
+  //           .toList(),
+  //     ),
+  //   );
+  // }
 
   Future<void> showMusicScreen(
       {required Song songData, required List<Song> songs}) async {

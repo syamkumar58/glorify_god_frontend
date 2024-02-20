@@ -201,3 +201,8 @@
 - 9/2/2024
   - Removed slider on change method for sliding the song
   - Added video player navigation screen to search and liked on tap songs
+
+- 20/2/2024
+  - Added real ad unit ids and conditions
+  - Bug fixes
+  - Home screen UI changes with comments added 
