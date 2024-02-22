@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -253,7 +254,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             if (showControls && !loading)
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.black.withOpacity(0.4),
+                  color: AppColors.black.withOpacity(0.5),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -326,99 +327,94 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          width: width * 0.9,
+                          width: width * 0.98,
+                          padding: const EdgeInsets.only(bottom: 10),
                           color: Colors.transparent,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal:
-                                    MediaQuery.of(context).orientation ==
-                                            Orientation.portrait
-                                        ? 0
-                                        : 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                AppText(
-                                  text:
-                                      '${data.chewieController.videoPlayerController.value.position.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.position.inSeconds % 60).toString().padLeft(2, '0')}'
-                                      ' / ${data.chewieController.videoPlayerController.value.duration.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.duration.inSeconds % 60).toString().padLeft(2, '0')}',
-                                  styles: GoogleFonts.manrope(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              AppText(
+                                text:
+                                    '${data.chewieController.videoPlayerController.value.position.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.position.inSeconds % 60).toString().padLeft(2, '0')}'
+                                    ' / ${data.chewieController.videoPlayerController.value.duration.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.duration.inSeconds % 60).toString().padLeft(2, '0')}',
+                                styles: GoogleFonts.manrope(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: AppColors.white,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 0),
+                                child: Bounce(
+                                  duration: const Duration(milliseconds: 50),
+                                  onPressed: () {
+                                    log(
+                                      '${MediaQuery.of(context).orientation == Orientation.portrait}',
+                                      name: 'The orientation',
+                                    );
+                                    if (MediaQuery.of(context).orientation ==
+                                        Orientation.portrait) {
+                                      SystemChrome.setPreferredOrientations(
+                                        [
+                                          DeviceOrientation.landscapeRight,
+                                          DeviceOrientation.landscapeLeft,
+                                        ],
+                                      );
+                                    } else {
+                                      SystemChrome.setPreferredOrientations(
+                                        [DeviceOrientation.portraitUp],
+                                      );
+                                    }
+                                  },
+                                  child: Icon(
+                                    !landScopeMode
+                                        ? Icons.fullscreen
+                                        : Icons.fullscreen_exit,
+                                    size: 22,
                                     color: AppColors.white,
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 0),
-                                  child: Bounce(
-                                    duration: const Duration(milliseconds: 50),
-                                    onPressed: () {
-                                      log(
-                                        '${MediaQuery.of(context).orientation == Orientation.portrait}',
-                                        name: 'The orientation',
-                                      );
-                                      if (MediaQuery.of(context).orientation ==
-                                          Orientation.portrait) {
-                                        SystemChrome.setPreferredOrientations(
-                                          [
-                                            DeviceOrientation.landscapeRight,
-                                            DeviceOrientation.landscapeLeft,
-                                          ],
-                                        );
-                                      } else {
-                                        SystemChrome.setPreferredOrientations(
-                                          [DeviceOrientation.portraitUp],
-                                        );
-                                      }
-                                    },
-                                    child: Icon(
-                                      !landScopeMode
-                                          ? Icons.fullscreen
-                                          : Icons.fullscreen_exit,
-                                      size: 22,
-                                      color: AppColors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                        Container(
-                          width: MediaQuery.of(context).orientation ==
-                                  Orientation.portrait
-                              ? width
-                              : width * 0.9,
-                          height: 15,
-                          color: Colors.transparent,
-                          child: SliderTheme(
-                            data: SliderThemeData(
-                              trackHeight: 6,
-                              trackShape: const RectangularSliderTrackShape(),
-                              thumbShape: SliderComponentShape.noThumb,
-                              thumbColor: Colors.transparent,
-                              inactiveTrackColor: AppColors.dullWhite,
-                              activeTrackColor: AppColors.white,
+                        SizedBox(
+                          width: width,
+                          child: ProgressBar(
+                            progress: Duration(
+                              seconds: data
+                                  .chewieController
+                                  .videoPlayerController
+                                  .value
+                                  .position
+                                  .inSeconds,
                             ),
-                            child: Slider(
-                              min: 0,
-                              value: data.chewieController.videoPlayerController
-                                  .value.position.inSeconds
-                                  .toDouble(),
-                              max: data.chewieController.videoPlayerController
-                                  .value.duration.inSeconds
-                                  .toDouble(),
-                              divisions: 100,
-                              onChanged: (val) {
-                                // data.chewieController.videoPlayerController
-                                //     .seekTo(
-                                //   Duration(
-                                //     seconds: val.toInt(),
-                                //   ),
-                                // );
-                              },
-                            ),
+                            total: Duration(
+                                seconds: data
+                                    .chewieController
+                                    .videoPlayerController
+                                    .value
+                                    .duration
+                                    .inSeconds),
+                            buffered: Duration(
+                                seconds: data
+                                        .chewieController
+                                        .videoPlayerController
+                                        .value
+                                        .position
+                                        .inSeconds +
+                                    10),
+                            barCapShape: BarCapShape.square,
+                            thumbRadius: 0,
+                            progressBarColor: AppColors.redAccent,
+                            bufferedBarColor: AppColors.dullWhite,
+                            timeLabelType: TimeLabelType.remainingTime,
+                            timeLabelLocation: TimeLabelLocation.none,
+                            onSeek: null,
+                            onDragEnd: null,
+                            onDragStart: null,
+                            onDragUpdate: null,
                           ),
                         ),
                       ],

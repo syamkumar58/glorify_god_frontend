@@ -206,3 +206,8 @@
   - Added real ad unit ids and conditions
   - Bug fixes
   - Home screen UI changes with comments added 
+
+- 22/2/2024
+  - Bug fixes
+
+  

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
-import 'package:glorify_god/screens/video_player_screen.dart';
+import 'package:glorify_god/screens/video_player_screen/video_player_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 
 String convertDurations(Duration duration) {

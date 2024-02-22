@@ -15,7 +15,7 @@ import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart' as app;
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
-import 'package:glorify_god/screens/video_player_screen.dart';
+import 'package:glorify_god/screens/video_player_screen/video_player_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -157,6 +157,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 const SizedBox(
                   height: 30,
                 ),
+                // if (kDebugMode)
+                //   CupertinoButton(
+                //     color: AppColors.redAccent,
+                //     onPressed: () {
+                //     },
+                //     child: const Text('Test Button'),
+                //   ),
                 if (appState.getArtistsWithSongsList.isNotEmpty)
                   ...appState.getArtistsWithSongsList.map((e) {
                     return Container(

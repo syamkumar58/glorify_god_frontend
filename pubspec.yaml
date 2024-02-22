@@ -29,6 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   animated_text_kit: ^4.2.2
+  audio_video_progress_bar: ^2.0.1
   auto_route: ^7.8.4
   auto_size_text: ^3.0.0
   cached_network_image: ^3.3.0
@@ -66,7 +67,6 @@ dependencies:
   url_launcher: ^6.2.2
   very_good_analysis: ^3.1.0
   video_player: ^2.8.2
-  youtube_player_flutter: ^8.1.2
   wakelock_plus: ^1.1.4
 #  webview_flutter: ^4.4.3
   flutter:

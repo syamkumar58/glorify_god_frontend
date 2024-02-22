@@ -18,7 +18,7 @@ import 'package:glorify_god/screens/favourites_screen/liked_screen.dart';
 import 'package:glorify_god/screens/home_screens/home_screen.dart';
 import 'package:glorify_god/screens/profile_screens/profile_screen.dart';
 import 'package:glorify_god/screens/search_screens/search_screen.dart';
-import 'package:glorify_god/screens/video_player_screen.dart';
+import 'package:glorify_god/screens/video_player_screen/video_player_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
