@@ -108,10 +108,10 @@ class _BottomTabsState extends State<BottomTabs>
             }
             break;
           case AppLifecycleState.resumed:
-            if (chewieController != null &&
-                chewieController!.videoPlayerController.value.isInitialized) {
-              BlocProvider.of<VideoPlayerCubit>(context).pause();
-            }
+            // if (chewieController != null &&
+            //     chewieController!.videoPlayerController.value.isInitialized) {
+            //   BlocProvider.of<VideoPlayerCubit>(context).pause();
+            // }
             break;
           case AppLifecycleState.inactive:
             // if (chewieController != null &&

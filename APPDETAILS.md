@@ -214,3 +214,5 @@
   - Bug fixes
   - Updated google service.json files for both android and ios
   - Removed unused animation assets
+  - Commented on resume and InActive app life cycle to pause the audio
+  - Video player screen only bottom of the screen will scroll not the video

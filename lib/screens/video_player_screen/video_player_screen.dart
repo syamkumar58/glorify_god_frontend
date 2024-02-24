@@ -162,20 +162,72 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
             final data = state;
             return MediaQuery.of(context).orientation == Orientation.portrait
-                ? SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        videoPortion(data: data),
-                        if (MediaQuery.of(context).orientation ==
-                            Orientation.portrait)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: otherSongs(
-                              playingSongId: data.songData.songId,
+                ? Column(
+                    children: [
+                      videoPortion(data: data),
+                      if (MediaQuery.of(context).orientation ==
+                          Orientation.portrait)
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  tileColor: Colors.blueGrey.withOpacity(0.1),
+                                  leading: CircleAvatar(
+                                    backgroundColor: AppColors.dullBlack,
+                                    backgroundImage:
+                                        NetworkImage(data.songData.artUri),
+                                  ),
+                                  title: Text(
+                                    data.songData.title,
+                                    textAlign: TextAlign.start,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.manrope(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                  subtitle: AppText(
+                                    text: data.songData.artist,
+                                    textAlign: TextAlign.start,
+                                    maxLines: 1,
+                                    styles: GoogleFonts.manrope(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                  trailing: IconButton(
+                                      onPressed: () async {
+                                        final favourite = await onFav();
+                                        await likedSongs();
+                                        setState(() {
+                                          appState.isSongFavourite = favourite;
+                                        });
+                                      },
+                                      icon: Icon(
+                                        appState.isSongFavourite
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        size: 21,
+                                        color: appState.isSongFavourite
+                                            ? AppColors.redAccent
+                                            : AppColors.dullWhite,
+                                      )),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: otherSongs(
+                                    playingSongId: data.songData.songId,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                      ],
-                    ),
+                        ),
+                    ],
                   )
                 : videoAspect(data: data);
           },
@@ -189,57 +241,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   Widget videoPortion({required VideoPlayerInitialised data}) {
-    return Column(
-      children: [
-        videoAspect(data: data),
-        if (MediaQuery.of(context).orientation == Orientation.portrait)
-          ListTile(
-            tileColor: Colors.blueGrey.withOpacity(0.1),
-            leading: CircleAvatar(
-              backgroundColor: AppColors.dullBlack,
-              backgroundImage: NetworkImage(data.songData.artUri),
-            ),
-            title: Text(
-              data.songData.title,
-              textAlign: TextAlign.start,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.manrope(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.white,
-              ),
-            ),
-            subtitle: AppText(
-              text: data.songData.artist,
-              textAlign: TextAlign.start,
-              maxLines: 1,
-              styles: GoogleFonts.manrope(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.white,
-              ),
-            ),
-            trailing: IconButton(
-                onPressed: () async {
-                  final favourite = await onFav();
-                  await likedSongs();
-                  setState(() {
-                    appState.isSongFavourite = favourite;
-                  });
-                },
-                icon: Icon(
-                  appState.isSongFavourite
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  size: 21,
-                  color: appState.isSongFavourite
-                      ? AppColors.redAccent
-                      : AppColors.dullWhite,
-                )),
-          ),
-      ],
-    );
+    return videoAspect(data: data);
   }
 
   Widget videoAspect({required VideoPlayerInitialised data}) {
