@@ -213,3 +213,4 @@
 - 24/2/2024
   - Bug fixes
   - Updated google service.json files for both android and ios
+  - Removed unused animation assets
