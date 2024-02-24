@@ -10,8 +10,6 @@ import 'package:glorify_god/models/songs_modal.dart';
 import 'package:glorify_god/models/user_models/user_login_response_model.dart';
 import 'package:glorify_god/src/api/api_calls.dart';
 import 'package:flutter/material.dart';
-import 'package:glorify_god/utils/hive_keys.dart';
-import 'package:hive/hive.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AppState with ChangeNotifier {
@@ -95,20 +93,14 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  Future initiallySetUserDataGlobally() async {
-    final glorifyGodBox = Hive.box<dynamic>(HiveKeys.openBox);
-
-    final userLogInData = await glorifyGodBox.get(
-      HiveKeys.logInKey,
-    );
-
+  Future initiallySetUserDataGlobally(dynamic userLogInData) async {
     log('$userLogInData', name: 'cached userLoginData');
 
     try {
       if (userLogInData != null) {
         final toJson = jsonEncode(userLogInData);
         final logIn = userLoginResponseModelFromJson(toJson);
-
+        log('$userLogInData', name: 'cached userLoginData --');
         final user = await ApiCalls().getUserById(userId: logIn.userId);
 
         log('$user', name: 'cached userLoginData 2');
@@ -403,9 +395,21 @@ class AppState with ChangeNotifier {
     );
 
     if (data != null) {
-      log('Is this coming here 21');
-      final artistsData = checkArtistLoginDataByEmailModelFromJson(data.body);
-      artistLoginDataByEmail = artistsData;
+      final body = data.body;
+
+      final decode = json.decode(body);
+      log('Is this coming here 21 $decode');
+
+      final status = decode['status'];
+
+      log('Is this coming here 21.1 $status');
+
+      if (status) {
+        final artistsData = checkArtistLoginDataByEmailModelFromJson(data.body);
+        artistLoginDataByEmail = artistsData;
+      } else {
+        artistLoginDataByEmail = null;
+      }
     } else {
       log('Is this coming here 22');
       artistLoginDataByEmail = null;

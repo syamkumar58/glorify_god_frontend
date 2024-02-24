@@ -187,8 +187,9 @@ class _SearchScreenState extends State<SearchScreen>
         ),
         onChanged: (text) {
           if (_searchDelay?.isActive ?? false) _searchDelay!.cancel();
-          if (text.isNotEmpty) {
-            onChangedValue(text);
+          final filteredText = filterText(text);
+          if (filteredText.trim().isNotEmpty) {
+            onChangedValue(filteredText.trim());
           } else {
             setState(() {
               searchController.clear();
@@ -199,6 +200,23 @@ class _SearchScreenState extends State<SearchScreen>
         },
       ),
     );
+  }
+
+  String filterText(String inputText) {
+    // Words to filter out
+    List<String> filterWords = ['song', 'Song', 'songs', 'Songs'];
+
+    // Split the input text into words
+    List<String> words = inputText.split(' ');
+
+    // Filter out unwanted words
+    List<String> filteredWords =
+        words.where((word) => !filterWords.contains(word)).toList();
+
+    // Join the filtered words back into a string
+    String filteredText = filteredWords.join(' ');
+
+    return filteredText;
   }
 
   Widget searchedSongs() {

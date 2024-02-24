@@ -46,7 +46,7 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
 
   Future initialCall() async {
     await BlocProvider.of<SongsDataInfoCubit>(context).getData(
-      artistId: appState.artistLoginDataByEmail!.artistUid,
+      artistId: appState.artistLoginDataByEmail!.artistDetails.artistUid,
       startDate: startDate,
       endDate: endDate,
     );
@@ -291,7 +291,7 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
     return BlocBuilder<SongsDataInfoCubit, SongsDataInfoState>(
       bloc: BlocProvider.of(context)
         ..getData(
-          artistId: appState.artistLoginDataByEmail!.artistUid,
+          artistId: appState.artistLoginDataByEmail!.artistDetails.artistUid,
           startDate: startDate,
           endDate: endDate,
         ),

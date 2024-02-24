@@ -5,26 +5,45 @@
 //   const YoutubeVideoPlayerScreen({super.key});
 //
 //   @override
-//   State<YoutubeVideoPlayerScreen> createState() => _YoutubeVideoPlayerScreenState();
+//   State<YoutubeVideoPlayerScreen> createState() =>
+//       _YoutubeVideoPlayerScreenState();
 // }
 //
 // class _YoutubeVideoPlayerScreenState extends State<YoutubeVideoPlayerScreen> {
 //   double get width => MediaQuery.of(context).size.width;
 //
 //   double get height => MediaQuery.of(context).size.height;
-//   YoutubePlayerController ytController = YoutubePlayerController(
-//     initialVideoId: '9qegZD84aCw',
-//     flags: const YoutubePlayerFlags(
-//       autoPlay: false,
-//       mute: false,
-//     ),
-//   );
+//   late YoutubePlayerController ytController;
+//
+//   @override
+//   void initState() {
+//     ytController = YoutubePlayerController(
+//       initialVideoId: 'g1KiQRqfhNc', //'9qegZD84aCw',
+//       flags: const YoutubePlayerFlags(
+//         autoPlay: false,
+//         mute: false,
+//       ),
+//     );
+//     super.initState();
+//   }
 //
 //   @override
 //   Widget build(BuildContext context) {
-//     return YoutubePlayer(
-//       controller: ytController,
-//       width: width,
+//     return Scaffold(
+//       appBar: AppBar(),
+//       body: AspectRatio(
+//         aspectRatio: 16 / 9,
+//         child: YoutubePlayer(
+//           controller: ytController,
+//           width: width,
+//         ),
+//       ),
 //     );
+//   }
+//
+//   @override
+//   void dispose() {
+//     ytController.dispose();
+//     super.dispose();
 //   }
 // }

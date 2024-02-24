@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:ui';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,12 +22,12 @@ import 'package:glorify_god/screens/search_screens/search_screen.dart';
 import 'package:glorify_god/screens/video_player_screen/video_player_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
+import 'package:glorify_god/utils/asset_images.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart' as ad;
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:hive/hive.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
@@ -40,7 +41,8 @@ class BottomTabs extends StatefulWidget {
   _BottomTabsState createState() => _BottomTabsState();
 }
 
-class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
+class _BottomTabsState extends State<BottomTabs>
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   double get width => MediaQuery.of(context).size.width;
 
   double get height => MediaQuery.of(context).size.height;
@@ -48,6 +50,7 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
   GlobalVariables globalVariables = GlobalVariables();
   bool isLoading = false;
   ChewieController? chewieController;
+  late AnimationController animationController;
 
   ad.InterstitialAd? _interstitialAd;
   bool interstitialAdClosed = false;
@@ -63,7 +66,12 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    box = Hive.box(HiveKeys.openBox);
+    box = Hive.box<dynamic>(HiveKeys.openBox);
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+    animationController.repeat();
     appState = context.read<AppState>();
     interstitialAdLogic();
     WidgetsBinding.instance.addObserver(this);
@@ -98,33 +106,44 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
               chewieController!.dispose();
               BlocProvider.of<VideoPlayerCubit>(context).pause();
             }
+            break;
           case AppLifecycleState.resumed:
             if (chewieController != null &&
                 chewieController!.videoPlayerController.value.isInitialized) {
               BlocProvider.of<VideoPlayerCubit>(context).pause();
             }
+            break;
           case AppLifecycleState.inactive:
-            if (chewieController != null &&
-                chewieController!.videoPlayerController.value.isInitialized) {
-              BlocProvider.of<VideoPlayerCubit>(context).pause();
-            }
+            // if (chewieController != null &&
+            //     chewieController!.videoPlayerController.value.isInitialized) {
+            //   BlocProvider.of<VideoPlayerCubit>(context).pause();
+            // }
+            break;
           case AppLifecycleState.hidden:
             if (chewieController != null &&
                 chewieController!.videoPlayerController.value.isInitialized) {
               BlocProvider.of<VideoPlayerCubit>(context).pause();
             }
+            break;
           case AppLifecycleState.paused:
             if (chewieController != null &&
                 chewieController!.videoPlayerController.value.isInitialized) {
               BlocProvider.of<VideoPlayerCubit>(context).pause();
             }
+            break;
         }
       }
     }
   }
 
   Future initialUserCall() async {
-    await appState.initiallySetUserDataGlobally();
+    final dynamic userLogInData = await box.get(
+      HiveKeys.logInKey,
+    );
+    log('$userLogInData', name: 'cached userLoginData from bottom tabs');
+    await appState.initiallySetUserDataGlobally(
+      userLogInData,
+    );
     await appState.checkArtistLoginDataByEmail();
     await appState.getRatings();
   }
@@ -139,40 +158,25 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
       child: Scaffold(
         extendBodyBehindAppBar: true,
         body: screens[_screenIndex],
-        bottomNavigationBar: gNavBar(),
+        bottomNavigationBar: navBar(),
       ),
     );
   }
 
-  Widget gNavBar() {
-    return BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
-      builder: (context, state) {
-        VideoPlayerInitialised? data;
-
-        if (state is VideoPlayerInitial) {
-        } else if (state is VideoPlayerInitialised) {
-          data = state;
-        }
-
-        return Container(
-          color: Colors.transparent,
-          height: Platform.isIOS ? height * 0.18 : height * 0.16,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (data != null &&
-                  data.chewieController.videoPlayerController.value
-                      .isInitialized)
-                videoBar(data)
-              else
-                const AdsCard(
-                  adSize: ad.AdSize.banner,
-                ),
-              gNav(),
-            ],
+  Widget navBar() {
+    return Container(
+      color: Colors.transparent,
+      width: width,
+      height: Platform.isIOS ? height * 0.18 : height * 0.16,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const AdsCard(
+            adSize: ad.AdSize.banner,
           ),
-        );
-      },
+          bottomBar(),
+        ],
+      ),
     );
   }
 
@@ -266,60 +270,145 @@ class _BottomTabsState extends State<BottomTabs> with WidgetsBindingObserver {
     );
   }
 
-  Widget gNav() {
-    return SafeArea(
-      child: GNav(
-        gap: 8,
-        // haptic: true,
-        activeColor: Colors.white,
-        tabBackgroundColor: Colors.blueGrey.shade800,
-        padding: const EdgeInsets.all(10),
-        tabMargin:
-            const EdgeInsets.only(left: 12, right: 12, top: 5, bottom: 5),
-        tabs: [
-          navBar(
-            activeIcon: Icons.library_music,
-            inactiveIcon: Icons.library_music_outlined,
-            index: 0,
-            tabName: AppStrings.tabSongs,
+  Widget bottomBar() {
+    return Container(
+      color: Colors.transparent,
+      width: width,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                textIcon(
+                  activeIcon: Icons.library_music,
+                  inactiveIcon: Icons.library_music_outlined,
+                  index: 0,
+                  tabName: AppStrings.tabSongs,
+                ),
+                textIcon(
+                  tabName: AppStrings.tabSearch,
+                  activeIcon: Icons.search,
+                  inactiveIcon: Icons.search,
+                  index: 1,
+                ),
+              ],
+            ),
           ),
-          navBar(
-            tabName: AppStrings.tabSearch,
-            activeIcon: Icons.search,
-            inactiveIcon: Icons.search,
-            index: 1,
-          ),
-          navBar(
-            tabName: AppStrings.tabLiked,
-            activeIcon: Icons.favorite,
-            inactiveIcon: Icons.favorite_border_outlined,
-            index: 2,
-          ),
-          navBar(
-            tabName: AppStrings.tabProfile,
-            activeIcon: Icons.account_circle,
-            inactiveIcon: Icons.account_circle_outlined,
-            index: 3,
+          centerPlayerIcon(),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                textIcon(
+                  tabName: AppStrings.tabLiked,
+                  activeIcon: Icons.favorite,
+                  inactiveIcon: Icons.favorite_border_outlined,
+                  index: 2,
+                ),
+                textIcon(
+                  tabName: AppStrings.tabProfile,
+                  activeIcon: Icons.account_circle,
+                  inactiveIcon: Icons.account_circle_outlined,
+                  index: 3,
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  GButton navBar({
+  Widget centerPlayerIcon() {
+    return BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
+      builder: (context, state) {
+        VideoPlayerInitialised? data;
+
+        if (state is VideoPlayerInitial) {
+        } else if (state is VideoPlayerInitialised) {
+          data = state;
+        }
+
+        final playing = data != null &&
+            data.chewieController.videoPlayerController.value.isInitialized;
+
+        return GestureDetector(
+          onTap: () {
+            if (data != null &&
+                data.chewieController.videoPlayerController.value
+                    .isInitialized) {
+              musicScreenNavigation(
+                context,
+                songData: data.songData,
+                songs: data.songs,
+              );
+            }
+          },
+          child: Container(
+            width: Platform.isAndroid ? 50 : 60,
+            height: Platform.isAndroid ? 50 : 60,
+            margin: const EdgeInsets.only(top: 5, bottom: 5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: AppColors.dullWhite,
+              border: Border.all(
+                width: !playing ? 0 : 2,
+                color: !playing ? Colors.transparent : AppColors.dullWhite,
+              ),
+              image: !playing
+                  ? DecorationImage(
+                      image: AssetImage(
+                        AppImages.appIcon,
+                      ),
+                      fit: BoxFit.contain,
+                    )
+                  : DecorationImage(
+                      image: NetworkImage(
+                        data.songData.artUri,
+                      ),
+                      fit: BoxFit.contain,
+                      opacity: 0.8,
+                    ),
+            ),
+            child: !playing
+                ? const SizedBox.shrink()
+                : Center(
+                    child: Icon(
+                      data.chewieController.isPlaying
+                          ? Icons.pause
+                          : Icons.play_arrow,
+                      size: 34,
+                      color: AppColors.white,
+                    ),
+                  ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget textIcon({
     required String tabName,
     required IconData activeIcon,
     required IconData inactiveIcon,
     required int index,
   }) {
-    return GButton(
-      icon: _screenIndex == index ? activeIcon : inactiveIcon,
-      text: tabName,
+    return IconButton(
+      padding: EdgeInsets.zero,
       onPressed: () {
         setState(() {
           _screenIndex = index;
         });
       },
+      icon: Icon(
+        _screenIndex == index ? activeIcon : inactiveIcon,
+        color: _screenIndex == index
+            ? AppColors.white
+            : AppColors.white.withOpacity(0.7),
+        size: Platform.isAndroid ? 22 : 24,
+      ),
     );
   }
 

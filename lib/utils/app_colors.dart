@@ -15,4 +15,7 @@ class AppColors {
   static Color deepPurple = Colors.deepPurple;
   static Color deepPurpleAccent = Colors.deepPurpleAccent;
   static Color dullBlack = const Color(0xFF424242);
+  static Color darkRed = const Color(0xFFC62828);
+  static Color darkRed2 = const Color(0xFFB71C1C);
+  static Color pink = const Color(0xFFAD1457);
 }

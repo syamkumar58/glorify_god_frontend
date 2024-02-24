@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +17,7 @@ import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({
@@ -199,21 +199,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               backgroundColor: AppColors.dullBlack,
               backgroundImage: NetworkImage(data.songData.artUri),
             ),
-            title: AppText(
-              text: data.songData.title,
+            title: Text(
+              data.songData.title,
               textAlign: TextAlign.start,
-              styles: GoogleFonts.manrope(
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.manrope(
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.bold,
                 color: AppColors.white,
               ),
             ),
             subtitle: AppText(
               text: data.songData.artist,
               textAlign: TextAlign.start,
+              maxLines: 1,
               styles: GoogleFonts.manrope(
                 fontSize: 14,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w600,
                 color: AppColors.white,
               ),
             ),
@@ -379,42 +382,35 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                             ],
                           ),
                         ),
-                        SizedBox(
+                        Container(
                           width: width,
-                          child: ProgressBar(
-                            progress: Duration(
-                              seconds: data
-                                  .chewieController
-                                  .videoPlayerController
-                                  .value
-                                  .position
-                                  .inSeconds,
-                            ),
-                            total: Duration(
-                                seconds: data
-                                    .chewieController
-                                    .videoPlayerController
-                                    .value
-                                    .duration
-                                    .inSeconds),
-                            buffered: Duration(
-                                seconds: data
+                          height: 5,
+                          padding: EdgeInsets.zero,
+                          color: AppColors.dullWhite,
+                          child: Stack(
+                            children: [
+                              FractionallySizedBox(
+                                widthFactor: (data
                                         .chewieController
                                         .videoPlayerController
                                         .value
                                         .position
-                                        .inSeconds +
-                                    10),
-                            barCapShape: BarCapShape.square,
-                            thumbRadius: 0,
-                            progressBarColor: AppColors.redAccent,
-                            bufferedBarColor: AppColors.dullWhite,
-                            timeLabelType: TimeLabelType.remainingTime,
-                            timeLabelLocation: TimeLabelLocation.none,
-                            onSeek: null,
-                            onDragEnd: null,
-                            onDragStart: null,
-                            onDragUpdate: null,
+                                        .inSeconds /
+                                    data.chewieController.videoPlayerController
+                                        .value.duration.inSeconds),
+                                child: Shimmer.fromColors(
+                                  baseColor: AppColors.white,
+                                  highlightColor:
+                                      AppColors.white.withOpacity(0.7),
+                                  enabled: true,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
                         ),
                       ],

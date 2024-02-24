@@ -210,4 +210,6 @@
 - 22/2/2024
   - Bug fixes
 
-  
+- 24/2/2024
+  - Bug fixes
+  - Updated google service.json files for both android and ios
