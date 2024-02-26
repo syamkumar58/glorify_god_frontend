@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
@@ -208,13 +209,16 @@ class _SearchScreenState extends State<SearchScreen>
 
     // Split the input text into words
     List<String> words = inputText.split(' ');
+    log('$words', name: 'Words 1');
 
     // Filter out unwanted words
     List<String> filteredWords =
         words.where((word) => !filterWords.contains(word)).toList();
+    log('$filteredWords', name: 'Words 2');
 
     // Join the filtered words back into a string
     String filteredText = filteredWords.join(' ');
+    log(filteredText, name: 'Words 3');
 
     return filteredText;
   }
@@ -293,12 +297,15 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Future<dynamic> onChangedValue(String text) async {
-    _searchDelay = Timer.periodic(const Duration(seconds: 2), (timer) async {
+    log('after ending 1 ${DateTime.now()}');
+    _searchDelay = Timer.periodic(const Duration(seconds: 3), (timer) async {
       final list = await appState.search(text: text);
       setState(() {
         searchedList = list;
       });
     });
+    log('after ending 2 ${DateTime.now()}');
+    // cancelTimer();
   }
 
   Future cancelTimer() async {

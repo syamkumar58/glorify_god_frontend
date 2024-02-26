@@ -216,3 +216,6 @@
   - Removed unused animation assets
   - Commented on resume and InActive app life cycle to pause the audio
   - Video player screen only bottom of the screen will scroll not the video
+
+- 26/2/2024
+  - Bug fixes from search screen are fixed from both back-end and front-end

@@ -239,9 +239,14 @@ class ApiCalls {
   }) async {
     log(text, name: 'searched text is');
     final token = await getToken();
-    final uri = '$searchUrl?query=$text';
+    const uri = searchUrl;
+    final body = {
+      "query": text,
+    };
+    log('$uri -', name: 'search api url or request');
     try {
-      final response = await http.get(Uri.parse(uri),
+      final response = await http.post(Uri.parse(uri),
+          body: json.encode(body),
           headers: {'Content-Type': 'application/json', authorization: token});
       log('${response.statusCode}', name: 'searched response');
       return response;
