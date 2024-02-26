@@ -219,3 +219,6 @@
 
 - 26/2/2024
   - Bug fixes from search screen are fixed from both back-end and front-end
+  - Build.gradle file edited with release and debug configurations
+  - GoogleService.json file got changed with new sha-1 and sha256 config & variant release keys added to the firebase
+  - Need to Upload release appbundle for test mode in playstore
