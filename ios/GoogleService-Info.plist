@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 <key>CLIENT_ID</key>
-<string>13510448361-sbd3dns69qf2ka1ehmp4qd824vbd65ui.apps.googleusercontent.com</string>
+<string>13510448361-edepmr6mofpd38e5cl2koaoeb5e9oa2b.apps.googleusercontent.com</string>
 <key>REVERSED_CLIENT_ID</key>
-<string>com.googleusercontent.apps.13510448361-sbd3dns69qf2ka1ehmp4qd824vbd65ui</string>
+<string>com.googleusercontent.apps.13510448361-edepmr6mofpd38e5cl2koaoeb5e9oa2b</string>
 <key>ANDROID_CLIENT_ID</key>
-<string>13510448361-ebp4hmm06od01gnjf9egfc0c12323jc7.apps.googleusercontent.com</string>
+<string>13510448361-06807saf1f212gut7fu1s0blkv3an9cs.apps.googleusercontent.com</string>
 <key>API_KEY</key>
 <string>AIzaSyCybCHbz6Ee2l20D78jSQ_Le-fC92pxw9I</string>
 <key>GCM_SENDER_ID</key>
@@ -15,7 +15,7 @@
 <key>PLIST_VERSION</key>
 <string>1</string>
 <key>BUNDLE_ID</key>
-<string>com.example.glorifyGod</string>
+<string>app.glorifygod.prod</string>
 <key>PROJECT_ID</key>
 <string>glorifygod-57842</string>
 <key>STORAGE_BUCKET</key>
@@ -31,8 +31,6 @@
 <key>IS_SIGNIN_ENABLED</key>
 <true></true>
 <key>GOOGLE_APP_ID</key>
-<string>1:13510448361:ios:e07e44e5c369e34cb88c78</string>
-<key>ADMOB_APP_ID</key>
-<string>ca-app-pub-2680116838717076~5533481360</string>
+<string>1:13510448361:ios:ea7e358e7930d373b88c78</string>
 </dict>
 </plist>

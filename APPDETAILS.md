@@ -222,3 +222,6 @@
   - Build.gradle file edited with release and debug configurations
   - GoogleService.json file got changed with new sha-1 and sha256 config & variant release keys added to the firebase
   - Need to Upload release appbundle for test mode in playstore
+
+- 27/2/2024
+  - Changed my app package name in both android and IOS along with firebase signing system from com.example.appname to app.appname.prod
