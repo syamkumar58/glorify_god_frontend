@@ -225,3 +225,7 @@
 
 - 27/2/2024
   - Changed my app package name in both android and IOS along with firebase signing system from com.example.appname to app.appname.prod
+
+- 04/03/2024
+  - Implemented Email login flow with LOGIN page screen UI design
+  - Implemented youtube player demo for future purpose and changes

@@ -13,6 +13,16 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AppState with ChangeNotifier {
+  bool _isGuestUser = false;
+
+
+  bool get isGuestUser => _isGuestUser;
+
+  set isGuestUser(bool value) {
+    _isGuestUser = value;
+    notifyListeners();
+  }
+
   AudioPlayer _audioPlayer = AudioPlayer();
 
   AudioPlayer get audioPlayer => _audioPlayer;
@@ -75,15 +85,16 @@ class AppState with ChangeNotifier {
     fcmToken: '',
     timeZone: '',
     gender: '',
-    device: Device(
-      uuid: '',
-      platform: '',
-      deviceName: '',
-      versionBaseOs: '',
-      manufacture: '',
-      model: '',
-      isPhysicalDevice: true,
-    ),
+    provider: '',
+    // device: Device(
+    //   uuid: '',
+    //   platform: '',
+    //   deviceName: '',
+    //   versionBaseOs: '',
+    //   manufacture: '',
+    //   model: '',
+    //   isPhysicalDevice: true,
+    // ),
   );
 
   UserLoginResponseModel get userData => _userData;

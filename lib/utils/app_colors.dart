@@ -18,4 +18,15 @@ class AppColors {
   static Color darkRed = const Color(0xFFC62828);
   static Color darkRed2 = const Color(0xFFB71C1C);
   static Color pink = const Color(0xFFAD1457);
+  static Color litePink3 = const Color(0xFFF48FB1);
+  static Color darkPink7 = const Color(0xFFD81B60);
+  static Color darkPink10 = const Color(0xFF880E4F);
+  static Color deppPurple3 = const Color(0xFFB39DDB);
+  static Color deppPurple4 = const Color(0xFF9575CD);
+  static Color deppPurple7 = const Color(0xFF5E35B1);
+  static Color appColor1 = const Color(0xFF26686e);
+  static Color appColor2 = const Color(0xFF16404c);
+  static Color red4 = const Color(0xFFE57373);
+  static Color red10 = const Color(0xFFB71C1C);
+  static Color maroon = const Color(0xFF800000);
 }

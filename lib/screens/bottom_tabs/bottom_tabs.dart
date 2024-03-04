@@ -141,6 +141,7 @@ class _BottomTabsState extends State<BottomTabs>
       HiveKeys.logInKey,
     );
     log('$userLogInData', name: 'cached userLoginData from bottom tabs');
+
     await appState.initiallySetUserDataGlobally(
       userLogInData,
     );

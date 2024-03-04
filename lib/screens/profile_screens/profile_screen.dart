@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -241,7 +242,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // await appState.removeUserFromPrivacyPolicyById();
                   await BlocProvider.of<VideoPlayerCubit>(context)
                       .stopVideoPlayer();
-                  await GoogleSignIn().signOut();
+                  if (appState.userData.provider == 'GOOGLE') {
+                    log('log out 1');
+                    await GoogleSignIn().signOut();
+                  } else if (appState.userData.provider == 'EMAIL') {
+                    log('log out 2');
+                    await FirebaseAuth.instance.signOut();
+                  }
+
                   await hiveBox!.clear();
                   Future.delayed(const Duration(seconds: 2), () async {
                     await onLogOutPushScreen();

@@ -5,6 +5,7 @@ class AppImages {
   static String jesusName = '$path/jesusName.jpeg';
   static String appIcon = '$path/appIcon.png';
   static String appWhiteIcon = '$path/appWhiteIcon.png';
+  static String emailLogo1 = '$path/emailLogo_1.png';
 }
 
 class LottieAnimations {

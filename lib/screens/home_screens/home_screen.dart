@@ -2,13 +2,17 @@
 
 import 'dart:async';
 import 'dart:developer';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
+import 'package:glorify_god/bloc/youtube_player_cubit/youtube_player_cubit.dart';
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/home_components/copy_right_text.dart';
 import 'package:glorify_god/components/home_components/home_loading_shimmer_effect.dart';
 import 'package:glorify_god/components/song_card_component.dart';
 import 'package:glorify_god/components/title_tile_component.dart';
+import 'package:glorify_god/components/youtube_video_player.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
@@ -43,6 +47,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool connectionError = false;
   List<int> showShimmers = [1, 2, 3, 4];
   late AnimationController lottieController;
+
+  List<String> testingSongs = [
+    'g1KiQRqfhNc',
+    'irvw4_562BM',
+    'BlVD1-bxABg',
+    'qvVBZ0rYvOg',
+  ];
 
   @override
   void initState() {
@@ -157,15 +168,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 const SizedBox(
                   height: 30,
                 ),
-                // if (kDebugMode)
-                //   CupertinoButton(
-                //     color: AppColors.redAccent,
-                //     onPressed: () {
-                //       // Navigator.of(context).push(CupertinoPageRoute(
-                //       //     builder: (_) => const YoutubeVideoPlayerScreen()));
-                //     },
-                //     child: const Text('Test Button'),
-                //   ),
+                if (kDebugMode)
+                  CupertinoButton(
+                    color: AppColors.redAccent,
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (_) => YoutubeVideoPlayerScreen(
+                            songs: testingSongs,
+                          ),
+                        ),
+                      );
+
+                      BlocProvider.of<YoutubePlayerCubit>(context).start(
+                        songs: testingSongs,
+                        currentSongIndex: 0,
+                      );
+                    },
+                    child: const Text('Test Button'),
+                  ),
                 if (appState.getArtistsWithSongsList.isNotEmpty)
                   ...appState.getArtistsWithSongsList.map((e) {
                     return Container(

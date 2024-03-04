@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
 import 'package:glorify_god/bloc/profile_bloc/songs_info_cubit/songs_data_info_cubit.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
+import 'package:glorify_god/bloc/youtube_player_cubit/youtube_player_cubit.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
 import 'package:glorify_god/screens/splash_screen.dart';
@@ -92,6 +93,9 @@ class _MainState extends State<Main> {
         ),
         BlocProvider(
           create: (_) => LikedCubit(),
+        ),
+        BlocProvider(
+          create: (_) => YoutubePlayerCubit(),
         ),
       ],
       child: MaterialApp(

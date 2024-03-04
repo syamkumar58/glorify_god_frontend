@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/user_models/user_login_response_model.dart';
 import 'package:glorify_god/src/api/api_calls.dart';
@@ -11,7 +12,6 @@ import 'package:hive/hive.dart';
 GoogleSignIn googleSignIn = GoogleSignIn();
 
 Future<UserCredential> signInWithGoogle() async {
-
   //<--If using Firebase, you might want to reinitialize Firebase -->/
   // await Firebase.initializeApp();
 
@@ -74,8 +74,10 @@ Future<UserLoginResponseModel?> googleLogin() async {
       email: userCredentials.user!.email!,
       displayName: userCredentials.user!.displayName!,
       profileUrl: userCredentials.user!.photoURL!,
+      provider: LoginProviders.GOOGLE.toString().split('.')[1],
     );
-    log('\n\n $userLogin \n\n', name: 'userLogin!.body from user bloc');
+    log('\n\n $userLogin -- ${LoginProviders.GOOGLE.toString().split('.')[1]} \n\n',
+        name: 'userLogin!.body from user bloc');
     await storeLogInDetailsInHive(userLogin!);
     return userLogin;
   } catch (er) {
@@ -121,5 +123,83 @@ Future<dynamic> storeLogInDetailsInHive(
     );
   } catch (err) {
     log('$err', name: 'while storing the error');
+  }
+}
+
+Future createEmail({
+  required String email,
+  required String password,
+}) async {
+  try {
+    final create = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: email,
+      password: password, //'guest.user.7908',
+    );
+    log('$create', name: 'Created with - ');
+  } on FirebaseAuthException catch (er) {
+    log('$er', name: 'createEmail failed with exception');
+  }
+}
+
+Future<UserCredential> signInWithEmail({
+  required BuildContext context,
+  required String email,
+  required String password,
+}) async {
+  try {
+    final emailDetails = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    log('$emailDetails', name: 'Signed with em');
+    return emailDetails;
+  } on FirebaseAuthException catch (er) {
+    log('$er', name: 'Email failed with exception');
+    if (er.toString().contains(
+        'The supplied auth credential is incorrect, malformed or has expired.')) {
+      flushBar(
+        context: context,
+        messageText:
+            'Entered login details are not valid, please try with valid details'
+            ' (or) '
+            'you can also use google login for easy acess',
+      );
+    } else if (er.toString().contains('')) {}
+    rethrow;
+  }
+}
+
+Future<UserLoginResponseModel?> emailLogin({
+  required BuildContext context,
+  required String email,
+  required String password,
+}) async {
+  log('it reached here to email login');
+
+  final emailDetails = await signInWithEmail(
+    context: context,
+    email: email,
+    password: password,
+  );
+
+  log('${emailDetails.user!.email}', name: 'it reached here to email login');
+
+  try {
+    final userLogin = await ApiCalls().logIn(
+      email: emailDetails.user!.email ?? '',
+      displayName: 'Guest User',
+      profileUrl:
+          'https://glorifygod.s3.ap-south-1.amazonaws.com/Guest+User/guestImage.png',
+      provider: LoginProviders.EMAIL.toString().split('.')[1],
+    );
+    log('\n\n $userLogin \n\n', name: 'userLogin!.body from user bloc');
+    await storeLogInDetailsInHive(userLogin!);
+    return userLogin;
+  } catch (er) {
+    log('$er', name: 'loginError from user bloc');
+    if (er.toString().contains('Connection refused')) {
+      toastMessage(message: 'Login failed, please try again some time later');
+    }
+    return null;
   }
 }

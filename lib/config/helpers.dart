@@ -1,8 +1,11 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/screens/video_player_screen/video_player_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 String convertDurations(Duration duration) {
   final convert = duration.inHours > 0
@@ -152,3 +155,28 @@ List<dynamic> mostPlayedSongsData = [
         'https://i.scdn.co/image/ab67616d0000b273c0412c357933a4a2c6c126a8',
   },
 ];
+
+void flushBar({
+  required BuildContext context,
+  required String messageText,
+}) {
+  Flushbar(
+    messageText: AppText(
+      text: messageText,
+      maxLines: 5,
+      styles: GoogleFonts.manrope(
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+    margin: const EdgeInsets.all(8),
+    borderRadius: BorderRadius.circular(8),
+    duration: const Duration(seconds: 3),
+    flushbarPosition: FlushbarPosition.TOP,
+  ).show(context);
+}
+
+enum LoginProviders {
+  GOOGLE,
+  EMAIL,
+  PHONE_NUMBER,
+}
