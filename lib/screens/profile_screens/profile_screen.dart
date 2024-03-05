@@ -133,23 +133,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   fontWeight: FontWeight.w600,
                   color: AppColors.white,
                 ),
-                text: appState.userData.displayName.isNotEmpty
-                    ? appState.userData.displayName
-                    : 'Name',
+                text: appState.userData.provider == 'PHONENUMBER'
+                    ? appState.userData.mobileNumber
+                    : appState.userData.provider == 'EMAIL'
+                        ? appState.userData.email
+                        : appState.userData.displayName.isNotEmpty
+                            ? appState.userData.displayName
+                            : 'Name',
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 5),
-              child: AppText(
-                styles: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.dullWhite,
+            if (appState.userData.provider == 'GOOGLE')
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: AppText(
+                  styles: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.dullWhite,
+                  ),
+                  text: appState.userData.email.isNotEmpty
+                      ? '@${appState.userData.email}'
+                      : '@email',
                 ),
-                text: appState.userData.email.isNotEmpty
-                    ? '@${appState.userData.email}'
-                    : '@email',
               ),
-            ),
           ],
         ),
       ),
@@ -239,18 +244,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   setState(() {
                     onLogout = true;
                   });
+
                   // await appState.removeUserFromPrivacyPolicyById();
                   await BlocProvider.of<VideoPlayerCubit>(context)
                       .stopVideoPlayer();
+                  await hiveBox!.clear();
                   if (appState.userData.provider == 'GOOGLE') {
                     log('log out 1');
                     await GoogleSignIn().signOut();
-                  } else if (appState.userData.provider == 'EMAIL') {
+                  } else if (appState.userData.provider == 'EMAIL' ||
+                      appState.userData.provider == 'PHONENUMBER') {
                     log('log out 2');
                     await FirebaseAuth.instance.signOut();
                   }
-
-                  await hiveBox!.clear();
                   Future.delayed(const Duration(seconds: 2), () async {
                     await onLogOutPushScreen();
                   });

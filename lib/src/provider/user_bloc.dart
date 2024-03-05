@@ -9,6 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
 
+FirebaseAuth auth = FirebaseAuth.instance;
+
 GoogleSignIn googleSignIn = GoogleSignIn();
 
 Future<UserCredential> signInWithGoogle() async {
@@ -104,6 +106,8 @@ Future<dynamic> storeLogInDetailsInHive(
 
   final theJson = userLoginResponse.toJson();
 
+  log('$theJson', name: 'theJson theJson --');
+
   try {
     await glorifyGodBox
         .put(HiveKeys.logInKey, theJson)
@@ -147,7 +151,7 @@ Future<UserCredential> signInWithEmail({
   required String password,
 }) async {
   try {
-    final emailDetails = await FirebaseAuth.instance.signInWithEmailAndPassword(
+    final emailDetails = await auth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
@@ -187,13 +191,37 @@ Future<UserLoginResponseModel?> emailLogin({
   try {
     final userLogin = await ApiCalls().logIn(
       email: emailDetails.user!.email ?? '',
-      displayName: 'Guest User',
-      profileUrl:
-          'https://glorifygod.s3.ap-south-1.amazonaws.com/Guest+User/guestImage.png',
+      displayName: '',
+      profileUrl: '',
+      //'https://glorifygod.s3.ap-south-1.amazonaws.com/Guest+User/guestImage.png',
       provider: LoginProviders.EMAIL.toString().split('.')[1],
     );
     log('\n\n $userLogin \n\n', name: 'userLogin!.body from user bloc');
     await storeLogInDetailsInHive(userLogin!);
+    return userLogin;
+  } catch (er) {
+    log('$er', name: 'loginError from user bloc');
+    if (er.toString().contains('Connection refused')) {
+      toastMessage(message: 'Login failed, please try again some time later');
+    }
+    return null;
+  }
+}
+
+Future<UserLoginResponseModel?> phoneNumberUserLogin({
+  required String mobileNumber,
+}) async {
+  try {
+    final userLogin = await ApiCalls().logIn(
+      email: '',
+      displayName: '',
+      profileUrl: '',
+      mobileNumber: mobileNumber,
+      provider: LoginProviders.PHONENUMBER.toString().split('.')[1],
+    );
+    log('\n\n ${userLogin!.mobileNumber} \n\n',
+        name: 'userLogin!.body from user bloc');
+    await storeLogInDetailsInHive(userLogin);
     return userLogin;
   } catch (er) {
     log('$er', name: 'loginError from user bloc');

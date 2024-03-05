@@ -178,5 +178,5 @@ void flushBar({
 enum LoginProviders {
   GOOGLE,
   EMAIL,
-  PHONE_NUMBER,
+  PHONENUMBER,
 }

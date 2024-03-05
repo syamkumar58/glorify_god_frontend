@@ -15,7 +15,6 @@ import 'package:just_audio/just_audio.dart';
 class AppState with ChangeNotifier {
   bool _isGuestUser = false;
 
-
   bool get isGuestUser => _isGuestUser;
 
   set isGuestUser(bool value) {
@@ -401,29 +400,33 @@ class AppState with ChangeNotifier {
   }
 
   Future checkArtistLoginDataByEmail() async {
-    final data = await ApiCalls().checkArtistLoginDataByEmail(
-      email: userData.email,
-    );
+    if (userData.email.isNotEmpty) {
+//<-- Some may login with mobile number at that time there wont be email so -->/
+      final data = await ApiCalls().checkArtistLoginDataByEmail(
+        email: userData.email,
+      );
 
-    if (data != null) {
-      final body = data.body;
+      if (data != null) {
+        final body = data.body;
 
-      final decode = json.decode(body);
-      log('Is this coming here 21 $decode');
+        final decode = json.decode(body);
+        log('Is this coming here 21 $decode');
 
-      final status = decode['status'];
+        final status = decode['status'];
 
-      log('Is this coming here 21.1 $status');
+        log('Is this coming here 21.1 $status');
 
-      if (status) {
-        final artistsData = checkArtistLoginDataByEmailModelFromJson(data.body);
-        artistLoginDataByEmail = artistsData;
+        if (status) {
+          final artistsData =
+              checkArtistLoginDataByEmailModelFromJson(data.body);
+          artistLoginDataByEmail = artistsData;
+        } else {
+          artistLoginDataByEmail = null;
+        }
       } else {
+        log('Is this coming here 22');
         artistLoginDataByEmail = null;
       }
-    } else {
-      log('Is this coming here 22');
-      artistLoginDataByEmail = null;
     }
   }
 }

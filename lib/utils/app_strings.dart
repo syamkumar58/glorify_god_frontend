@@ -37,7 +37,7 @@ class AppStrings {
   static const songInfo2 = 'SONGS INFO';
   static const monetizationHeading = 'Monetization';
   static const monetizationSubText = 'Once the monetization is completed the check on right side will turn on';
-  static const or = 'Or';
+  static const or = 'OR';
 
 
 

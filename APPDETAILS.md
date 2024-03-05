@@ -229,3 +229,6 @@
 - 04/03/2024
   - Implemented Email login flow with LOGIN page screen UI design
   - Implemented youtube player demo for future purpose and changes
+
+- 05/03/2024
+  - Mobile number and otp login was implemented
