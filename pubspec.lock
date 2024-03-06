@@ -361,14 +361,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.0"
-  email_auth:
+  email_otp:
     dependency: "direct main"
     description:
-      name: email_auth
-      sha256: d83bce63de8167976693f503eea924af39654af2625f8733d0c1d29d03aef012
+      name: email_otp
+      sha256: c19c35c3df43ca0d5cf763c9cfb682455c0defc629903704cd1ed4dfc21440c1
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.1"
+    version: "2.1.2"
   email_validator:
     dependency: "direct main"
     description:

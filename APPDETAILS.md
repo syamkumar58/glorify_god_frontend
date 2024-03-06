@@ -232,3 +232,11 @@
 
 - 05/03/2024
   - Mobile number and otp login was implemented
+
+- 06/03/2024
+  - Email login guest user flow
+  - Email Forgot password
+  - Sign up new account
+  - New account email verification
+  - Login screen Ui changes
+    _ Logical changes in user bloc  

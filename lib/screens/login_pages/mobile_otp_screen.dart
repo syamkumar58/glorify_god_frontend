@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:glorify_god/components/noisey_text.dart';
-import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/screens/bottom_tabs/bottom_tabs.dart';
 import 'package:glorify_god/src/provider/user_bloc.dart';
 import 'package:glorify_god/utils/app_colors.dart';
@@ -139,32 +138,30 @@ class _MobileOtpScreenState extends State<MobileOtpScreen> {
                         ),
                       ),
                     ),
-                    if (!widget.isGuest)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Center(
-                          child: AppText(
-                            text: "Didn't received an OTP?",
-                            textAlign: TextAlign.center,
-                            styles: GoogleFonts.manrope(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.white,
-                            ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Center(
+                        child: AppText(
+                          text: "Didn't received an OTP?",
+                          textAlign: TextAlign.center,
+                          styles: GoogleFonts.manrope(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.white,
                           ),
                         ),
                       ),
-                    if (!widget.isGuest)
-                      Center(
-                        child: OtpTimerButton(
-                          controller: resendTimerController,
-                          backgroundColor: AppColors.white,
-                          textColor: AppColors.appColor2,
-                          onPressed: onPressed,
-                          text: const Text('Resend OTP'),
-                          duration: 120,
-                        ),
+                    ),
+                    Center(
+                      child: OtpTimerButton(
+                        controller: resendTimerController,
+                        backgroundColor: AppColors.white,
+                        textColor: AppColors.appColor2,
+                        onPressed: onPressed,
+                        text: const Text('Resend OTP'),
+                        duration: 120,
                       ),
+                    ),
                   ],
                 ),
               ),
@@ -176,30 +173,20 @@ class _MobileOtpScreenState extends State<MobileOtpScreen> {
   }
 
   Future verifyOtp(String otp) async {
-    if (widget.isGuest && otp == '000000') {
-      log('step 1');
-      //<-- Navigate to home tabs -->/
-      await userLoginCall();
-    } else if (widget.isGuest && otp != '000000') {
-      log('step 2');
-      flushBar(context: context, messageText: 'Entered a wrong OTP');
-    } else {
-      log('step 3');
-      //<-- Not a guest user so normal flow -->/
-      try {
-        final authCredentials = PhoneAuthProvider.credential(
-          verificationId: verificationId,
-          smsCode: otp,
-        );
+    //<-- Not a guest user so normal flow -->/
+    try {
+      final authCredentials = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: otp,
+      );
 
-        final userCredentials =
-            await firebaseAuth.signInWithCredential(authCredentials);
+      final userCredentials =
+          await firebaseAuth.signInWithCredential(authCredentials);
 
-        //<-- Using userCredentials login in to app -->/
-        userLoginCall(userCredentials: userCredentials);
-      } catch (er) {
-        log('$er', name: 'OTP verification failed');
-      }
+      //<-- Using userCredentials login in to app -->/
+      userLoginCall(userCredentials: userCredentials);
+    } catch (er) {
+      log('$er', name: 'OTP verification failed');
     }
   }
 

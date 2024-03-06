@@ -70,13 +70,22 @@ Future<UserLoginResponseModel?> googleLogin() async {
   final userCredentials = await signInWithGoogle();
 
   log('it reached here what happening');
+  final userLoginResponse = await userLoginCall(
+    userCredentials: userCredentials,
+    provider: LoginProviders.GOOGLE.toString().split('.')[1],
+  );
+  return userLoginResponse;
+}
 
+Future<UserLoginResponseModel?> userLoginCall(
+    {UserCredential? userCredentials, String provider = ''}) async {
   try {
     final userLogin = await ApiCalls().logIn(
-      email: userCredentials.user!.email!,
-      displayName: userCredentials.user!.displayName!,
-      profileUrl: userCredentials.user!.photoURL!,
-      provider: LoginProviders.GOOGLE.toString().split('.')[1],
+      email: userCredentials!.user!.email ?? '',
+      displayName: userCredentials.user!.displayName ?? '',
+      profileUrl: userCredentials.user!.photoURL ?? '',
+      mobileNumber: userCredentials.user!.phoneNumber ?? '',
+      provider: provider,
     );
     log('\n\n $userLogin -- ${LoginProviders.GOOGLE.toString().split('.')[1]} \n\n',
         name: 'userLogin!.body from user bloc');
@@ -130,7 +139,7 @@ Future<dynamic> storeLogInDetailsInHive(
   }
 }
 
-Future createEmail({
+Future<UserCredential?> createEmail({
   required String email,
   required String password,
 }) async {
@@ -140,13 +149,14 @@ Future createEmail({
       password: password, //'guest.user.7908',
     );
     log('$create', name: 'Created with - ');
+    return create;
   } on FirebaseAuthException catch (er) {
     log('$er', name: 'createEmail failed with exception');
+    rethrow;
   }
 }
 
 Future<UserCredential> signInWithEmail({
-  required BuildContext context,
   required String email,
   required String password,
 }) async {
@@ -158,17 +168,7 @@ Future<UserCredential> signInWithEmail({
     log('$emailDetails', name: 'Signed with em');
     return emailDetails;
   } on FirebaseAuthException catch (er) {
-    log('$er', name: 'Email failed with exception');
-    if (er.toString().contains(
-        'The supplied auth credential is incorrect, malformed or has expired.')) {
-      flushBar(
-        context: context,
-        messageText:
-            'Entered login details are not valid, please try with valid details'
-            ' (or) '
-            'you can also use google login for easy acess',
-      );
-    } else if (er.toString().contains('')) {}
+    log('${er.message}', name: 'Email failed with exception');
     rethrow;
   }
 }
@@ -181,31 +181,17 @@ Future<UserLoginResponseModel?> emailLogin({
   log('it reached here to email login');
 
   final emailDetails = await signInWithEmail(
-    context: context,
     email: email,
     password: password,
   );
 
   log('${emailDetails.user!.email}', name: 'it reached here to email login');
 
-  try {
-    final userLogin = await ApiCalls().logIn(
-      email: emailDetails.user!.email ?? '',
-      displayName: '',
-      profileUrl: '',
-      //'https://glorifygod.s3.ap-south-1.amazonaws.com/Guest+User/guestImage.png',
-      provider: LoginProviders.EMAIL.toString().split('.')[1],
-    );
-    log('\n\n $userLogin \n\n', name: 'userLogin!.body from user bloc');
-    await storeLogInDetailsInHive(userLogin!);
-    return userLogin;
-  } catch (er) {
-    log('$er', name: 'loginError from user bloc');
-    if (er.toString().contains('Connection refused')) {
-      toastMessage(message: 'Login failed, please try again some time later');
-    }
-    return null;
-  }
+  final userLoginResponse = await userLoginCall(
+    userCredentials: emailDetails,
+    provider: LoginProviders.EMAIL.toString().split('.')[1],
+  );
+  return userLoginResponse;
 }
 
 Future<UserLoginResponseModel?> phoneNumberUserLogin({

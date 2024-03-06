@@ -166,6 +166,7 @@ void flushBar({
       maxLines: 5,
       styles: GoogleFonts.manrope(
         fontWeight: FontWeight.w600,
+        fontSize: 18,
       ),
     ),
     margin: const EdgeInsets.all(8),
