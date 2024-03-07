@@ -14,6 +14,7 @@ import 'package:glorify_god/screens/bottom_tabs/bottom_tabs.dart';
 import 'package:glorify_god/screens/login_pages/my_sign_up_screen.dart';
 import 'package:glorify_god/src/provider/user_bloc.dart';
 import 'package:glorify_god/utils/app_colors.dart';
+import 'package:glorify_god/utils/app_strings.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -43,7 +44,7 @@ class _EmailComponentState extends State<EmailComponent> {
 
   @override
   Widget build(BuildContext context) {
-    appState = Provider.of<AppState>(context);
+    appState = Provider.of<AppState>(widget.context);
     return Form(
       key: formKey,
       child: Column(
@@ -65,7 +66,7 @@ class _EmailComponentState extends State<EmailComponent> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AppText(
-            text: 'Email',
+            text: AppStrings.email,
             styles: GoogleFonts.manrope(
               fontWeight: FontWeight.w500,
               color: AppColors.white,
@@ -92,7 +93,7 @@ class _EmailComponentState extends State<EmailComponent> {
                   fillColor: AppColors.grey.withOpacity(0.3),
                   focusColor: AppColors.white,
                   contentPadding: const EdgeInsets.only(top: 8),
-                  hintText: 'Enter your Email',
+                  hintText: AppStrings.enterYourEmail,
                   hintStyle: GoogleFonts.manrope(
                     fontSize: 14,
                     color: AppColors.dullWhite,
@@ -156,7 +157,7 @@ class _EmailComponentState extends State<EmailComponent> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AppText(
-              text: 'Password',
+              text: AppStrings.password,
               styles: GoogleFonts.manrope(
                 fontWeight: FontWeight.w500,
                 color: AppColors.white,
@@ -183,7 +184,7 @@ class _EmailComponentState extends State<EmailComponent> {
                     fillColor: AppColors.grey.withOpacity(0.3),
                     focusColor: AppColors.white,
                     contentPadding: const EdgeInsets.only(top: 8),
-                    hintText: 'Enter your Password',
+                    hintText: AppStrings.enterYourPassword,
                     hintStyle: GoogleFonts.manrope(
                       fontSize: 14,
                       color: AppColors.dullWhite,
@@ -244,7 +245,7 @@ class _EmailComponentState extends State<EmailComponent> {
                 await forgotPasswordMethod();
               },
               child: AppText(
-                text: 'Forgot Password?',
+                text: AppStrings.forgotPassword,
                 styles: GoogleFonts.manrope(
                   fontWeight: FontWeight.w600,
                   color: AppColors.white,
@@ -267,19 +268,20 @@ class _EmailComponentState extends State<EmailComponent> {
         padding: EdgeInsets.zero,
         onPressed: () async {
           if (!EmailValidator.validate(emailController.text)) {
-            toast(messageText: 'Enter a valid Email');
-          } else if (!firebaseAuth.currentUser!.emailVerified) {
+            toast(messageText: AppStrings.enterAValidEmail);
+          } else if (firebaseAuth.currentUser != null &&
+              !firebaseAuth.currentUser!.emailVerified) {
             await firebaseAuth.currentUser!.reload();
             log('${firebaseAuth.currentUser}', name: 'Email is not verified');
             toast(
                 messageText:
-                    '${emailController.text} provided Email is not verified');
+                    '${emailController.text} ${AppStrings.providedEmailNotVerified}');
           } else {
             await onSubmit();
           }
         },
         child: AppText(
-          text: 'LOGIN',
+          text: AppStrings.login,
           styles: GoogleFonts.manrope(
             color: AppColors.appColor2,
             fontWeight: FontWeight.bold,
@@ -296,14 +298,14 @@ class _EmailComponentState extends State<EmailComponent> {
           text: TextSpan(
         children: [
           TextSpan(
-            text: "Don't have an Account?",
+            text: AppStrings.dontHaveAnAccount,
             style: GoogleFonts.manrope(
               fontWeight: FontWeight.w400,
               fontSize: 15,
             ),
           ),
           TextSpan(
-            text: " Sign Up",
+            text: AppStrings.signUp,
             style: GoogleFonts.manrope(
               fontWeight: FontWeight.bold,
               fontSize: 15,
@@ -311,7 +313,7 @@ class _EmailComponentState extends State<EmailComponent> {
             recognizer: TapGestureRecognizer()
               ..onTap = () {
                 //<-- On Tap signUp open create account -->/
-                Navigator.of(context).push(
+                Navigator.of(widget.context).push(
                   CupertinoPageRoute(
                       builder: (_) => MySignUpScreen(
                             holdEmailData: (String email, bool emailVerified) {
@@ -333,10 +335,10 @@ class _EmailComponentState extends State<EmailComponent> {
 
     if (form.validate()) {
       if (passwordController.text.trim().isEmpty) {
-        toast(messageText: 'Enter a valid password');
+        toast(messageText: AppStrings.enterAValidPassword);
       } else {
         log('step 3');
-        FocusScope.of(context).unfocus();
+        FocusScope.of(widget.context).unfocus();
         await onSubmitEmailLogin();
       }
     }
@@ -347,7 +349,7 @@ class _EmailComponentState extends State<EmailComponent> {
 
     try {
       final userLogin = await emailLogin(
-        context: context,
+        context: widget.context,
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
@@ -363,15 +365,12 @@ class _EmailComponentState extends State<EmailComponent> {
       if (er.toString().contains(
           'The supplied auth credential is incorrect, malformed or has expired.')) {
         toast(
-          messageText:
-              'Entered login details are not valid, please try with valid details'
-              ' (or) '
-              'you can also use google login for easy acess',
+          messageText: AppStrings.credentialsAreWrong,
         );
       } else if (er.message.toString().contains(''
           'INVALID_LOGIN_CREDENTIALS')) {
         toast(
-          messageText: 'Please provide a valid details',
+          messageText: AppStrings.provideAValidDetails,
         );
       }
       log('$er and  ${er.runtimeType}', name: 'Email login failed');
@@ -390,20 +389,20 @@ class _EmailComponentState extends State<EmailComponent> {
         log('$er', name: 'Reset password not sent');
       }
     } else {
-      toast(messageText: 'Enter a valid Email');
+      toast(messageText: AppStrings.enterAValidEmail);
     }
   }
 
   void toast({required String messageText}) {
     flushBar(
-      context: context,
+      context: widget.context,
       messageText: messageText,
     );
   }
 
   void bottomTabsNavigation() {
     Navigator.pushAndRemoveUntil(
-        context,
+        widget.context,
         CupertinoPageRoute<BottomTabs>(
           builder: (_) => const BottomTabs(),
         ),

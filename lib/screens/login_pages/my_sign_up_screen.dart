@@ -11,6 +11,7 @@ import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/src/provider/user_bloc.dart';
 import 'package:glorify_god/utils/app_colors.dart';
+import 'package:glorify_god/utils/app_strings.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MySignUpScreen extends StatefulWidget {
@@ -68,7 +69,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
                 )
               : const SizedBox(),
           title: AppText(
-            text: 'My Sign up',
+            text: AppStrings.mySignUp,
             styles: GoogleFonts.manrope(
               color: AppColors.white,
               fontWeight: FontWeight.bold,
@@ -119,7 +120,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 21, bottom: 21),
           child: AppText(
-            text: 'Account verified successfully,\nplease try to Sign in',
+            text: AppStrings.accountVerified,
             styles: GoogleFonts.manrope(
               fontSize: 21,
               color: AppColors.white,
@@ -151,7 +152,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
                   color: AppColors.black,
                 ),
                 AppText(
-                  text: ' Go Back',
+                  text: AppStrings.goBack,
                   styles: GoogleFonts.manrope(
                     fontSize: 20,
                     color: AppColors.black,
@@ -173,7 +174,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AppText(
-            text: 'Email',
+            text: AppStrings.email,
             styles: GoogleFonts.manrope(
               fontWeight: FontWeight.w500,
               color: AppColors.white,
@@ -200,7 +201,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
                   fillColor: AppColors.grey.withOpacity(0.3),
                   focusColor: AppColors.white,
                   contentPadding: const EdgeInsets.only(top: 8),
-                  hintText: 'Enter your Email',
+                  hintText: AppStrings.enterYourEmail,
                   hintStyle: GoogleFonts.manrope(
                     fontSize: 14,
                     color: AppColors.dullWhite,
@@ -269,7 +270,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AppText(
-              text: 'Password',
+              text: AppStrings.password,
               styles: GoogleFonts.manrope(
                 fontWeight: FontWeight.w500,
                 color: AppColors.white,
@@ -297,7 +298,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
                     fillColor: AppColors.grey.withOpacity(0.3),
                     focusColor: AppColors.white,
                     contentPadding: const EdgeInsets.only(top: 8),
-                    hintText: 'Enter your Password',
+                    hintText: AppStrings.enterYourPassword,
                     hintStyle: GoogleFonts.manrope(
                       fontSize: 14,
                       color: AppColors.dullWhite,
@@ -379,7 +380,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
                 fillColor: AppColors.grey.withOpacity(0.3),
                 focusColor: AppColors.white,
                 contentPadding: const EdgeInsets.only(top: 8),
-                hintText: 'Re-Enter your Password',
+                hintText: AppStrings.reEnterYourPassword,
                 hintStyle: GoogleFonts.manrope(
                   fontSize: 14,
                   color: AppColors.dullWhite,
@@ -445,7 +446,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
           onPressed: !loading ? signUp : null,
           child: !loading
               ? AppText(
-                  text: 'SIGN UP',
+                  text: AppStrings.signUp2,
                   styles: GoogleFonts.manrope(
                     color: AppColors.appColor2,
                     fontWeight: FontWeight.bold,
@@ -463,16 +464,18 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
 
   Future signUp() async {
     if (!EmailValidator.validate(emailController.text)) {
-      flushBar(context: context, messageText: 'Enter a valid Email');
+      flushBar(context: context, messageText: AppStrings.enterAValidEmail);
     } else if (password.isEmpty || reEnteredPassword.isEmpty) {
       flushBar(
-          context: context, messageText: 'Password fields cannot be empty');
+        context: context,
+        messageText: AppStrings.passwordCannotBeEmpty,
+      );
     } else if (password != reEnteredPassword) {
       setState(() {
         passwordObscureText = false;
         reEnterPasswordObscureText = false;
       });
-      flushBar(context: context, messageText: 'Please re-check your passwords');
+      flushBar(context: context, messageText: AppStrings.reCheckYourPasswords);
     } else {
       setState(() {
         loading = true;
@@ -496,7 +499,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
 
         toastMessage(
             messageText:
-                'Verification email was sent to $email, Please verify to Sign in ');
+                '${AppStrings.verificationEmailSentTo} $email, ${AppStrings.pleaseVerify}');
 
         // Wait for a short time to allow the email verification process to complete
         await Future.delayed(const Duration(seconds: 2));
@@ -523,7 +526,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
           .contains('The email address is already in use by another account')) {
         toastMessage(
             messageText:
-                'This Email ${emailController.text} is already in use, Please try with another account');
+                '${AppStrings.thisEmail} ${emailController.text} ${AppStrings.alreadyInUse}');
       }
     }
   }

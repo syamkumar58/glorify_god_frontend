@@ -520,6 +520,7 @@ class _BottomTabsState extends State<BottomTabs>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    animationController.dispose();
     super.dispose();
   }
 }

@@ -1,4 +1,4 @@
-const bool useLocalHost = true;
+const bool useLocalHost = false;
 
 const String localHost = 'localhost'; //'10.0.2.2'; //
 // < If platform is Android use '10.0.2.2' as host and IOS uses 'localhost'>/

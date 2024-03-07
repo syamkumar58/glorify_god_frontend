@@ -239,4 +239,8 @@
   - Sign up new account
   - New account email verification
   - Login screen Ui changes
-    _ Logical changes in user bloc  
+  - Logical changes in user bloc  
+
+- 07/03/2024
+  - Bug fixes on new email implementation
+  - Moved Strings from files to common file
