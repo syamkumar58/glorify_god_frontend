@@ -270,6 +270,7 @@ class _EmailComponentState extends State<EmailComponent> {
           if (!EmailValidator.validate(emailController.text)) {
             toast(messageText: AppStrings.enterAValidEmail);
           } else if (firebaseAuth.currentUser != null &&
+              firebaseAuth.currentUser!.email == emailController.text &&
               !firebaseAuth.currentUser!.emailVerified) {
             await firebaseAuth.currentUser!.reload();
             log('${firebaseAuth.currentUser}', name: 'Email is not verified');

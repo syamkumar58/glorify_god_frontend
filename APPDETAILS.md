@@ -241,9 +241,10 @@
   - Login screen Ui changes
   - Logical changes in user bloc
 
-- 08/03/2024
-  - Version increment for play store upload
-
 - 07/03/2024
   - Bug fixes on new email implementation
   - Moved Strings from files to common file
+
+- 08/03/2024
+  - Version increment for play store upload
+  - Added email conditional check for user login

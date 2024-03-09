@@ -38,9 +38,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   late Box<dynamic> glorifyGodBox;
 
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-
   bool loading = false;
 
   @override

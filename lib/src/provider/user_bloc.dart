@@ -79,6 +79,7 @@ Future<UserLoginResponseModel?> googleLogin() async {
 
 Future<UserLoginResponseModel?> userLoginCall(
     {UserCredential? userCredentials, String provider = ''}) async {
+  log('${userCredentials!.user!.email}',name: 'userCredentials!.user!.email');
   try {
     final userLogin = await ApiCalls().logIn(
       email: userCredentials!.user!.email ?? '',
