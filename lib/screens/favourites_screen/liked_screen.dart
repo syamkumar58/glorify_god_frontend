@@ -1,18 +1,22 @@
 import 'dart:developer';
 
-import 'package:glorify_god/components/ads_card.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
+import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
+import 'package:glorify_god/config/helpers.dart';
+import 'package:glorify_god/models/get_favourites_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
-import 'package:glorify_god/screens/home_screens/home_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
+import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -29,9 +33,17 @@ class _LikedScreenState extends State<LikedScreen> {
   bool isLoading = true;
   List<Song> collectedSongs = [];
 
+  double get width => MediaQuery.of(context).size.width;
+
+  double get height => MediaQuery.of(context).size.height;
+
   Future<void> getLikedSongs() async {
-    await appState.likedSongs().whenComplete(() {
-      Future.delayed(const Duration(seconds: 3), () async {
+    await BlocProvider.of<LikedCubit>(context)
+        .likedSongs(
+      appState.userData.userId,
+    )
+        .whenComplete(() {
+      Future.delayed(const Duration(seconds: 2), () async {
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -43,6 +55,7 @@ class _LikedScreenState extends State<LikedScreen> {
 
   @override
   void initState() {
+    appState = context.read<AppState>();
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       getLikedSongs();
@@ -54,37 +67,66 @@ class _LikedScreenState extends State<LikedScreen> {
     appState = Provider.of<AppState>(context);
     return Scaffold(
       appBar: customAppbar('LIKED'),
-      body: Column(
-        children: [
-          const BannerCard(),
-          if (!isLoading && appState.likedSongsList.isNotEmpty)
-            playAllButton()
-          else if (!isLoading && appState.likedSongsList.isEmpty)
-            Column(
-              children: [
+      body: BlocBuilder<LikedCubit, LikedState>(
+        builder: (context, state) {
+          if (state is! LikedLoaded) {
+            return const Center(
+              child: CupertinoActivityIndicator(),
+            );
+          }
+
+          final likedSongsList = state.likedSongs;
+
+          return Column(
+            children: [
+              // const AdsCard(),
+              const BannerCard(),
+              if (!isLoading && likedSongsList.isNotEmpty)
+                playAllButton(likedSongsList)
+              else if (!isLoading && likedSongsList.isEmpty)
                 Padding(
-                  padding: const EdgeInsets.only(top: 50, bottom: 50),
+                  padding: EdgeInsets.only(top: height * 0.2, bottom: 50),
                   child: Center(
-                    child: AppText(
-                      styles: GoogleFonts.manrope(
-                        fontSize: 18,
-                        color: AppColors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      text: AppStrings.noFavourites,
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          AppImages.appWhiteIcon,
+                          width: 45,
+                          height: 40,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(height: 8),
+                        AppText(
+                          styles: GoogleFonts.manrope(
+                            fontSize: 18,
+                            color: AppColors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          text: AppStrings.noFavourites,
+                        ),
+                        const SizedBox(height: 8),
+                        AppText(
+                          text: AppStrings.youCanAddFavourites,
+                          maxLines: 5,
+                          styles: GoogleFonts.manrope(
+                            fontSize: 12,
+                            color: AppColors.white,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                const AdsCard(),
-              ],
-            ),
-          Expanded(child: songs()),
-        ],
+              Expanded(child: songs(likedSongsList)),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget playAllButton() {
+  Widget playAllButton(List<GetFavouritesModel> likedSongsList) {
     return Padding(
       padding: const EdgeInsets.only(top: 20, bottom: 20),
       child: Container(
@@ -97,7 +139,7 @@ class _LikedScreenState extends State<LikedScreen> {
         child: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () async {
-            await onPlay(0);
+            await onPlay(likedSongsList, likedSongsList[0], 0);
           },
           child: AppText(
             text: 'Play all',
@@ -112,7 +154,7 @@ class _LikedScreenState extends State<LikedScreen> {
     );
   }
 
-  Widget songs() {
+  Widget songs(List<GetFavouritesModel> likedSongsList) {
     return RefreshIndicator(
       color: Colors.transparent,
       backgroundColor: Colors.transparent,
@@ -128,25 +170,24 @@ class _LikedScreenState extends State<LikedScreen> {
               title: const CupertinoActivityIndicator(),
               leading: const SizedBox(),
             ),
-          if (!isLoading) songsWidget(),
+          if (!isLoading) songsWidget(likedSongsList),
         ],
       ),
     );
   }
 
-  Widget songsWidget() {
+  Widget songsWidget(List<GetFavouritesModel> likedSongsList) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
-        childCount: appState.likedSongsList.length,
+        childCount: likedSongsList.length,
         (context, index) {
-          final songDetails = appState.likedSongsList[index];
+          final songDetails = likedSongsList[index];
           return Bounce(
             duration: const Duration(milliseconds: 200),
             onPressed: () async {
-              final initialId = appState.likedSongsList
-                  .indexOf(appState.likedSongsList[index]);
+              final initialId = likedSongsList.indexOf(likedSongsList[index]);
               log('$initialId', name: 'initial id in liked');
-              await onPlay(initialId);
+              await onPlay(likedSongsList, songDetails, initialId);
             },
             child: SongsLikesTile(
               index: index + 1,
@@ -160,11 +201,12 @@ class _LikedScreenState extends State<LikedScreen> {
     );
   }
 
-  Future<void> onPlay(int initialId) async {
-    for (final song in appState.likedSongsList) {
+  Future<void> onPlay(List<GetFavouritesModel> likedSongsList,
+      GetFavouritesModel songDetails, int initialId) async {
+    for (final song in likedSongsList) {
       final eachSong = Song(
         songId: song.songId,
-        songUrl: song.songUrl,
+        videoUrl: song.videoUrl,
         title: song.title,
         artist: song.artist,
         artUri: song.artUri,
@@ -173,13 +215,32 @@ class _LikedScreenState extends State<LikedScreen> {
         ytUrl: song.ytUrl,
         ytTitle: song.ytTitle,
         ytImage: song.ytImage,
+        artistUID: song.artistUID,
       );
       collectedSongs.add(eachSong);
     }
-    await startAudio(
-      appState: appState,
-      audioSource: collectedSongs,
-      initialId: initialId,
+
+    final songData = Song(
+      artistUID: songDetails.artistUID,
+      videoUrl: songDetails.videoUrl,
+      title: songDetails.title,
+      artist: songDetails.artist,
+      artUri: songDetails.artUri,
+      lyricist: songDetails.lyricist,
+      ytTitle: songDetails.ytTitle,
+      ytUrl: songDetails.ytUrl,
+      ytImage: songDetails.ytImage,
+      createdAt: songDetails.createdAt,
+      songId: songDetails.songId,
+    );
+
+    musicScreenNavigation(context, songData: songData, songs: collectedSongs);
+
+    await BlocProvider.of<VideoPlayerCubit>(context).setToInitialState();
+    await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
+      songData: songData,
+      songs: collectedSongs,
+      selectedSongIndex: initialId,
     );
   }
 }

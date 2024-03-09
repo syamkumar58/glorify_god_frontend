@@ -111,4 +111,139 @@
   - Audio player UI changes with blurred background with the song image
   - Bottom height and UI changes
   - Home screen app title changed with new font family
-          
+
+- 7/1/2024
+  - Added all app icons
+  - On tap music bar instead of bottomSheet now moved to materialRoute with page transition (code from chatGpt) works super fine
+  - Search screen logic added on clearing the entry
+  - End point moved to the domain system now that points to api.glorifygod.in
+
+- 10/1/2024
+  - Changed google service json file for android
+  - implemented Privacy policy apis
+  - Privacy policy screen now changed to internal app screen not an url to call  
+
+- 11/1/2024
+  - Added to native white screen to app title logo for IOS at launch (Some more changes need to be done there)
+  - Android only Image is added to drawable folder
+    Still work is under progress
+  - Removed unUsed import
+
+- 12/1/2024
+  - App launch white screen replaced with splashLogo
+  - Fixed some fixes
+  - main.dart main function removed await and did unAwait for fast launch
+
+- 14/1/2024
+  - Bug fixes
+  - YouTube link UI changes
+  - Removed privacy policy as a login interphase and marked the policy as true for every user when login
+      API implementation is pending
+
+- 15/1/2024
+  - Search field on empty issue fix
+  - Copyright text implementation
+  - Created One more adUnit for IOS in AdMob
+  - Did some changes in UI and small fixes
+
+- 16/1/2024
+  - Added a new wallet screen (Not clearly Done)
+
+- 21/1/2024
+  - Done with song completion tracker
+  - Added required API calls for collecting song data on each track with artist U-ID
+
+- 30/1/2024
+  - Removed unused animation and added new music animations
+  - Enabled wakelock
+  - Video player set-up is done
+  - Removed the music player set-up
+  - Added flutter bloc for better state management
+  - Added AppLifecycleState
+    While playing audio if user locks the screen, or he puts the app in background the audio stops playing
+  - Changed the ad portion to show in the home screen now came to on top of nav bar in place of video player section
+    If video is playing that will goes off and when disposed it will  show again in that place
+
+- 31/1/2024
+  - Video player Controls UI changes and fixes
+  - Added close option in the video player screen for user can stop the audio from there
+
+- 1/2/2024
+  - Implemented artists songs data per month how many songs are playing
+    BackEnd api calls with frond end implementation is done
+  - UI need to be refined in songs info
+  - Condition to show Songs info tile to the artist
+
+- 2/2/2024
+  - Changed ad floating height adjustment and added loading while ad loads
+  - Changed favourites screen ui and added text for user to understand
+  - Search screen field added border for users intimation
+  - Video player cubit added null check while disposing the video player on logout and removal
+  - End point changed to server
+
+- 3/2/2024
+  - Interstitial ad added to home screen which comes for every 2 hours of closing it
+  - Search screen render issue fixes
+
+- 5/2/2024
+  - Fixing video player and tested bugs
+  - testing is undergoing
+
+- 7/2/2024
+  - Banner card Design changes
+  - Removed adCard from top of search and liked screens
+  - Added bannerCard in liked screen
+  - Songs information now added more a=information about monetization and total songs played after monetization
+
+- 8/2/2024
+  -Songs information monetization logic moved to backend from front end
+
+- 9/2/2024
+  - Removed slider on change method for sliding the song
+  - Added video player navigation screen to search and liked on tap songs
+
+- 20/2/2024
+  - Added real ad unit ids and conditions
+  - Bug fixes
+  - Home screen UI changes with comments added 
+
+- 22/2/2024
+  - Bug fixes
+
+- 24/2/2024
+  - Bug fixes
+  - Updated google service.json files for both android and ios
+  - Removed unused animation assets
+  - Commented on resume and InActive app life cycle to pause the audio
+  - Video player screen only bottom of the screen will scroll not the video
+
+- 26/2/2024
+  - Bug fixes from search screen are fixed from both back-end and front-end
+  - Build.gradle file edited with release and debug configurations
+  - GoogleService.json file got changed with new sha-1 and sha256 config & variant release keys added to the firebase
+  - Need to Upload release appbundle for test mode in playstore
+
+- 27/2/2024
+  - Changed my app package name in both android and IOS along with firebase signing system from com.example.appname to app.appname.prod
+
+- 04/03/2024
+  - Implemented Email login flow with LOGIN page screen UI design
+  - Implemented youtube player demo for future purpose and changes
+
+- 05/03/2024
+  - Mobile number and otp login was implemented
+
+- 06/03/2024
+  - Email login guest user flow
+  - Email Forgot password
+  - Sign up new account
+  - New account email verification
+  - Login screen Ui changes
+  - Logical changes in user bloc
+
+- 08/03/2024
+  - Version increment for play store upload
+
+- 07/03/2024
+  - Bug fixes on new email implementation
+  - Moved Strings from files to common file

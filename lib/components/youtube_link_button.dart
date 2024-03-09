@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:flutter/material.dart';
+import 'package:glorify_god/utils/app_colors.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class YoutubeLinkButton extends StatelessWidget {
@@ -50,12 +51,35 @@ class YoutubeLinkButton extends StatelessWidget {
               dense: true,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
-              // leading: CircleAvatar(
-              //   backgroundColor: AppColors.dullBlack.withOpacity(0.3),
-              //   backgroundImage: NetworkImage(
-              //     ytImage,
-              //   ),
-              // ),
+              leading: Container(
+                height: 60,
+                width: 80,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      width: 1,
+                      color: AppColors.white,
+                    ),
+                    image: DecorationImage(
+                      fit: BoxFit.contain,
+                      image: NetworkImage(
+                        ytImage,
+                      ),
+                    )),
+                child: Center(
+                  child: Container(
+                    height: 30,
+                    width: 30,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: AppColors.dullBlack,
+                    ),
+                    child: const Icon(
+                      Icons.play_arrow_outlined,
+                    ),
+                  ),
+                ),
+              ),
               title: AppText(
                 text: ytTitle,
                 textAlign: TextAlign.left,
@@ -64,14 +88,14 @@ class YoutubeLinkButton extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              subtitle: const AppText(
-                text: 'Sub-title',
-                textAlign: TextAlign.left,
-                styles: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              // subtitle: const AppText(
+              //   text: 'Sub-title',
+              //   textAlign: TextAlign.left,
+              //   styles: TextStyle(
+              //     fontSize: 14,
+              //     fontWeight: FontWeight.bold,
+              //   ),
+              // ),
               trailing: const Icon(
                 Icons.arrow_forward_ios,
                 color: Colors.white,

@@ -1,10 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:auto_route/annotations.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/models/remote_config/remote_config_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
@@ -39,7 +40,12 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     setConfigData();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Future.delayed(const Duration(seconds: 4), navigations);
+      Future.delayed(const Duration(seconds: 2), navigations);
+      // if (Platform.isAndroid) {
+      //   navigations();
+      // } else {
+      //   Future.delayed(const Duration(seconds: 2), navigations);
+      // }
     });
   }
 
@@ -85,25 +91,83 @@ class _SplashScreenState extends State<SplashScreen> {
       body: SizedBox(
         width: width,
         height: height,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
+          // mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-              width: width * 0.9,
-              child: TextLiquidFill(
+            // SizedBox(
+            //   width: width * 0.9,
+            //   child: TextLiquidFill(
+            //     text: AppStrings.appName,
+            //     waveColor: AppColors.redAccent,
+            //     waveDuration: const Duration(seconds: 3),
+            //     loadDuration: const Duration(seconds: 3),
+            //     textStyle: const TextStyle(
+            //       fontSize: 60,
+            //       fontWeight: FontWeight.bold,
+            //       fontFamily: 'AppTitle',
+            //       letterSpacing: 2,
+            //     ),
+            //     boxHeight: 150,
+            //   ),
+            // ),
+
+            Align(
+              alignment: Alignment.center,
+              child: AppText(
                 text: AppStrings.appName,
-                waveColor: AppColors.redAccent,
-                waveDuration: const Duration(seconds: 3),
-                loadDuration: const Duration(seconds: 3),
-                textStyle: const TextStyle(
-                  fontSize: 60,
+                styles: TextStyle(
+                  color: AppColors.redAccent,
+                  fontSize: Platform.isIOS ? 60 : 56,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'AppTitle',
                   letterSpacing: 2,
                 ),
-                boxHeight: 150,
               ),
             ),
+
+            Padding(
+              padding: const EdgeInsets.only(bottom: 120),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: CupertinoActivityIndicator(
+                  color: AppColors.white,
+                  radius: 14,
+                ),
+              ),
+            ),
+
+            // Container(
+            //   color: Colors.white,
+            //   width: width * 0.9,
+            //   height: height * 0.5,
+            //   child: Align(
+            //     alignment: Alignment.bottomCenter,
+            //     child: AppText(
+            //       text: AppStrings.appName,
+            //       styles: TextStyle(
+            //         color: AppColors.redAccent,
+            //         fontSize: 60,
+            //         fontWeight: FontWeight.bold,
+            //         fontFamily: 'AppTitle',
+            //         letterSpacing: 2,
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // Container(
+            //   color: Colors.transparent,
+            //   height: height * 0.3,
+            //   child: Align(
+            //     alignment: Alignment.bottomCenter,
+            //     child: Padding(
+            //       padding: const EdgeInsets.only(bottom: 12),
+            //       child: CupertinoActivityIndicator(
+            //         color: AppColors.white,
+            //         radius: 14,
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

@@ -3,6 +3,8 @@
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
+import 'package:glorify_god/utils/app_colors.dart';
+import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class TitleTile extends StatefulWidget {
@@ -11,9 +13,11 @@ class TitleTile extends StatefulWidget {
     required this.title,
     required this.onPressViewAll,
     this.showViewAll = true,
+    required this.pastorImage,
   });
 
   final String title;
+  final String pastorImage;
   final bool showViewAll;
   final Function onPressViewAll;
 
@@ -26,6 +30,21 @@ class _TitleTileState extends State<TitleTile> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      leading: widget.pastorImage.isNotEmpty
+          ? CircleAvatar(
+              radius: 22,
+              backgroundImage: NetworkImage(
+                widget.pastorImage,
+              ),
+              backgroundColor: AppColors.dullBlack.withOpacity(0.5),
+            )
+          : CircleAvatar(
+              radius: 22,
+              backgroundImage: AssetImage(
+                AppImages.appWhiteIcon,
+              ),
+              backgroundColor: AppColors.dullBlack.withOpacity(0.5),
+            ),
       title: AppText(
         text: widget.title,
         textAlign: TextAlign.start,

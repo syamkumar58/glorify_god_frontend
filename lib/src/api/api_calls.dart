@@ -1,12 +1,10 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
-
 import 'package:glorify_god/models/user_models/user_login_response_model.dart';
 import 'package:glorify_god/src/api/end_points.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class ApiCalls {
   String authorization = 'Authorization';
@@ -35,33 +33,35 @@ class ApiCalls {
     String passportNumber = '',
     String fcmToken = '',
     String timeZone = '',
+    String gender = 'UNKNOWN',
+    String provider = 'GOOGLE',
   }) async {
-    var uuId = '';
-    var platform = '';
-    var deviceName = '';
-    var versionBaseOs = '';
-    var manufacture = '';
-    var model = '';
-
-    final deviceInfo = DeviceInfoPlugin();
-
-    if (Platform.isIOS) {
-      final iosInfo = await deviceInfo.iosInfo;
-      uuId = iosInfo.identifierForVendor!;
-      platform = 'iOS';
-      deviceName = iosInfo.name;
-      versionBaseOs = iosInfo.systemVersion;
-      manufacture = iosInfo.model;
-      model = iosInfo.model;
-    } else if (Platform.isAndroid) {
-      final androidInfo = await deviceInfo.androidInfo;
-      uuId = androidInfo.id;
-      platform = 'Android';
-      deviceName = androidInfo.device;
-      versionBaseOs = androidInfo.version.release;
-      manufacture = androidInfo.manufacturer;
-      model = androidInfo.device;
-    }
+    // var uuId = '';
+    // var platform = '';
+    // var deviceName = '';
+    // var versionBaseOs = '';
+    // var manufacture = '';
+    // var model = '';
+    //
+    // final deviceInfo = DeviceInfoPlugin();
+    //
+    // if (Platform.isIOS) {
+    //   final iosInfo = await deviceInfo.iosInfo;
+    //   uuId = iosInfo.identifierForVendor!;
+    //   platform = 'iOS';
+    //   deviceName = iosInfo.name;
+    //   versionBaseOs = iosInfo.systemVersion;
+    //   manufacture = iosInfo.model;
+    //   model = iosInfo.model;
+    // } else if (Platform.isAndroid) {
+    //   final androidInfo = await deviceInfo.androidInfo;
+    //   uuId = androidInfo.id;
+    //   platform = 'Android';
+    //   deviceName = androidInfo.device;
+    //   versionBaseOs = androidInfo.version.release;
+    //   manufacture = androidInfo.manufacturer;
+    //   model = androidInfo.device;
+    // }
 
     try {
       final body = {
@@ -80,17 +80,21 @@ class ApiCalls {
         'passport_number': passportNumber,
         'fcmToken': fcmToken,
         'timeZone': timeZone,
-        'device_request': {
-          'UUID': uuId,
-          'platform': platform,
-          'device_name': deviceName,
-          'version_base_os': versionBaseOs,
-          'manufacture': manufacture,
-          'model': model,
-          'is_physical_device': true,
-        },
+        'provider': provider,
+        // 'device_request': {
+        //   'UUID': uuId,
+        //   'platform': platform,
+        //   'device_name': deviceName,
+        //   'version_base_os': versionBaseOs,
+        //   'manufacture': manufacture,
+        //   'model': model,
+        //   'is_physical_device': true,
+        // },
       };
-      const loginEndpoint = '$loginUrl?gender=MALE';
+
+      log(json.encode(body),name:'Login request');
+
+      final loginEndpoint = '$loginUrl?gender=$gender';
 
       final loginResponse = await http.post(
         Uri.parse(loginEndpoint),
@@ -100,6 +104,8 @@ class ApiCalls {
 
       if (loginResponse.statusCode == 200) {
         final response = userLoginResponseModelFromJson(loginResponse.body);
+        log('${loginResponse.body}',
+            name: 'User login response from api calls');
         return response;
       } else {
         log(
@@ -139,7 +145,7 @@ class ApiCalls {
   }
 
   Future<http.Response?> getAllArtistsWithSongs() async {
-    log('$getArtistWithSongsUrl',name: 'getArtistWithSongsUrl url');
+    log(getArtistWithSongsUrl, name: 'getArtistWithSongsUrl url');
     final token = await getToken();
     try {
       final response = await http.get(
@@ -238,9 +244,14 @@ class ApiCalls {
   }) async {
     log(text, name: 'searched text is');
     final token = await getToken();
-    final uri = '$searchUrl?query=$text';
+    const uri = searchUrl;
+    final body = {
+      "query": text,
+    };
+    log('$uri -', name: 'search api url or request');
     try {
-      final response = await http.get(Uri.parse(uri),
+      final response = await http.post(Uri.parse(uri),
+          body: json.encode(body),
           headers: {'Content-Type': 'application/json', authorization: token});
       log('${response.statusCode}', name: 'searched response');
       return response;
@@ -299,6 +310,7 @@ class ApiCalls {
   }) async {
     final token = await getToken();
     final uri = '$getRatingUrl?userId=$userId';
+    log(uri, name: 'getRating url request');
     try {
       final res = await http.get(Uri.parse(uri),
           headers: {'Content-Type': 'application/json', authorization: token});
@@ -349,6 +361,142 @@ class ApiCalls {
       return res;
     } catch (e) {
       log('$e', name: 'getUserReportedById error');
+      rethrow;
+    }
+  }
+
+  Future<http.Response> acceptedPolicyById(
+      {required int userId, required bool check}) async {
+    final url = '$privacyPolicyUrl/?userId=$userId&check=$check';
+    final token = await getToken();
+    try {
+      final res = await http.post(Uri.parse(url),
+          headers: {'Content-Type': 'application/json', authorization: token});
+      log(res.body, name: 'acceptedPolicyById from api services');
+      return res;
+    } catch (e) {
+      log('$e', name: 'acceptedPolicyById error');
+      rethrow;
+    }
+  }
+
+  Future<http.Response> checkUserAcceptedPolicyById(
+      {required int userId}) async {
+    final url = '$privacyPolicyAcceptedUrl?userId=$userId';
+    final token = await getToken();
+    try {
+      final res = await http.get(Uri.parse(url),
+          headers: {'Content-Type': 'application/json', authorization: token});
+
+      return res;
+    } catch (e) {
+      log('$e', name: 'getUserReportedById error');
+      rethrow;
+    }
+  }
+
+  Future<http.Response> removeUserFromPrivacyPolicyById(
+      {required int userId}) async {
+    final url = '$removeUserFromPrivacyPolicyUrl?userId=$userId';
+    final token = await getToken();
+    try {
+      final res = await http.delete(Uri.parse(url),
+          headers: {'Content-Type': 'application/json', authorization: token});
+      log('${res.body} - ${res.statusCode}',
+          name: 'removeUserFromPrivacyPolicyById response On success ');
+      return res;
+    } catch (e) {
+      log('$e', name: 'removeUserFromPrivacyPolicyById error');
+      rethrow;
+    }
+  }
+
+  Future<http.Response> createArtistsSongData({
+    required int artistId,
+    required DateTime createdAt,
+  }) async {
+    const url = addArtistsSongDataByIdUrl;
+    final token = await getToken();
+
+    String formattedDate =
+        '${DateFormat('yyyy-MM-ddTHH:mm:ss.SSSZ').format(createdAt.toUtc())}Z';
+
+    final body = {
+      "artistsId": artistId,
+      "createdAt": formattedDate,
+      "streamCount": 1
+    };
+    final jsonBody = json.encode(body);
+
+    log('$body\n$jsonBody', name: 'createArtistsSongData request body');
+
+    try {
+      final data = await http.post(
+        Uri.parse(url),
+        body: jsonBody,
+        headers: {'Content-Type': 'application/json', authorization: token},
+      );
+      log(data.body, name: 'createArtistsSongData response');
+      return data;
+    } catch (e) {
+      log('$e', name: 'createArtistsSongData error');
+      rethrow;
+    }
+  }
+
+  Future<http.Response> getArtistsSongDataById({
+    required int artistId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    String formattedStartDate =
+        DateFormat('yyyy-MM-ddTHH:mm:ss.SSSZ').format(startDate);
+    String formattedEndDate =
+        DateFormat('yyyy-MM-ddTHH:mm:ss.SSSZ').format(endDate);
+    final url =
+        '$getArtistsSongDataByIdUrl?artistId=$artistId&startDate=$formattedStartDate&endDate=$formattedEndDate';
+
+    log(url, name: 'getArtistsSongDataById request url');
+
+    final token = await getToken();
+
+    try {
+      final data = await http.get(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json', authorization: token},
+      );
+      return data;
+    } catch (e) {
+      log('$e', name: 'getArtistsSongDataById error');
+      rethrow;
+    }
+  }
+
+  Future<http.Response?> checkArtistLoginDataByEmail(
+      {required String email}) async {
+    const url = checkArtistLoginDataByIdUrl;
+    final token = await getToken();
+
+    final body = {"email": email};
+
+    log('$body', name: 'checkArtistLoginDataByEmail request');
+
+    try {
+      final data = await http.post(
+        Uri.parse(url),
+        body: json.encode(body),
+        headers: {'Content-Type': 'application/json', authorization: token},
+      );
+
+      log(data.body, name: 'checkArtistLoginDataByEmail response');
+      log('Is this coming here 23 ${data.statusCode}');
+      if (data.statusCode == 200) {
+        return data;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      log('$e', name: 'checkArtistLoginDataByEmail error');
       rethrow;
     }
   }

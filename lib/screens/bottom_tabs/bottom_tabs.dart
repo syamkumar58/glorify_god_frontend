@@ -1,26 +1,34 @@
 // ignore_for_file: strict_raw_type
 
+import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 import 'dart:ui';
-
+import 'package:chewie/chewie.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
+import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/noisey_text.dart';
-import 'package:glorify_god/components/song_image_box.dart';
+import 'package:glorify_god/config/helpers.dart';
+import 'package:glorify_god/config/remote_config.dart';
+import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
+import 'package:glorify_god/provider/global_variables.dart';
 import 'package:glorify_god/screens/favourites_screen/liked_screen.dart';
 import 'package:glorify_god/screens/home_screens/home_screen.dart';
-import 'package:glorify_god/screens/music_player_files/just_audio_player.dart';
 import 'package:glorify_god/screens/profile_screens/profile_screen.dart';
 import 'package:glorify_god/screens/search_screens/search_screen.dart';
+import 'package:glorify_god/screens/video_player_screen/video_player_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
+import 'package:glorify_god/utils/asset_images.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bounce/flutter_bounce.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart' as ad;
 import 'package:hive/hive.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
@@ -33,14 +41,22 @@ class BottomTabs extends StatefulWidget {
   _BottomTabsState createState() => _BottomTabsState();
 }
 
-class _BottomTabsState extends State<BottomTabs> {
+class _BottomTabsState extends State<BottomTabs>
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   double get width => MediaQuery.of(context).size.width;
 
   double get height => MediaQuery.of(context).size.height;
   AppState appState = AppState();
+  GlobalVariables globalVariables = GlobalVariables();
   bool isLoading = false;
+  ChewieController? chewieController;
+  late AnimationController animationController;
+
+  ad.InterstitialAd? _interstitialAd;
+  bool interstitialAdClosed = false;
   int _screenIndex = 0;
   late Box box;
+  bool checkItOnce = false;
   List<Widget> screens = const [
     HomeScreen(),
     SearchScreen(),
@@ -50,249 +66,361 @@ class _BottomTabsState extends State<BottomTabs> {
 
   @override
   void initState() {
-    box = Hive.box(HiveKeys.openBox);
+    box = Hive.box<dynamic>(HiveKeys.openBox);
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+    animationController.repeat();
     appState = context.read<AppState>();
+    interstitialAdLogic();
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
     initialUserCall();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (mounted) {
+      VideoPlayerCubit videoPlayerCubit =
+          BlocProvider.of<VideoPlayerCubit>(context);
+
+      if (videoPlayerCubit.playerController != null &&
+          videoPlayerCubit
+              .playerController!.videoPlayerController.value.isInitialized) {
+        chewieController = BlocProvider.of<VideoPlayerCubit>(context)
+                .playerController!
+                .videoPlayerController
+                .value
+                .isInitialized
+            ? BlocProvider.of<VideoPlayerCubit>(context).playerController
+            : null;
+        log('$chewieController && state - $state',
+            name: 'checking the state and the controller');
+        switch (state) {
+          case AppLifecycleState.detached:
+            if (chewieController != null &&
+                chewieController!.videoPlayerController.value.isInitialized) {
+              chewieController!.dispose();
+              BlocProvider.of<VideoPlayerCubit>(context).pause();
+            }
+            break;
+          case AppLifecycleState.resumed:
+            // if (chewieController != null &&
+            //     chewieController!.videoPlayerController.value.isInitialized) {
+            //   BlocProvider.of<VideoPlayerCubit>(context).pause();
+            // }
+            break;
+          case AppLifecycleState.inactive:
+            // if (chewieController != null &&
+            //     chewieController!.videoPlayerController.value.isInitialized) {
+            //   BlocProvider.of<VideoPlayerCubit>(context).pause();
+            // }
+            break;
+          case AppLifecycleState.hidden:
+            if (chewieController != null &&
+                chewieController!.videoPlayerController.value.isInitialized) {
+              BlocProvider.of<VideoPlayerCubit>(context).pause();
+            }
+            break;
+          case AppLifecycleState.paused:
+            if (chewieController != null &&
+                chewieController!.videoPlayerController.value.isInitialized) {
+              BlocProvider.of<VideoPlayerCubit>(context).pause();
+            }
+            break;
+        }
+      }
+    }
+  }
+
   Future initialUserCall() async {
-    await appState.initiallySetUserDataGlobally();
+    final dynamic userLogInData = await box.get(
+      HiveKeys.logInKey,
+    );
+    log('$userLogInData', name: 'cached userLoginData from bottom tabs');
+
+    await appState.initiallySetUserDataGlobally(
+      userLogInData,
+    );
+    await appState.checkArtistLoginDataByEmail();
     await appState.getRatings();
   }
 
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
+    globalVariables = Provider.of<GlobalVariables>(context);
     return ModalProgressHUD(
       inAsyncCall: isLoading,
       progressIndicator: const CupertinoActivityIndicator(),
       child: Scaffold(
         extendBodyBehindAppBar: true,
         body: screens[_screenIndex],
-        bottomNavigationBar: gNavBar(),
+        bottomNavigationBar: navBar(),
       ),
     );
   }
 
-  Widget gNavBar() {
-    return StreamBuilder(
-      stream: appState.audioPlayer.playerStateStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          log('${snapshot.error}',
-              name: 'The snapshot error from stream builder');
-        }
-
-        final playerState = snapshot.data;
-        final playing = playerState?.playing;
-        final processingState = playerState?.processingState;
-        log(
-            '$playerState\n'
-            '$playing\n'
-            '$processingState',
-            name: 'Yhe processingState');
-
-        return SizedBox(
-          height: processingState != ProcessingState.idle ? 150 : 90,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (processingState != ProcessingState.idle)
-                musicUI(
-                  playing ?? false,
-                  processingState ?? ProcessingState.idle,
-                ),
-              gNav(),
-            ],
+  Widget navBar() {
+    return Container(
+      color: Colors.transparent,
+      width: width,
+      height: Platform.isIOS ? height * 0.18 : height * 0.16,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const AdsCard(
+            adSize: ad.AdSize.banner,
           ),
-        );
-      },
+          bottomBar(),
+        ],
+      ),
     );
   }
 
-  Widget musicUI(
-    bool isPlaying,
-    ProcessingState processingState,
-  ) {
-    return StreamBuilder(
-      stream: appState.audioPlayer.sequenceStateStream,
-      builder: (context, snapshot) {
-        final state = snapshot.data;
-        if (state?.sequence.isEmpty ?? true) {
-          return const SizedBox();
-        }
-
-        final trackData = state?.currentSource!.tag as MediaItem;
-
-        final songId = int.parse(trackData.id);
-
-        return Container(
-          width: width,
-          height: 60,
-          decoration: BoxDecoration(
-            color: Colors.black,
-            image: DecorationImage(
-              fit: BoxFit.fill,
-                opacity: 0.4,
-              image: NetworkImage(trackData.artUri.toString())
-            )
-          ),
-          child: ClipRRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              child: Center(
-                child: ListTile(
-                  dense: true,
-                  onTap: () {
-                    showMusicScreen(songId);
-                  },
-                  leading: SongImageBox(
-                    imageUrl: trackData.artUri.toString(),
-                  ),
-                  title: SizedBox(
-                    width: width * 0.3,
-                    child: Text(
-                      trackData.title,
-                      textAlign: TextAlign.left,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+  Widget videoBar(VideoPlayerInitialised data) {
+    return InkWell(
+      onTap: () {
+        musicScreenNavigation(
+          context,
+          songData: data.songData,
+          songs: data.songs,
+        );
+      },
+      child: Container(
+        height: 60,
+        width: width,
+        color: Colors.transparent,
+        child: Row(
+          children: [
+            Container(
+              height: 60,
+              width: width * 0.3,
+              color: Colors.transparent,
+              child: data.chewieController.videoPlayerController.value
+                      .isInitialized
+                  ? Chewie(
+                      controller: data.chewieController,
+                    )
+                  : const SizedBox(),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 3),
+              child: Container(
+                  height: 60,
+                  width: width * 0.4,
+                  color: Colors.transparent,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        data.songData.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.manrope(
+                          fontSize: 16,
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                  ),
-                  subtitle: AppText(
-                    text: trackData.artist.toString(),
-                    textAlign: TextAlign.left,
-                    styles: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  trailing: SizedBox(
-                    width: 100,
-                    child: Row(
-                      children: [
-                        Bounce(
-                          duration: const Duration(milliseconds: 50),
-                          onPressed: () {
-                            if (isPlaying) {
-                              appState.audioPlayer.pause();
-                            } else {
-                              appState.audioPlayer.play();
-                            }
-                          },
-                          child: processingState == ProcessingState.loading
-                              ? SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CupertinoActivityIndicator(
-                                    color: AppColors.white,
-                                  ),
-                                )
-                              : Icon(
-                                  isPlaying
-                                      ? Icons.pause_circle
-                                      : Icons.play_circle,
-                                  size: 30,
-                                  color: Colors.white,
-                                ),
+                      AppText(
+                        text: data.songData.artist,
+                        styles: GoogleFonts.manrope(
+                          fontSize: 14,
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w400,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 12),
-                          child: IconButton(
-                              padding: EdgeInsets.zero,
-                              onPressed: () {
-                                if (processingState != ProcessingState.idle) {
-                                  appState.audioPlayer.stop();
-                                }
-                              },
-                              icon: Icon(
-                                Icons.close,
-                                size: 20,
-                                color: processingState != ProcessingState.idle
-                                    ? AppColors.white
-                                    : AppColors.dullBlack,
-                              )),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                      ),
+                    ],
+                  )),
+            ),
+            IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  if (data
+                      .chewieController.videoPlayerController.value.isPlaying) {
+                    data.chewieController.pause();
+                  } else {
+                    data.chewieController.play();
+                  }
+                },
+                icon: Icon(
+                  data.chewieController.videoPlayerController.value.isPlaying
+                      ? Icons.pause
+                      : Icons.play_arrow,
+                  color: AppColors.white,
+                )),
+            IconButton(
+              padding: EdgeInsets.zero,
+              onPressed: () async {
+                await BlocProvider.of<VideoPlayerCubit>(context)
+                    .stopVideoPlayer();
+              },
+              icon: const Icon(
+                Icons.close,
+                size: 21,
               ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 
-  Widget gNav() {
-    return SafeArea(
-      child: GNav(
-        gap: 8,
-        // haptic: true,
-        activeColor: Colors.white,
-        tabBackgroundColor: Colors.blueGrey.shade800,
-        padding: const EdgeInsets.all(10),
-        tabMargin: const EdgeInsets.only(left: 12,right: 12,top: 5,bottom: 5),
-        tabs: [
-          navBar(
-            activeIcon: Icons.library_music,
-            inactiveIcon: Icons.library_music_outlined,
-            index: 0,
-            tabName: AppStrings.tabSongs,
+  Widget bottomBar() {
+    return Container(
+      color: Colors.transparent,
+      width: width,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                textIcon(
+                  activeIcon: Icons.library_music,
+                  inactiveIcon: Icons.library_music_outlined,
+                  index: 0,
+                  tabName: AppStrings.tabSongs,
+                ),
+                textIcon(
+                  tabName: AppStrings.tabSearch,
+                  activeIcon: Icons.search,
+                  inactiveIcon: Icons.search,
+                  index: 1,
+                ),
+              ],
+            ),
           ),
-          navBar(
-            tabName: AppStrings.tabSearch,
-            activeIcon: Icons.search,
-            inactiveIcon: Icons.search,
-            index: 1,
-          ),
-          navBar(
-            tabName: AppStrings.tabLiked,
-            activeIcon: Icons.favorite,
-            inactiveIcon: Icons.favorite_border_outlined,
-            index: 2,
-          ),
-          navBar(
-            tabName: AppStrings.tabProfile,
-            activeIcon: Icons.account_circle,
-            inactiveIcon: Icons.account_circle_outlined,
-            index: 3,
+          centerPlayerIcon(),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                textIcon(
+                  tabName: AppStrings.tabLiked,
+                  activeIcon: Icons.favorite,
+                  inactiveIcon: Icons.favorite_border_outlined,
+                  index: 2,
+                ),
+                textIcon(
+                  tabName: AppStrings.tabProfile,
+                  activeIcon: Icons.account_circle,
+                  inactiveIcon: Icons.account_circle_outlined,
+                  index: 3,
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  GButton navBar({
+  Widget centerPlayerIcon() {
+    return BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
+      builder: (context, state) {
+        VideoPlayerInitialised? data;
+
+        if (state is VideoPlayerInitial) {
+        } else if (state is VideoPlayerInitialised) {
+          data = state;
+        }
+
+        final playing = data != null &&
+            data.chewieController.videoPlayerController.value.isInitialized;
+
+        return GestureDetector(
+          onTap: () {
+            if (data != null &&
+                data.chewieController.videoPlayerController.value
+                    .isInitialized) {
+              musicScreenNavigation(
+                context,
+                songData: data.songData,
+                songs: data.songs,
+              );
+            }
+          },
+          child: Container(
+            width: Platform.isAndroid ? 50 : 60,
+            height: Platform.isAndroid ? 50 : 60,
+            margin: const EdgeInsets.only(top: 5, bottom: 5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: AppColors.dullWhite,
+              border: Border.all(
+                width: !playing ? 0 : 2,
+                color: !playing ? Colors.transparent : AppColors.dullWhite,
+              ),
+              image: !playing
+                  ? DecorationImage(
+                      image: AssetImage(
+                        AppImages.appIcon,
+                      ),
+                      fit: BoxFit.contain,
+                    )
+                  : DecorationImage(
+                      image: NetworkImage(
+                        data.songData.artUri,
+                      ),
+                      fit: BoxFit.contain,
+                      opacity: 0.8,
+                    ),
+            ),
+            child: !playing
+                ? const SizedBox.shrink()
+                : Center(
+                    child: Icon(
+                      data.chewieController.isPlaying
+                          ? Icons.pause
+                          : Icons.play_arrow,
+                      size: 34,
+                      color: AppColors.white,
+                    ),
+                  ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget textIcon({
     required String tabName,
     required IconData activeIcon,
     required IconData inactiveIcon,
     required int index,
   }) {
-    return GButton(
-      icon: _screenIndex == index ? activeIcon : inactiveIcon,
-      text: tabName,
+    return IconButton(
+      padding: EdgeInsets.zero,
       onPressed: () {
         setState(() {
           _screenIndex = index;
         });
       },
+      icon: Icon(
+        _screenIndex == index ? activeIcon : inactiveIcon,
+        color: _screenIndex == index
+            ? AppColors.white
+            : AppColors.white.withOpacity(0.7),
+        size: Platform.isAndroid ? 22 : 24,
+      ),
     );
   }
 
-  Future<void> showMusicScreen(int songId) async {
+  Future<void> showMusicScreen(
+      {required Song songData, required List<Song> songs}) async {
     await showModalBottomSheet<dynamic>(
       context: context,
       isScrollControlled: true,
-      showDragHandle: true,
-      backgroundColor: Colors.black,
-      barrierColor: Colors.grey.withOpacity(0.5),
+      // showDragHandle: true,
+      backgroundColor: AppColors.black,
+      barrierColor: AppColors.black.withOpacity(0.5),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(30),
@@ -300,16 +428,99 @@ class _BottomTabsState extends State<BottomTabs> {
         ),
       ),
       builder: (ctx) {
-        return JustAudioPlayer(
-          songId: songId,
+        return SizedBox(
+          width: width,
+          height: height * 0.95,
+          child: VideoPlayerScreen(
+            songData: songData,
+            songs: songs,
+          ),
         );
       },
     );
   }
 
+  Future interstitialAdLogic() async {
+    final dynamic getStoredAdShownTime =
+        await box.get(HiveKeys.storeInterstitialAdLoadedTime);
+
+    if (getStoredAdShownTime == null) {
+      //<-- If the stored value is null then will put the value to the
+      // hive when the add loaded and closed like on dismissed the ad will assign
+      // the key and value to it
+      // adDismissed Call will inside  the loadInterstitialAds Function
+      // -->/
+      log('', name: 'Stored value is null');
+      showInterstitialAd();
+    } else {
+      final presentTime = DateTime.now();
+      final convertStoredValueToDateTime =
+          DateTime.parse(getStoredAdShownTime.toString());
+
+      log(
+          '${presentTime.isAfter(convertStoredValueToDateTime.add(const Duration(minutes: 30)))}'
+          '\n$getStoredAdShownTime && $convertStoredValueToDateTime && $presentTime',
+          name: 'Stored value');
+
+      if (presentTime.isAfter(
+          convertStoredValueToDateTime.add(const Duration(minutes: 30)))) {
+        log('did ir came here after 2 mins when i launch the app');
+        await box.delete(HiveKeys.storeInterstitialAdLoadedTime);
+        showInterstitialAd();
+      }
+    }
+  }
+
+  Future showInterstitialAd() async {
+    loadInterstitialAds().then((_) {
+      Future.delayed(const Duration(seconds: 2), () async {
+        if (_interstitialAd != null) {
+          await _interstitialAd!.show();
+        } else {
+          log('Ad not loaded due to null ');
+        }
+      });
+    });
+  }
+
+  Future loadInterstitialAds() async {
+    await ad.InterstitialAd.load(
+      adUnitId: kDebugMode
+          ? remoteConfigData.interstitialAdTestId
+          : Platform.isAndroid
+              ? remoteConfigData.androidInterstitialAdUnitId
+              : remoteConfigData.iosInterstitialAdUnitId,
+      request: const ad.AdRequest(),
+      adLoadCallback: ad.InterstitialAdLoadCallback(
+        onAdLoaded: (ad.InterstitialAd advertisement) {
+          _interstitialAd = advertisement;
+          _interstitialAd!.fullScreenContentCallback =
+              ad.FullScreenContentCallback(
+                  onAdDismissedFullScreenContent: (advertisement) async {
+            advertisement.dispose();
+            await box.put(HiveKeys.storeInterstitialAdLoadedTime,
+                DateTime.now().toString());
+            //<-- Store a key value of date time and again fetch and check the that when to load the
+            // interstitial ad
+            // -->/
+          }, onAdFailedToShowFullScreenContent: (advertisement, error) {
+            log('$error',
+                name: 'onAdFailedToShowFullScreenContent ad failed to load');
+            advertisement.dispose();
+          });
+        },
+        onAdFailedToLoad: (ad.LoadAdError error) {
+          _interstitialAd!.dispose();
+          log('$error', name: 'Failed to load the Interstitial ad');
+        },
+      ),
+    );
+  }
+
   @override
   void dispose() {
-    appState.audioPlayer.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    animationController.dispose();
     super.dispose();
   }
 }

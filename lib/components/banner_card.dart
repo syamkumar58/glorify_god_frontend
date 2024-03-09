@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/utils/app_colors.dart';
+import 'package:shimmer/shimmer.dart';
 
 class BannerCard extends StatefulWidget {
   const BannerCard({super.key});
@@ -18,14 +19,14 @@ class _BannerCardState extends State<BannerCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
         CarouselSlider(
           options: CarouselOptions(
             autoPlay: true,
             enableInfiniteScroll: true,
             enlargeCenterPage: true,
-            aspectRatio: 16 / 9,
+            aspectRatio: 2.5 / 1,
             viewportFraction: 1,
             onPageChanged: (index, reason) {
               setState(() {
@@ -35,20 +36,41 @@ class _BannerCardState extends State<BannerCard> {
             },
           ),
           items: [
-            ...remoteConfigData.bannerMessages.map((e) {
-              return Padding(
-                padding: const EdgeInsets.only(
-                  left: 8,
-                  right: 8,
-                ),
+            if (remoteConfigData.bannerMessages.isEmpty)
+              Shimmer.fromColors(
+                baseColor: AppColors.dullWhite.withOpacity(0.2),
+                highlightColor: AppColors.dullBlack.withOpacity(0.2),
                 child: Center(
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 0),
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     width: width,
-                    height: 160,
+                    height: 100,
+                  ),
+                ),
+              )
+            else
+              ...remoteConfigData.bannerMessages.map((e) {
+                return Padding(
+                  padding: const EdgeInsets.only(
+                    left: 8,
+                    right: 8,
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 0),
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                    width: width,
+                    height: 40,
                     decoration: BoxDecoration(
                       color: AppColors.dullWhite,
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.topRight,
+                        colors: [
+                          AppColors.dullWhite.withOpacity(0.2),
+                          AppColors.dullBlack.withOpacity(0.2),
+                        ],
+                      ),
                       borderRadius: BorderRadius.circular(15),
                       image: const DecorationImage(
                         image: NetworkImage(
@@ -82,29 +104,32 @@ class _BannerCardState extends State<BannerCard> {
                       ],
                     ),
                   ),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
           ],
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ...List.generate(remoteConfigData.bannerMessages.length, (index) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: Icon(
-                    Icons.fiber_manual_record,
-                    color: pageIndex == index
-                        ? AppColors.redAccent
-                        : AppColors.dullBlack,
-                    size: 10,
+        Positioned(
+          left: 40,
+          top: 12,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ...List.generate(remoteConfigData.bannerMessages.length, (index) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: Icon(
+                      Icons.fiber_manual_record,
+                      color: pageIndex == index
+                          ? AppColors.redAccent
+                          : AppColors.dullWhite,
+                      size: 10,
+                    ),
                   ),
-                ),
-              );
-            }).toList(),
-          ],
+                );
+              }).toList(),
+            ],
+          ),
         ),
       ],
     );

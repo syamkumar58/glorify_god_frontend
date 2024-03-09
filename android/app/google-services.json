@@ -7,12 +7,33 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:13510448361:android:2750fe4a37f70352b88c78",
+        "mobilesdk_app_id": "1:13510448361:android:eac9261d9d254db3b88c78",
         "android_client_info": {
-          "package_name": "com.example.glorify_god"
+          "package_name": "app.glorifygod.prod"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "13510448361-06807saf1f212gut7fu1s0blkv3an9cs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.glorifygod.prod",
+            "certificate_hash": "59830600250ea022656efd03ec21ea1b20b09c3d"
+          }
+        },
+        {
+          "client_id": "13510448361-c1ctl0bkql9ve6gf44gn2trssnlv55ek.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.glorifygod.prod",
+            "certificate_hash": "a74350ef7c0950b8589675a0f2a8e9c742e57df3"
+          }
+        },
+        {
+          "client_id": "13510448361-4sgurqs7rh94n11i6thu4qalds5ldqlb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBZ-XnU5xYy_En4Qismn5sCA7arWtFwIt4"
@@ -20,7 +41,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "13510448361-4sgurqs7rh94n11i6thu4qalds5ldqlb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "13510448361-edepmr6mofpd38e5cl2koaoeb5e9oa2b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.glorifygod.prod"
+              }
+            }
+          ]
         }
       }
     }

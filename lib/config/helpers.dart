@@ -1,5 +1,11 @@
+import 'package:another_flushbar/flushbar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:glorify_god/components/noisey_text.dart';
+import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
+import 'package:glorify_god/screens/video_player_screen/video_player_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 String convertDurations(Duration duration) {
   final convert = duration.inHours > 0
@@ -16,6 +22,28 @@ void toastMessage({required String message}) {
     textColor: AppColors.black,
     gravity: ToastGravity.SNACKBAR,
   );
+}
+
+Future<void> musicScreenNavigation(BuildContext context,
+    {required List<Song> songs, required Song songData}) async {
+  Navigator.of(context).push(PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return VideoPlayerScreen(songs: songs, songData: songData);
+    },
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(0.0, 1.0);
+      const end = Offset.zero;
+      const curve = Curves.easeInOutCubic;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+      var offsetAnimation = animation.drive(tween);
+
+      return SlideTransition(
+        position: offsetAnimation,
+        child: child,
+      );
+    },
+  ));
 }
 
 List<dynamic> songs = [
@@ -127,3 +155,29 @@ List<dynamic> mostPlayedSongsData = [
         'https://i.scdn.co/image/ab67616d0000b273c0412c357933a4a2c6c126a8',
   },
 ];
+
+void flushBar({
+  required BuildContext context,
+  required String messageText,
+}) {
+  Flushbar(
+    messageText: AppText(
+      text: messageText,
+      maxLines: 5,
+      styles: GoogleFonts.manrope(
+        fontWeight: FontWeight.w600,
+        fontSize: 18,
+      ),
+    ),
+    margin: const EdgeInsets.all(8),
+    borderRadius: BorderRadius.circular(8),
+    duration: const Duration(seconds: 3),
+    flushbarPosition: FlushbarPosition.TOP,
+  ).show(context);
+}
+
+enum LoginProviders {
+  GOOGLE,
+  EMAIL,
+  PHONENUMBER,
+}

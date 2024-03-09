@@ -1,5 +1,8 @@
 import 'dart:developer';
+import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -7,7 +10,10 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 class AdsCard extends StatefulWidget {
   const AdsCard({
     super.key,
+    this.adSize = AdSize.banner,
   });
+
+  final AdSize adSize;
 
   @override
   State<AdsCard> createState() => _AdsCardState();
@@ -18,14 +24,19 @@ class _AdsCardState extends State<AdsCard> {
   bool adLoaded = false;
 
   Future<void> initializeAd() async {
-    final adUnitId = remoteConfigData.adUnitId;
+    final adUnitId = kDebugMode
+        ? remoteConfigData.testAdUnitId
+        : Platform.isAndroid
+            ? remoteConfigData.androidAdUnitId
+            : remoteConfigData.iosAdUniId;
+    log(adUnitId,name:'The ad unit id');
     bannerAd = BannerAd(
-      size: AdSize.banner,
+      size: widget.adSize,
       adUnitId: adUnitId,
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
-          log(ad.adUnitId, name: 'Ad loaded');
+          log('${ad.adUnitId} - ti ${DateTime.now()}', name: 'Ad loaded');
           setState(
             () {
               adLoaded = true;
@@ -54,7 +65,7 @@ class _AdsCardState extends State<AdsCard> {
       child: Container(
         width: bannerAd.size.width.toDouble(),
         height: bannerAd.size.height.toDouble(),
-        margin: const EdgeInsets.only(top: 20),
+        // margin: const EdgeInsets.only(top: 20),
         decoration: BoxDecoration(
           // color: Colors.white,
           borderRadius: BorderRadius.circular(8),
@@ -63,7 +74,9 @@ class _AdsCardState extends State<AdsCard> {
             ? AdWidget(
                 ad: bannerAd,
               )
-            : const SizedBox(),
+            : const Center(
+                child: CupertinoActivityIndicator(),
+              ),
       ),
     );
   }

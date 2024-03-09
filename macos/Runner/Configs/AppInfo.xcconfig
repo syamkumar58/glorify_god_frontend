@@ -8,7 +8,7 @@
 PRODUCT_NAME = glorify_god
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.glorifyGod
+PRODUCT_BUNDLE_IDENTIFIER = app.glorifygod.prod
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2023 com.example. All rights reserved.
