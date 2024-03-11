@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/utils/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BannerCard extends StatefulWidget {
@@ -72,9 +73,9 @@ class _BannerCardState extends State<BannerCard> {
                         ],
                       ),
                       borderRadius: BorderRadius.circular(15),
-                      image: const DecorationImage(
+                      image:  DecorationImage(
                         image: NetworkImage(
-                          'https://images.unsplash.com/photo-1561448817-bb90ab1327b5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80',
+                          e.imageUrl,
                         ),
                         fit: BoxFit.fill,
                       ),
@@ -85,20 +86,20 @@ class _BannerCardState extends State<BannerCard> {
                         AppText(
                             text: e.message,
                             maxLines: 4,
-                            styles: const TextStyle(
+                            styles: GoogleFonts.manrope(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
-                              color: Colors.white,
+                              color: AppColors.white,
                               height: 2,
                             )),
                         AppText(
                             text: e.verses,
                             maxLines: 4,
                             textAlign: TextAlign.start,
-                            styles: const TextStyle(
+                            styles: GoogleFonts.manrope(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: AppColors.white,
                               height: 2,
                             )),
                       ],

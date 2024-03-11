@@ -247,3 +247,13 @@
 - 07/03/2024
   - Bug fixes on new email implementation
   - Moved Strings from files to common file
+
+- 11/03/2024
+  - Changed the interstitial ad time from 30 to 10 minutes
+  - Home screen UI changed
+  - Stick Golden Old songs on top with whereas artistUi is 2   logics written
+  - Added version number to the profile screen
+  - Added Update popup in home screen for each latest update user will get the popup to update
+  - Logical changes
+  - Bug fixes
+  - Ui changes

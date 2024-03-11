@@ -457,13 +457,8 @@ class _BottomTabsState extends State<BottomTabs>
       final convertStoredValueToDateTime =
           DateTime.parse(getStoredAdShownTime.toString());
 
-      log(
-          '${presentTime.isAfter(convertStoredValueToDateTime.add(const Duration(minutes: 30)))}'
-          '\n$getStoredAdShownTime && $convertStoredValueToDateTime && $presentTime',
-          name: 'Stored value');
-
       if (presentTime.isAfter(
-          convertStoredValueToDateTime.add(const Duration(minutes: 30)))) {
+          convertStoredValueToDateTime.add(Duration(minutes: remoteConfigData.interstitialAdTime)))) {
         log('did ir came here after 2 mins when i launch the app');
         await box.delete(HiveKeys.storeInterstitialAdLoadedTime);
         showInterstitialAd();
@@ -477,19 +472,23 @@ class _BottomTabsState extends State<BottomTabs>
         if (_interstitialAd != null) {
           await _interstitialAd!.show();
         } else {
-          log('Ad not loaded due to null ');
+          log('Interstitial Ad not loaded due to null ');
         }
       });
     });
   }
 
   Future loadInterstitialAds() async {
+    final adUnitId = kDebugMode
+        ? remoteConfigData.interstitialAdTestId
+        : Platform.isAndroid
+            ? remoteConfigData.androidInterstitialAdUnitId
+            : remoteConfigData.iosInterstitialAdUnitId;
+
+    log(adUnitId, name: 'loadInterstitialAds adUnitId');
+
     await ad.InterstitialAd.load(
-      adUnitId: kDebugMode
-          ? remoteConfigData.interstitialAdTestId
-          : Platform.isAndroid
-              ? remoteConfigData.androidInterstitialAdUnitId
-              : remoteConfigData.iosInterstitialAdUnitId,
+      adUnitId: adUnitId,
       request: const ad.AdRequest(),
       adLoadCallback: ad.InterstitialAdLoadCallback(
         onAdLoaded: (ad.InterstitialAd advertisement) {

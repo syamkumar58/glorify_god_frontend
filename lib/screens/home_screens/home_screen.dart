@@ -2,17 +2,15 @@
 
 import 'dart:async';
 import 'dart:developer';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
-import 'package:glorify_god/bloc/youtube_player_cubit/youtube_player_cubit.dart';
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/home_components/copy_right_text.dart';
 import 'package:glorify_god/components/home_components/home_loading_shimmer_effect.dart';
+import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/song_card_component.dart';
 import 'package:glorify_god/components/title_tile_component.dart';
-import 'package:glorify_god/components/youtube_video_player.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
@@ -27,7 +25,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -41,12 +41,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   app.AppState appState = app.AppState();
   GlobalVariables globalVariables = GlobalVariables();
 
+  PackageInfo? packageInfo;
+
   double get width => MediaQuery.of(context).size.width;
 
   double get height => MediaQuery.of(context).size.height;
   bool connectionError = false;
   List<int> showShimmers = [1, 2, 3, 4];
   late AnimationController lottieController;
+  bool showUpdateBanner = false;
 
   List<String> testingSongs = [
     'g1KiQRqfhNc',
@@ -64,6 +67,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     globalVariables = context.read<GlobalVariables>();
     super.initState();
     getAllSongs();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      packageInformation();
+    });
   }
 
   Future getAllSongs() async {
@@ -79,35 +85,71 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
+  Future packageInformation() async {
+    packageInfo = await PackageInfo.fromPlatform();
+    final versionNumber = packageInfo!.version.toString().replaceAll('.', '');
+    final androidLatestVersion = remoteConfigData
+        .appUpdateVersions.androidLatestVersion
+        .replaceAll('.', '');
+    final iosLatestVersion =
+        remoteConfigData.appUpdateVersions.iosLatestVersion.replaceAll('.', '');
+    log('$versionNumber -- $androidLatestVersion -- $iosLatestVersion',
+        name: 'versionNumber ');
+    setState(() {
+      if (Platform.isAndroid) {
+        if (int.parse(androidLatestVersion) > int.parse(versionNumber)) {
+          showUpdateBanner = true;
+        }
+      } else if (Platform.isIOS) {
+        if (int.parse(iosLatestVersion) > int.parse(versionNumber)) {
+          showUpdateBanner = true;
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<app.AppState>(context);
     globalVariables = Provider.of<GlobalVariables>(context);
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize:
-            Size.fromHeight(remoteConfigData.showUpdateBanner ? 160 : 60),
+        preferredSize: Size.fromHeight(showUpdateBanner ? 160 : 60),
         child: SafeArea(
           child: Column(
             children: [
-              if (remoteConfigData.showUpdateBanner)
+              if (showUpdateBanner)
                 ListTile(
-                  tileColor: Colors.blue,
+                  tileColor: AppColors.blue,
                   title: Text(
-                    "Exciting news! A new version of our app is now available. Elevate your experience by updating through the Play/App Store today!",
+                    AppStrings.excitingNews,
                     style: GoogleFonts.manrope(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                     textAlign: TextAlign.start,
                   ),
-                  trailing: IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.close,
-                        size: 22,
-                        color: AppColors.white,
-                      )),
+                  trailing: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.white,
+                    ),
+                    child: AppText(
+                      styles: GoogleFonts.manrope(
+                        color: AppColors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      text: 'Update',
+                    ),
+                    onPressed: () async {
+                      if (Platform.isAndroid) {
+                        const url =
+                            'https://play.google.com/store/apps/details?id=app.glorifygod.prod';
+                        if (await canLaunchUrlString(url)) {
+                          await launchUrlString(url);
+                        }
+                      }
+                    },
+                  ),
                 ),
               appBar(appState),
             ],
@@ -168,27 +210,63 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 const SizedBox(
                   height: 30,
                 ),
-                if (kDebugMode)
-                  CupertinoButton(
-                    color: AppColors.redAccent,
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        CupertinoPageRoute(
-                          builder: (_) => YoutubeVideoPlayerScreen(
-                            songs: testingSongs,
-                          ),
-                        ),
-                      );
+                // if (kDebugMode)
+                //   CupertinoButton(
+                //     color: AppColors.redAccent,
+                //     onPressed: () {
+                //       Navigator.of(context).push(
+                //         CupertinoPageRoute(
+                //           builder: (_) => YoutubeVideoPlayerScreen(
+                //             songs: testingSongs,
+                //           ),
+                //         ),
+                //       );
+                //
+                //       BlocProvider.of<YoutubePlayerCubit>(context).start(
+                //         songs: testingSongs,
+                //         currentSongIndex: 0,
+                //       );
+                //     },
+                //     child: const Text('Test Button'),
+                //   ),
 
-                      BlocProvider.of<YoutubePlayerCubit>(context).start(
-                        songs: testingSongs,
-                        currentSongIndex: 0,
-                      );
-                    },
-                    child: const Text('Test Button'),
-                  ),
+                //<-- Show only Golden songs here ART ID - 2 -->/
                 if (appState.getArtistsWithSongsList.isNotEmpty)
-                  ...appState.getArtistsWithSongsList.map((e) {
+                  ...appState.getArtistsWithSongsList
+                      .where((element) => element.artistUid == 2)
+                      .map((e) {
+                    return Container(
+                      color: Colors.transparent,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (e.songs.isNotEmpty)
+                            TitleTile(
+                              title: e.artistName,
+                              showViewAll: false,
+                              onPressViewAll: () {},
+                              pastorImage: e.artistImage,
+                            ),
+                          if (e.songs.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: 12,
+                                left: 5,
+                                right: 5,
+                              ),
+                              child: songCard(e.songs),
+                            ),
+                        ],
+                      ),
+                    );
+                  }),
+
+                //<-- Show only All songs here except ART ID - 2 -->/
+                if (appState.getArtistsWithSongsList.isNotEmpty)
+                  ...appState.getArtistsWithSongsList
+                      .where((element) => element.artistUid != 2)
+                      .map((e) {
                     return Container(
                       color: Colors.transparent,
                       margin: const EdgeInsets.only(bottom: 20),
@@ -276,72 +354,35 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget songCard(List<Song> songs) {
-    return SizedBox(
-      height: height * 0.8,
-      child: GridView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: songs.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            childAspectRatio: 2 / 3,
-            crossAxisSpacing: 0,
-            mainAxisSpacing: 0,
-          ),
-          itemBuilder: (context, index) {
-            final e = songs[index];
-            return Bounce(
-              duration: const Duration(milliseconds: 50),
-              onPressed: () async {
-                log(e.videoUrl, name: 'tapped video url');
-                final selectedSongIndex = songs.indexOf(e);
-                musicScreenNavigation(context, songData: e, songs: songs);
-                await BlocProvider.of<VideoPlayerCubit>(context)
-                    .setToInitialState();
-                await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
-                  songData: e,
-                  songs: songs,
-                  selectedSongIndex: selectedSongIndex,
-                );
-              },
-              child: SongCard(
-                image: e.artUri,
-                title: e.title,
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: songs
+            .map(
+              (e) => Bounce(
+                duration: const Duration(milliseconds: 50),
+                onPressed: () async {
+                  log(e.videoUrl, name: 'tapped video url');
+                  final selectedSongIndex = songs.indexOf(e);
+                  musicScreenNavigation(context, songData: e, songs: songs);
+                  await BlocProvider.of<VideoPlayerCubit>(context)
+                      .setToInitialState();
+                  await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
+                    songData: e,
+                    songs: songs,
+                    selectedSongIndex: selectedSongIndex,
+                  );
+                },
+                child: SongCard(
+                  image: e.artUri,
+                  title: e.title,
+                ),
               ),
-            );
-          }),
+            )
+            .toList(),
+      ),
     );
   }
-
-  // Widget songCard(List<Song> songs) {
-  //   return SingleChildScrollView(
-  //     scrollDirection: Axis.horizontal,
-  //     child: Row(
-  //       children: songs
-  //           .map(
-  //             (e) => Bounce(
-  //               duration: const Duration(milliseconds: 50),
-  //               onPressed: () async {
-  //                 log(e.videoUrl,name:'tapped video url');
-  //                 final selectedSongIndex = songs.indexOf(e);
-  //                 musicScreenNavigation(context, songData: e, songs: songs);
-  //                 await BlocProvider.of<VideoPlayerCubit>(context)
-  //                     .setToInitialState();
-  //                 await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
-  //                   songData: e,
-  //                   songs: songs,
-  //                   selectedSongIndex: selectedSongIndex,
-  //                 );
-  //               },
-  //               child: SongCard(
-  //                 image: e.artUri,
-  //                 title: e.title,
-  //               ),
-  //             ),
-  //           )
-  //           .toList(),
-  //     ),
-  //   );
-  // }
 
   Future<void> showMusicScreen(
       {required Song songData, required List<Song> songs}) async {

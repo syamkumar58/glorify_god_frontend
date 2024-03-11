@@ -66,6 +66,8 @@ class AppStrings {
   static const verificationEmailSentTo = 'Verification email was sent to';
   static const pleaseVerify = 'Please verify to Sign in ';
   static const thisEmail = 'This Email';
+  static const excitingNews = "Exciting news! A new version of our app is now available. Elevate your experience by updating through the Play Store today!";
   static const alreadyInUse =
       'is already in use, Please try with another account';
+  static const version = "Version";
 }

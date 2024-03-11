@@ -10,6 +10,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
+import 'package:glorify_god/components/profile_components/version_number.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/screens/login_pages/login_page.dart';
@@ -74,8 +75,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   songsInformationTile(),
                 restOfScreen(),
                 const SizedBox(
-                  height: 20,
+                  height: 40,
                 ),
+                const VersionNumber(),
               ],
             ),
           ),
