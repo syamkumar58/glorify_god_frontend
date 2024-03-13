@@ -20,7 +20,7 @@ import 'package:provider/provider.dart';
 
 class EmailComponent extends StatefulWidget {
   const EmailComponent(
-      {super.key, required this.loading, required this.context});
+      {super.key, required this.loading, required this.context,});
 
   final Function(bool loading) loading;
 
@@ -263,7 +263,7 @@ class _EmailComponentState extends State<EmailComponent> {
       width: width * 0.6,
       height: 35,
       decoration: BoxDecoration(
-          color: AppColors.white, borderRadius: BorderRadius.circular(15)),
+          color: AppColors.white, borderRadius: BorderRadius.circular(15),),
       child: CupertinoButton(
         padding: EdgeInsets.zero,
         onPressed: () async {
@@ -275,7 +275,7 @@ class _EmailComponentState extends State<EmailComponent> {
             log('${firebaseAuth.currentUser}', name: 'Email is not verified');
             toast(
                 messageText:
-                    '${emailController.text} ${AppStrings.providedEmailNotVerified}');
+                    '${emailController.text} ${AppStrings.providedEmailNotVerified}',);
           } else {
             await onSubmit();
           }
@@ -321,12 +321,12 @@ class _EmailComponentState extends State<EmailComponent> {
                                 emailController.text = email;
                               });
                             },
-                          )),
+                          ),),
                 );
               },
           ),
         ],
-      )),
+      ),),
     );
   }
 
@@ -363,7 +363,7 @@ class _EmailComponentState extends State<EmailComponent> {
       }
     } on FirebaseAuthException catch (er) {
       if (er.toString().contains(
-          'The supplied auth credential is incorrect, malformed or has expired.')) {
+          'The supplied auth credential is incorrect, malformed or has expired.',)) {
         toast(
           messageText: AppStrings.credentialsAreWrong,
         );
@@ -406,6 +406,6 @@ class _EmailComponentState extends State<EmailComponent> {
         CupertinoPageRoute<BottomTabs>(
           builder: (_) => const BottomTabs(),
         ),
-        (route) => false);
+        (route) => false,);
   }
 }

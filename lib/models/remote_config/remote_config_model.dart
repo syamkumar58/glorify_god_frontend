@@ -45,7 +45,7 @@ class RemoteConfig {
         interstitialAdTime: int.parse(json["interstitialAdTime"].toString()),
         showUpdateBanner: json["showUpdateBanner"] ?? false,
         bannerMessages: List<BannerMessage>.from(
-            json["bannerMessages"].map((x) => BannerMessage.fromJson(x))),
+            json["bannerMessages"].map((x) => BannerMessage.fromJson(x)),),
         appUpdateVersions:
             AppUpdateVersions.fromJson(json["appUpdateVersions"]),
       );

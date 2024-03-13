@@ -32,21 +32,21 @@ class _TitleTileState extends State<TitleTile> {
     return ListTile(
       leading: widget.pastorImage.isNotEmpty
           ? Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50),
-          border: Border.all(
-            color: AppColors.white,
-            width: 1.2,
-          )
-        ),
-            child: CircleAvatar(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                border: Border.all(
+                  color: AppColors.white,
+                  width: 1.2,
+                ),
+              ),
+              child: CircleAvatar(
                 radius: 22,
                 backgroundImage: NetworkImage(
                   widget.pastorImage,
                 ),
                 backgroundColor: AppColors.dullBlack.withOpacity(0.5),
               ),
-          )
+            )
           : CircleAvatar(
               radius: 22,
               backgroundImage: AssetImage(

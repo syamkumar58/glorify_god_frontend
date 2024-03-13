@@ -142,7 +142,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
             height: 40,
             decoration: BoxDecoration(
                 color: AppColors.white,
-                borderRadius: BorderRadius.circular(20)),
+                borderRadius: BorderRadius.circular(20),),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -440,7 +440,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
         width: width * 0.6,
         height: 35,
         decoration: BoxDecoration(
-            color: AppColors.white, borderRadius: BorderRadius.circular(15)),
+            color: AppColors.white, borderRadius: BorderRadius.circular(15),),
         child: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: !loading ? signUp : null,
@@ -499,7 +499,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
 
         toastMessage(
             messageText:
-                '${AppStrings.verificationEmailSentTo} $email, ${AppStrings.pleaseVerify}');
+                '${AppStrings.verificationEmailSentTo} $email, ${AppStrings.pleaseVerify}',);
 
         // Wait for a short time to allow the email verification process to complete
         await Future.delayed(const Duration(seconds: 2));
@@ -526,7 +526,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
           .contains('The email address is already in use by another account')) {
         toastMessage(
             messageText:
-                '${AppStrings.thisEmail} ${emailController.text} ${AppStrings.alreadyInUse}');
+                '${AppStrings.thisEmail} ${emailController.text} ${AppStrings.alreadyInUse}',);
       }
     }
   }
@@ -542,7 +542,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
               ? FirebaseAuth.instance.currentUser!.emailVerified
               : false;
           log('$emailVerified - ${FirebaseAuth.instance.currentUser!.emailVerified} // ${FirebaseAuth.instance.currentUser!}',
-              name: 'Email verified');
+              name: 'Email verified',);
 
           if (emailVerified) {
             //<-- Email is verified -->/

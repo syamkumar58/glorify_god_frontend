@@ -202,7 +202,7 @@ class _LikedScreenState extends State<LikedScreen> {
   }
 
   Future<void> onPlay(List<GetFavouritesModel> likedSongsList,
-      GetFavouritesModel songDetails, int initialId) async {
+      GetFavouritesModel songDetails, int initialId,) async {
     for (final song in likedSongsList) {
       final eachSong = Song(
         songId: song.songId,

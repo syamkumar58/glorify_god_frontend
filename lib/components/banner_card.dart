@@ -73,7 +73,7 @@ class _BannerCardState extends State<BannerCard> {
                         ],
                       ),
                       borderRadius: BorderRadius.circular(15),
-                      image:  DecorationImage(
+                      image: DecorationImage(
                         image: NetworkImage(
                           e.imageUrl,
                         ),
@@ -84,24 +84,31 @@ class _BannerCardState extends State<BannerCard> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         AppText(
-                            text: e.message,
-                            maxLines: 4,
-                            styles: GoogleFonts.manrope(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: AppColors.white,
-                              height: 2,
-                            )),
-                        AppText(
+                          text: e.message,
+                          maxLines: 4,
+                          styles: GoogleFonts.manrope(
+                            backgroundColor: AppColors.black.withOpacity(0.4),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: AppColors.white,
+                            height: 2,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: AppText(
                             text: e.verses,
                             maxLines: 4,
                             textAlign: TextAlign.start,
                             styles: GoogleFonts.manrope(
+                              backgroundColor: AppColors.black.withOpacity(0.4),
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                               color: AppColors.white,
                               height: 2,
-                            )),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

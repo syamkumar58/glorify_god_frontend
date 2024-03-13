@@ -25,7 +25,7 @@ void toastMessage({required String message}) {
 }
 
 Future<void> musicScreenNavigation(BuildContext context,
-    {required List<Song> songs, required Song songData}) async {
+    {required List<Song> songs, required Song songData,}) async {
   Navigator.of(context).push(PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) {
       return VideoPlayerScreen(songs: songs, songData: songData);
@@ -43,7 +43,7 @@ Future<void> musicScreenNavigation(BuildContext context,
         child: child,
       );
     },
-  ));
+  ),);
 }
 
 List<dynamic> songs = [

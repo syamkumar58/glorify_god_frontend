@@ -208,7 +208,7 @@ class _MobileOtpScreenState extends State<MobileOtpScreen> {
         CupertinoPageRoute<BottomTabs>(
           builder: (_) => const BottomTabs(),
         ),
-        (route) => false);
+        (route) => false,);
   }
 
   Future onPressed() async {

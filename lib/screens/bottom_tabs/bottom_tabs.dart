@@ -3,10 +3,10 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-import 'dart:ui';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glorify_god/bloc/all_songs/all_songs_cubit.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/noisey_text.dart';
@@ -98,7 +98,7 @@ class _BottomTabsState extends State<BottomTabs>
             ? BlocProvider.of<VideoPlayerCubit>(context).playerController
             : null;
         log('$chewieController && state - $state',
-            name: 'checking the state and the controller');
+            name: 'checking the state and the controller',);
         switch (state) {
           case AppLifecycleState.detached:
             if (chewieController != null &&
@@ -137,6 +137,7 @@ class _BottomTabsState extends State<BottomTabs>
   }
 
   Future initialUserCall() async {
+    await BlocProvider.of<AllSongsCubit>(context).getAllSongs();
     final dynamic userLogInData = await box.get(
       HiveKeys.logInKey,
     );
@@ -236,7 +237,7 @@ class _BottomTabsState extends State<BottomTabs>
                         ),
                       ),
                     ],
-                  )),
+                  ),),
             ),
             IconButton(
                 padding: EdgeInsets.zero,
@@ -253,7 +254,7 @@ class _BottomTabsState extends State<BottomTabs>
                       ? Icons.pause
                       : Icons.play_arrow,
                   color: AppColors.white,
-                )),
+                ),),
             IconButton(
               padding: EdgeInsets.zero,
               onPressed: () async {
@@ -414,7 +415,7 @@ class _BottomTabsState extends State<BottomTabs>
   }
 
   Future<void> showMusicScreen(
-      {required Song songData, required List<Song> songs}) async {
+      {required Song songData, required List<Song> songs,}) async {
     await showModalBottomSheet<dynamic>(
       context: context,
       isScrollControlled: true,
@@ -457,8 +458,8 @@ class _BottomTabsState extends State<BottomTabs>
       final convertStoredValueToDateTime =
           DateTime.parse(getStoredAdShownTime.toString());
 
-      if (presentTime.isAfter(
-          convertStoredValueToDateTime.add(Duration(minutes: remoteConfigData.interstitialAdTime)))) {
+      if (presentTime.isAfter(convertStoredValueToDateTime
+          .add(Duration(minutes: remoteConfigData.interstitialAdTime)),)) {
         log('did ir came here after 2 mins when i launch the app');
         await box.delete(HiveKeys.storeInterstitialAdLoadedTime);
         showInterstitialAd();
@@ -498,15 +499,15 @@ class _BottomTabsState extends State<BottomTabs>
                   onAdDismissedFullScreenContent: (advertisement) async {
             advertisement.dispose();
             await box.put(HiveKeys.storeInterstitialAdLoadedTime,
-                DateTime.now().toString());
+                DateTime.now().toString(),);
             //<-- Store a key value of date time and again fetch and check the that when to load the
             // interstitial ad
             // -->/
           }, onAdFailedToShowFullScreenContent: (advertisement, error) {
             log('$error',
-                name: 'onAdFailedToShowFullScreenContent ad failed to load');
+                name: 'onAdFailedToShowFullScreenContent ad failed to load',);
             advertisement.dispose();
-          });
+          },);
         },
         onAdFailedToLoad: (ad.LoadAdError error) {
           _interstitialAd!.dispose();

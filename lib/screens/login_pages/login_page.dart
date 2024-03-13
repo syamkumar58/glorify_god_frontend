@@ -74,7 +74,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 AppColors.appColor1,
                 AppColors.appColor2,
               ],
-            )),
+            ),),
             child: SizedBox(
               width: width,
               height: height,
@@ -172,7 +172,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             image,
             fit: BoxFit.cover,
           ),
-        ));
+        ),);
   }
 
   Widget appleLoginButton() {
@@ -244,7 +244,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             CupertinoPageRoute<BottomTabs>(
               builder: (_) => const BottomTabs(),
             ),
-            (route) => false);
+            (route) => false,);
       } else {
         setState(() {
           loading = false;

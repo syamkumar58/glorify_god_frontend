@@ -89,7 +89,7 @@ class _YoutubeVideoPlayerScreenState extends State<YoutubeVideoPlayerScreen> {
                                         Icons.skip_previous,
                                         size: 30,
                                         color: AppColors.white,
-                                      )),
+                                      ),),
                                   Container(
                                     width: 50,
                                     height: 50,
@@ -117,7 +117,7 @@ class _YoutubeVideoPlayerScreenState extends State<YoutubeVideoPlayerScreen> {
                                                 : Icons.play_arrow,
                                             size: 30,
                                             color: AppColors.white,
-                                          )),
+                                          ),),
                                     ),
                                   ),
                                   IconButton(
@@ -128,7 +128,7 @@ class _YoutubeVideoPlayerScreenState extends State<YoutubeVideoPlayerScreen> {
                                         Icons.skip_next,
                                         size: 30,
                                         color: AppColors.white,
-                                      )),
+                                      ),),
                                 ],
                               ),
                             ],
@@ -171,7 +171,7 @@ class _YoutubeVideoPlayerScreenState extends State<YoutubeVideoPlayerScreen> {
                                               const EdgeInsets.only(right: 0),
                                           child: Bounce(
                                             duration: const Duration(
-                                                milliseconds: 50),
+                                                milliseconds: 50,),
                                             onPressed: () {
                                               log(
                                                 '${MediaQuery.of(context).orientation == Orientation.portrait}',
@@ -194,7 +194,7 @@ class _YoutubeVideoPlayerScreenState extends State<YoutubeVideoPlayerScreen> {
                                                     .setPreferredOrientations(
                                                   [
                                                     DeviceOrientation
-                                                        .portraitUp
+                                                        .portraitUp,
                                                   ],
                                                 );
                                               }

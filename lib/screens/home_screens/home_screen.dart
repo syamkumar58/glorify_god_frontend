@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glorify_god/bloc/all_songs/all_songs_cubit.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/home_components/copy_right_text.dart';
@@ -46,7 +47,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   double get width => MediaQuery.of(context).size.width;
 
   double get height => MediaQuery.of(context).size.height;
-  bool connectionError = false;
+
+  // bool connectionError = false;
   List<int> showShimmers = [1, 2, 3, 4];
   late AnimationController lottieController;
   bool showUpdateBanner = false;
@@ -66,23 +68,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     appState = context.read<app.AppState>();
     globalVariables = context.read<GlobalVariables>();
     super.initState();
-    getAllSongs();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       packageInformation();
     });
-  }
-
-  Future getAllSongs() async {
-    try {
-      await appState.getAllArtistsWithSongs();
-    } catch (er) {
-      log('$er', name: 'The home screen error');
-      if (er.toString().contains('Null check operator used on a null value')) {
-        setState(() {
-          connectionError = true;
-        });
-      }
-    }
   }
 
   Future packageInformation() async {
@@ -94,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final iosLatestVersion =
         remoteConfigData.appUpdateVersions.iosLatestVersion.replaceAll('.', '');
     log('$versionNumber -- $androidLatestVersion -- $iosLatestVersion',
-        name: 'versionNumber ');
+        name: 'versionNumber ',);
     setState(() {
       if (Platform.isAndroid) {
         if (int.parse(androidLatestVersion) > int.parse(versionNumber)) {
@@ -160,149 +148,133 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         width: width,
         height: height,
         child: SafeArea(
-          child: SingleChildScrollView(
-            physics: appState.getArtistsWithSongsList.isNotEmpty
-                ? const AlwaysScrollableScrollPhysics()
-                : const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(bottom: 50),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (connectionError)
-                  Container(
-                    width: width,
-                    decoration: const BoxDecoration(color: Colors.blue),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text:
-                                        "**Service Update: Servers Currently Unavailable**\n",
-                                    style: GoogleFonts.manrope(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+          child: BlocBuilder<AllSongsCubit, AllSongsState>(
+            builder: (context, state) {
+              if (state is AllSongsHasError) {
+                return ListView(
+                  children: [
+                    errorMessage(),
+                    commonWidget(),
+                    const HomeShimmerEffect(),
+                  ],
+                );
+              }
+
+              if (state is! AllSongsLoaded) {
+                return ListView(
+                  children: [
+                    commonWidget(),
+                    const HomeShimmerEffect(),
+                  ],
+                );
+              }
+
+              final allSongs = state.songs;
+
+              return SingleChildScrollView(
+                physics: allSongs.isNotEmpty
+                    ? const AlwaysScrollableScrollPhysics()
+                    : const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(bottom: 50),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    commonWidget(),
+                    // if (kDebugMode)
+                    //   CupertinoButton(
+                    //     color: AppColors.redAccent,
+                    //     onPressed: () {
+                    //       Navigator.of(context).push(
+                    //         CupertinoPageRoute(
+                    //           builder: (_) => YoutubeVideoPlayerScreen(
+                    //             songs: testingSongs,
+                    //           ),
+                    //         ),
+                    //       );
+                    //
+                    //       BlocProvider.of<YoutubePlayerCubit>(context).start(
+                    //         songs: testingSongs,
+                    //         currentSongIndex: 0,
+                    //       );
+                    //     },
+                    //     child: const Text('Test Button'),
+                    //   ),
+
+                    //<-- Show only Golden songs here ART ID - 2 -->/
+                    if (allSongs.isNotEmpty)
+                      ...allSongs
+                          .where((element) => element.artistUid == 2)
+                          .map((e) {
+                        return Container(
+                          color: Colors.transparent,
+                          margin: const EdgeInsets.only(bottom: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (e.songs.isNotEmpty)
+                                TitleTile(
+                                  title: e.artistName,
+                                  showViewAll: false,
+                                  onPressViewAll: () {},
+                                  pastorImage: e.artistImage,
+                                ),
+                              if (e.songs.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 12,
+                                    left: 5,
+                                    right: 5,
                                   ),
-                                  TextSpan(
-                                    text:
-                                        "We apologize for the inconvenience, but our servers are currently down for maintenance. Please try accessing the app again later. Thank you for your understanding.",
-                                    style: GoogleFonts.manrope(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                  child: songCard(e.songs),
+                                ),
+                            ],
+                          ),
+                        );
+                      }),
+
+                    //<-- Show only All songs here except ART ID - 2 -->/
+                    if (allSongs.isNotEmpty)
+                      ...allSongs
+                          .where((element) => element.artistUid != 2)
+                          .map((e) {
+                        return Container(
+                          color: Colors.transparent,
+                          margin: const EdgeInsets.only(bottom: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (e.songs.isNotEmpty)
+                                TitleTile(
+                                  title: e.artistName,
+                                  showViewAll: false,
+                                  onPressViewAll: () {},
+                                  pastorImage: e.artistImage,
+                                ),
+                              if (e.songs.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 12,
+                                    left: 5,
+                                    right: 5,
                                   ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                const BannerCard(),
-                const SizedBox(
-                  height: 30,
+                                  child: songCard(e.songs),
+                                ),
+                            ],
+                          ),
+                        );
+                      })
+                    else
+                      const HomeShimmerEffect(),
+                    // TitleTile(
+                    //   title: 'Most played',
+                    //   onPressViewAll: () {},
+                    // ),
+                    // mostPlayedSongs(),
+                    const CopyRightText(),
+                  ],
                 ),
-                // if (kDebugMode)
-                //   CupertinoButton(
-                //     color: AppColors.redAccent,
-                //     onPressed: () {
-                //       Navigator.of(context).push(
-                //         CupertinoPageRoute(
-                //           builder: (_) => YoutubeVideoPlayerScreen(
-                //             songs: testingSongs,
-                //           ),
-                //         ),
-                //       );
-                //
-                //       BlocProvider.of<YoutubePlayerCubit>(context).start(
-                //         songs: testingSongs,
-                //         currentSongIndex: 0,
-                //       );
-                //     },
-                //     child: const Text('Test Button'),
-                //   ),
-
-                //<-- Show only Golden songs here ART ID - 2 -->/
-                if (appState.getArtistsWithSongsList.isNotEmpty)
-                  ...appState.getArtistsWithSongsList
-                      .where((element) => element.artistUid == 2)
-                      .map((e) {
-                    return Container(
-                      color: Colors.transparent,
-                      margin: const EdgeInsets.only(bottom: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (e.songs.isNotEmpty)
-                            TitleTile(
-                              title: e.artistName,
-                              showViewAll: false,
-                              onPressViewAll: () {},
-                              pastorImage: e.artistImage,
-                            ),
-                          if (e.songs.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: 12,
-                                left: 5,
-                                right: 5,
-                              ),
-                              child: songCard(e.songs),
-                            ),
-                        ],
-                      ),
-                    );
-                  }),
-
-                //<-- Show only All songs here except ART ID - 2 -->/
-                if (appState.getArtistsWithSongsList.isNotEmpty)
-                  ...appState.getArtistsWithSongsList
-                      .where((element) => element.artistUid != 2)
-                      .map((e) {
-                    return Container(
-                      color: Colors.transparent,
-                      margin: const EdgeInsets.only(bottom: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (e.songs.isNotEmpty)
-                            TitleTile(
-                              title: e.artistName,
-                              showViewAll: false,
-                              onPressViewAll: () {},
-                              pastorImage: e.artistImage,
-                            ),
-                          if (e.songs.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: 12,
-                                left: 5,
-                                right: 5,
-                              ),
-                              child: songCard(e.songs),
-                            ),
-                        ],
-                      ),
-                    );
-                  })
-                else
-                  const HomeShimmerEffect(),
-                // TitleTile(
-                //   title: 'Most played',
-                //   onPressViewAll: () {},
-                // ),
-                // mostPlayedSongs(),
-                const CopyRightText(),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
@@ -348,6 +320,57 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  Widget commonWidget({bool serverFailed = false}) {
+    return const Column(
+      children: [
+        BannerCard(),
+        SizedBox(
+          height: 30,
+        ),
+      ],
+    );
+  }
+
+  Widget errorMessage() {
+    return Container(
+      width: width,
+      decoration: const BoxDecoration(color: Colors.blue),
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        title: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text:
+                          "**Service Update: Servers Currently Unavailable**\n",
+                      style: GoogleFonts.manrope(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text:
+                          "We apologize for the inconvenience, but our servers are currently down for maintenance. Please try accessing the app again later. Thank you for your understanding.",
+                      style: GoogleFonts.manrope(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future getToken() async {
     final jwtToken = await FirebaseAuth.instance.currentUser!.getIdToken();
     log('$jwtToken', name: 'jwtToken');
@@ -385,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Future<void> showMusicScreen(
-      {required Song songData, required List<Song> songs}) async {
+      {required Song songData, required List<Song> songs,}) async {
     await showModalBottomSheet<dynamic>(
       context: context,
       isScrollControlled: true,

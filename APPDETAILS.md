@@ -257,3 +257,11 @@
   - Logical changes
   - Bug fixes
   - Ui changes
+
+- 13/03/2024
+  - Added trailing comma separation analysis
+  - Video player seek bar changes with onSeek added
+    and also added see more with drop down icon for song details regarding the song playing
+  - In Banner card added background color to the text for separation to BG image
+  - Fetching all songs api call moved to home_tabs from home screen initial call and also changed from app_state provider to cubit system for better and speed loading
+  - Contact number removed and changed the gmail to app's mail from Help and Support screen

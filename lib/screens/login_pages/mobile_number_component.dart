@@ -188,7 +188,7 @@ class _MobileNumberComponentState extends State<MobileNumberComponent> {
       // });
       if (mobileNumberController.text.length < 10) {
         flushBar(
-            context: context, messageText: 'Please check your mobile number');
+            context: context, messageText: 'Please check your mobile number',);
       }
     }
   }
@@ -206,10 +206,10 @@ class _MobileNumberComponentState extends State<MobileNumberComponent> {
           log('$firebaseAuthException', name: 'firebaseAuthException');
 
           if (firebaseAuthException.toString().contains(
-              'We have blocked all requests from this device due to unusual activity. Try again later')) {
+              'We have blocked all requests from this device due to unusual activity. Try again later',)) {
             flushBar(
                 context: context,
-                messageText: 'Please try again! after sometime');
+                messageText: 'Please try again! after sometime',);
           }
         },
         codeSent: (String verificationId, int? forceResendToken) async {
