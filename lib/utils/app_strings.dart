@@ -1,6 +1,9 @@
 class AppStrings {
   static const appName = 'Glorify God';
   static const appName2 = 'Glorify\nGod';
+  static const hello = 'HELLO!';
+  static const welcomeTo = 'Welcome to';
+  static const signInWithGoogle = 'Sign In with\nGoogle';
   static const jyothirajSongs = 'Jyothi Raj Songs';
   static const favoritesTitle = 'Liked';
   static const homeBannerText =
@@ -46,6 +49,8 @@ class AppStrings {
   static const provideAValidDetails = 'Please provide a valid details';
   static const enterAValidEmail = 'Enter a valid Email';
   static const enterAValidPassword = 'Enter a valid password';
+  static const signIn = 'Sign In';
+  static const signIn2 = 'SIGN IN';
   static const signUp = " Sign Up";
   static const signUp2 = 'SIGN UP';
   static const dontHaveAnAccount = "Don't have an Account?";

@@ -28,7 +28,7 @@ class _AdsCardState extends State<AdsCard> {
         : Platform.isAndroid
             ? remoteConfigData.androidAdUnitId
             : remoteConfigData.iosAdUniId;
-    log(adUnitId,name:'The ad unit id');
+    log(adUnitId, name: 'The ad unit id');
     bannerAd = BannerAd(
       size: widget.adSize,
       adUnitId: adUnitId,

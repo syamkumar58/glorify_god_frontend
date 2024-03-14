@@ -281,7 +281,7 @@ class _EmailComponentState extends State<EmailComponent> {
           }
         },
         child: AppText(
-          text: AppStrings.login,
+          text: AppStrings.signIn,
           styles: GoogleFonts.manrope(
             color: AppColors.appColor2,
             fontWeight: FontWeight.bold,
