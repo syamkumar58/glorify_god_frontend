@@ -88,6 +88,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                         Padding(
                           padding: EdgeInsets.only(
                             top: height * 0.12,
+                            bottom: 5,
                           ),
                           child: SizedBox(
                             width: width * 0.8,
@@ -113,12 +114,22 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           child: const Row(
                             children: [
                               AppText(
-                                text: '${AppStrings.welcomeTo} ${AppStrings.appName}',
+                                text: '${AppStrings.welcomeTo}  ',
                                 styles: TextStyle(
                                   fontSize: 14,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500,
                                   fontFamily: 'Memphis-Bold',
+                                  letterSpacing: 2,
+                                ),
+                              ),
+                              AppText(
+                                text: AppStrings.appName,
+                                styles: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Cavas',
                                   letterSpacing: 2,
                                 ),
                               ),
