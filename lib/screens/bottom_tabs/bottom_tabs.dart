@@ -493,10 +493,13 @@ class _BottomTabsState extends State<BottomTabs>
       request: const ad.AdRequest(),
       adLoadCallback: ad.InterstitialAdLoadCallback(
         onAdLoaded: (ad.InterstitialAd advertisement) {
+          log('$advertisement',name:'Step 1');
           _interstitialAd = advertisement;
+          log('$_interstitialAd',name:'Step 2');
           _interstitialAd!.fullScreenContentCallback =
               ad.FullScreenContentCallback(
                   onAdDismissedFullScreenContent: (advertisement) async {
+                    log('',name:'Step 3');
             advertisement.dispose();
             await box.put(HiveKeys.storeInterstitialAdLoadedTime,
                 DateTime.now().toString(),);
