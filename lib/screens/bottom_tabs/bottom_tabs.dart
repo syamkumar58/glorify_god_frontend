@@ -97,8 +97,10 @@ class _BottomTabsState extends State<BottomTabs>
                 .isInitialized
             ? BlocProvider.of<VideoPlayerCubit>(context).playerController
             : null;
-        log('$chewieController && state - $state',
-            name: 'checking the state and the controller',);
+        log(
+          '$chewieController && state - $state',
+          name: 'checking the state and the controller',
+        );
         switch (state) {
           case AppLifecycleState.detached:
             if (chewieController != null &&
@@ -211,50 +213,52 @@ class _BottomTabsState extends State<BottomTabs>
             Padding(
               padding: const EdgeInsets.only(left: 3),
               child: Container(
-                  height: 60,
-                  width: width * 0.4,
-                  color: Colors.transparent,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        data.songData.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.manrope(
-                          fontSize: 16,
-                          color: AppColors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
+                height: 60,
+                width: width * 0.4,
+                color: Colors.transparent,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      data.songData.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.manrope(
+                        fontSize: 16,
+                        color: AppColors.white,
+                        fontWeight: FontWeight.w600,
                       ),
-                      AppText(
-                        text: data.songData.artist,
-                        styles: GoogleFonts.manrope(
-                          fontSize: 14,
-                          color: AppColors.white,
-                          fontWeight: FontWeight.w400,
-                        ),
+                    ),
+                    AppText(
+                      text: data.songData.artist,
+                      styles: GoogleFonts.manrope(
+                        fontSize: 14,
+                        color: AppColors.white,
+                        fontWeight: FontWeight.w400,
                       ),
-                    ],
-                  ),),
+                    ),
+                  ],
+                ),
+              ),
             ),
             IconButton(
-                padding: EdgeInsets.zero,
-                onPressed: () {
-                  if (data
-                      .chewieController.videoPlayerController.value.isPlaying) {
-                    data.chewieController.pause();
-                  } else {
-                    data.chewieController.play();
-                  }
-                },
-                icon: Icon(
-                  data.chewieController.videoPlayerController.value.isPlaying
-                      ? Icons.pause
-                      : Icons.play_arrow,
-                  color: AppColors.white,
-                ),),
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                if (data
+                    .chewieController.videoPlayerController.value.isPlaying) {
+                  data.chewieController.pause();
+                } else {
+                  data.chewieController.play();
+                }
+              },
+              icon: Icon(
+                data.chewieController.videoPlayerController.value.isPlaying
+                    ? Icons.pause
+                    : Icons.play_arrow,
+                color: AppColors.white,
+              ),
+            ),
             IconButton(
               padding: EdgeInsets.zero,
               onPressed: () async {
@@ -414,8 +418,10 @@ class _BottomTabsState extends State<BottomTabs>
     );
   }
 
-  Future<void> showMusicScreen(
-      {required Song songData, required List<Song> songs,}) async {
+  Future<void> showMusicScreen({
+    required Song songData,
+    required List<Song> songs,
+  }) async {
     await showModalBottomSheet<dynamic>(
       context: context,
       isScrollControlled: true,
@@ -458,8 +464,10 @@ class _BottomTabsState extends State<BottomTabs>
       final convertStoredValueToDateTime =
           DateTime.parse(getStoredAdShownTime.toString());
 
-      if (presentTime.isAfter(convertStoredValueToDateTime
-          .add(Duration(minutes: remoteConfigData.interstitialAdTime)),)) {
+      if (presentTime.isAfter(
+        convertStoredValueToDateTime
+            .add(Duration(minutes: remoteConfigData.interstitialAdTime)),
+      )) {
         log('did ir came here after 2 mins when i launch the app');
         await box.delete(HiveKeys.storeInterstitialAdLoadedTime);
         showInterstitialAd();
@@ -493,24 +501,30 @@ class _BottomTabsState extends State<BottomTabs>
       request: const ad.AdRequest(),
       adLoadCallback: ad.InterstitialAdLoadCallback(
         onAdLoaded: (ad.InterstitialAd advertisement) {
-          log('$advertisement',name:'Step 1');
+          log('$advertisement', name: 'Step 1');
           _interstitialAd = advertisement;
-          log('$_interstitialAd',name:'Step 2');
+          log('$_interstitialAd', name: 'Step 2');
           _interstitialAd!.fullScreenContentCallback =
               ad.FullScreenContentCallback(
-                  onAdDismissedFullScreenContent: (advertisement) async {
-                    log('',name:'Step 3');
-            advertisement.dispose();
-            await box.put(HiveKeys.storeInterstitialAdLoadedTime,
-                DateTime.now().toString(),);
-            //<-- Store a key value of date time and again fetch and check the that when to load the
-            // interstitial ad
-            // -->/
-          }, onAdFailedToShowFullScreenContent: (advertisement, error) {
-            log('$error',
-                name: 'onAdFailedToShowFullScreenContent ad failed to load',);
-            advertisement.dispose();
-          },);
+            onAdDismissedFullScreenContent: (advertisement) async {
+              log('', name: 'Step 3');
+              advertisement.dispose();
+              await box.put(
+                HiveKeys.storeInterstitialAdLoadedTime,
+                DateTime.now().toString(),
+              );
+              //<-- Store a key value of date time and again fetch and check the that when to load the
+              // interstitial ad
+              // -->/
+            },
+            onAdFailedToShowFullScreenContent: (advertisement, error) {
+              log(
+                '$error',
+                name: 'onAdFailedToShowFullScreenContent ad failed to load',
+              );
+              advertisement.dispose();
+            },
+          );
         },
         onAdFailedToLoad: (ad.LoadAdError error) {
           _interstitialAd!.dispose();

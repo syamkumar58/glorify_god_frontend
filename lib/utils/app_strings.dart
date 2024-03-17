@@ -76,10 +76,10 @@ class AppStrings {
   static const alreadyInUse =
       'is already in use, Please try with another account';
   static const version = "Version";
-  static const songName = 'song name:';
-  static const singer = 'singer:';
-  static const lyricist = 'lyricist:';
+  static const songName = 'Song name:';
+  static const singer = 'Singer:';
+  static const lyricist = 'Lyricist:';
+  static const credits = 'Credits:';
   static const offline_mode = 'No Internet';
-  static const serverUpdate1 = "**Service Update: Servers Currently Unavailable**\n";
-  static const serverUpdate2 = "We apologize for the inconvenience, but our servers are currently down for maintenance. Please try accessing the app again later. Thank you for your understanding.";
+  static const serverUpdate1 = "**Service Update:";
 }

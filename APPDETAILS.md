@@ -149,6 +149,10 @@
 - 16/1/2024
   - Added a new wallet screen (Not clearly Done)
 
+- 17/03/2024
+  - Working on No Internet Connection
+  - Code formation
+
 - 21/1/2024
   - Done with song completion tracker
   - Added required API calls for collecting song data on each track with artist U-ID

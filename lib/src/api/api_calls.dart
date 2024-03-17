@@ -36,32 +36,6 @@ class ApiCalls {
     String gender = 'UNKNOWN',
     String provider = 'GOOGLE',
   }) async {
-    // var uuId = '';
-    // var platform = '';
-    // var deviceName = '';
-    // var versionBaseOs = '';
-    // var manufacture = '';
-    // var model = '';
-    //
-    // final deviceInfo = DeviceInfoPlugin();
-    //
-    // if (Platform.isIOS) {
-    //   final iosInfo = await deviceInfo.iosInfo;
-    //   uuId = iosInfo.identifierForVendor!;
-    //   platform = 'iOS';
-    //   deviceName = iosInfo.name;
-    //   versionBaseOs = iosInfo.systemVersion;
-    //   manufacture = iosInfo.model;
-    //   model = iosInfo.model;
-    // } else if (Platform.isAndroid) {
-    //   final androidInfo = await deviceInfo.androidInfo;
-    //   uuId = androidInfo.id;
-    //   platform = 'Android';
-    //   deviceName = androidInfo.device;
-    //   versionBaseOs = androidInfo.version.release;
-    //   manufacture = androidInfo.manufacturer;
-    //   model = androidInfo.device;
-    // }
 
     try {
       final body = {
@@ -81,15 +55,6 @@ class ApiCalls {
         'fcmToken': fcmToken,
         'timeZone': timeZone,
         'provider': provider,
-        // 'device_request': {
-        //   'UUID': uuId,
-        //   'platform': platform,
-        //   'device_name': deviceName,
-        //   'version_base_os': versionBaseOs,
-        //   'manufacture': manufacture,
-        //   'model': model,
-        //   'is_physical_device': true,
-        // },
       };
 
       log(json.encode(body),name:'Login request');
@@ -105,7 +70,7 @@ class ApiCalls {
       if (loginResponse.statusCode == 200) {
         final response = userLoginResponseModelFromJson(loginResponse.body);
         log(loginResponse.body,
-            name: 'User login response from api calls',);
+            name: 'User login response from api calls');
         return response;
       } else {
         log(

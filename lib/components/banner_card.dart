@@ -6,11 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/connectivity_bloc/internet_connection_cubit.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/remote_config.dart';
-import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BannerCard extends StatefulWidget {

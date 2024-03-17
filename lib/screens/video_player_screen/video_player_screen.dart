@@ -505,7 +505,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         children: [
           ListTile(
             dense: true,
-            leading:  const AppText(
+            leading: const AppText(
               text: AppStrings.songName,
               textAlign: TextAlign.left,
               styles: TextStyle(
@@ -544,23 +544,47 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           if (data.songData.lyricist.isNotEmpty)
             ListTile(
               dense: true,
-              leading: const AppText(
-                text: AppStrings.lyricist,
+              leading: AppText(
+                text: data.songData.lyricist.contains('Credits')
+                    ? data.songData.lyricist
+                    : AppStrings.lyricist,
                 textAlign: TextAlign.left,
-                styles: TextStyle(
+                styles: GoogleFonts.manrope(
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                 ),
               ),
               title: AppText(
-                text: data.songData.lyricist,
+                text: data.songData.lyricist.contains('Credits')
+                    ? ''
+                    : data.songData.lyricist,
                 textAlign: TextAlign.left,
-                styles: const TextStyle(
+                styles: GoogleFonts.manrope(
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                 ),
               ),
             ),
+          // if (data.songData.credits.isNotEmpty)
+          //   ListTile(
+          //     dense: true,
+          //     leading:  AppText(
+          //       text: AppStrings.lyricist,
+          //       textAlign: TextAlign.left,
+          //       styles: GoogleFonts.manrope(
+          //         fontSize: 16,
+          //         fontWeight: FontWeight.w400,
+          //       ),
+          //     ),
+          //     title: AppText(
+          //       text: data.songData.lyricist,
+          //       textAlign: TextAlign.left,
+          //       styles: GoogleFonts.manrope(
+          //         fontSize: 16,
+          //         fontWeight: FontWeight.w400,
+          //       ),
+          //     ),
+          //   ),
           if (data.songData.ytUrl.isNotEmpty)
             ListTile(
               dense: true,
