@@ -76,9 +76,9 @@ class HomeShimmerEffect extends StatelessWidget {
                             ),
                           ],
                         ),
-                      )).toList(),
+                      ),).toList(),
             ],
-          )),
+          ),),
     );
   }
 }

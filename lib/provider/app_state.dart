@@ -130,25 +130,22 @@ class AppState with ChangeNotifier {
     }
   }
 
-  List<GetArtistsWithSongs> _getArtistsWithSongsList = [];
-
-  List<GetArtistsWithSongs> get getArtistsWithSongsList =>
-      _getArtistsWithSongsList;
-
-  set getArtistsWithSongsList(List<GetArtistsWithSongs> value) {
-    _getArtistsWithSongsList = value;
-    notifyListeners();
-  }
+  // List<GetArtistsWithSongs> _getArtistsWithSongsList = [];
+  //
+  // List<GetArtistsWithSongs> get getArtistsWithSongsList =>
+  //     _getArtistsWithSongsList;
+  //
+  // set getArtistsWithSongsList(List<GetArtistsWithSongs> value) {
+  //   _getArtistsWithSongsList = value;
+  //   notifyListeners();
+  // }
 
   Future<List<GetArtistsWithSongs>?> getAllArtistsWithSongs() async {
     final data = await ApiCalls().getAllArtistsWithSongs();
 
     if (data != null && data.statusCode == 200) {
       final allSongs = getArtistsWithSongsFromJson(data.body);
-
       log('$allSongs', name: 'All songs');
-
-      getArtistsWithSongsList = allSongs;
       return allSongs;
     } else {
       log('${data!.statusCode}', name: 'Failed all songs');
@@ -200,8 +197,10 @@ class AppState with ChangeNotifier {
       songId: songId,
       userId: userData.userId,
     );
-    log('${data.statusCode} && ${data.body}',
-        name: 'checkFavourites status code');
+    log(
+      '${data.statusCode} && ${data.body}',
+      name: 'checkFavourites status code',
+    );
     if (data.statusCode == 200) {
       if (data.body.contains('false')) {
         isSongFavourite = false;
@@ -311,8 +310,10 @@ class AppState with ChangeNotifier {
     final userId = userData.userId;
     final res = await ApiCalls().getRating(userId: userId);
     if (res != null && res.statusCode == 200) {
-      log('${res.body} & ${res.statusCode}',
-          name: 'The json body for the app rating call');
+      log(
+        '${res.body} & ${res.statusCode}',
+        name: 'The json body for the app rating call',
+      );
       final data = json.decode(res.body);
       userGivenRating = int.parse(data['ratings'].toString());
       log('$userGivenRating', name: 'The res for get Rating');
@@ -356,8 +357,10 @@ class AppState with ChangeNotifier {
     final userId = userData.userId;
     final res =
         await ApiCalls().acceptedPolicyById(userId: userId, check: check);
-    log('${res.statusCode} - b ${res.body}',
-        name: 'acceptedPolicyById response');
+    log(
+      '${res.statusCode} - b ${res.body}',
+      name: 'acceptedPolicyById response',
+    );
     if (res.statusCode == 200) {
       return true;
     } else {
@@ -368,8 +371,10 @@ class AppState with ChangeNotifier {
   Future<bool> checkUserAcceptedPolicyById() async {
     final userId = userData.userId;
     final res = await ApiCalls().checkUserAcceptedPolicyById(userId: userId);
-    log('${res.statusCode} - b ${res.body}',
-        name: 'checkUserAcceptedPolicyById response');
+    log(
+      '${res.statusCode} - b ${res.body}',
+      name: 'checkUserAcceptedPolicyById response',
+    );
     if (res.statusCode == 200) {
       return res.body.contains('true') ? true : false;
     } else {

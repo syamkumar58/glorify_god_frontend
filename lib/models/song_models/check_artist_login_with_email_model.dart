@@ -3,11 +3,11 @@
 import 'dart:convert';
 
 CheckArtistLoginDataByEmailModel checkArtistLoginDataByEmailModelFromJson(
-        String str) =>
+        String str,) =>
     CheckArtistLoginDataByEmailModel.fromJson(json.decode(str));
 
 String checkArtistLoginDataByEmailModelToJson(
-        CheckArtistLoginDataByEmailModel data) =>
+        CheckArtistLoginDataByEmailModel data,) =>
     json.encode(data.toJson());
 
 class CheckArtistLoginDataByEmailModel {
@@ -20,11 +20,11 @@ class CheckArtistLoginDataByEmailModel {
   });
 
   factory CheckArtistLoginDataByEmailModel.fromJson(
-          Map<String, dynamic> json) =>
+          Map<String, dynamic> json,) =>
       CheckArtistLoginDataByEmailModel(
         status: json["status"],
         artistDetails: ArtistDetails.fromJson(
-            json["artistDetails"] as Map<String, dynamic>),
+            json["artistDetails"] as Map<String, dynamic>,),
       );
 
   Map<String, dynamic> toJson() => {

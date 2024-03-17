@@ -24,7 +24,7 @@ CupertinoButton loginButton({
         width: width,
         height: height,
         decoration: BoxDecoration(
-            color: boxColor, borderRadius: BorderRadius.circular(30)),
+            color: boxColor, borderRadius: BorderRadius.circular(30),),
         child: Row(
           children: [
             CircleAvatar(
@@ -47,5 +47,5 @@ CupertinoButton loginButton({
             ),
           ],
         ),
-      ));
+      ),);
 }

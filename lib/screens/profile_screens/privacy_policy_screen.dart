@@ -54,7 +54,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                   icon: const Icon(
                     Icons.keyboard_arrow_left,
                     size: 26,
-                  ))
+                  ),)
               : const SizedBox(),
           centerTitle: true,
           title: AppText(
@@ -177,7 +177,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                           setState(() {
                             value = val!;
                           });
-                        }),
+                        },),
               title: AppText(
                 text: 'I agree to the terms and conditions.',
                 textAlign: TextAlign.start,
@@ -215,8 +215,8 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                           color: value
                               ? AppColors.black
                               : AppColors.black.withOpacity(0.5),
-                          fontWeight: FontWeight.w600),
-                    )),
+                          fontWeight: FontWeight.w600,),
+                    ),),
               ),
           ],
         ),
@@ -230,7 +230,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
         CupertinoPageRoute<BottomTabs>(
           builder: (_) => const BottomTabs(),
         ),
-        (route) => false);
+        (route) => false,);
   }
 }
 

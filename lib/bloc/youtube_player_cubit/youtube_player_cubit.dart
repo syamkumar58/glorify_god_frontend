@@ -36,7 +36,7 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
       songs: songs,
       currentSongIndex: selectedIndex,
       youtubePlayerController: youtubePlayerController!,
-    ));
+    ),);
 
     //<-- once started the the listener handles the rest -->/
     youtubePlayerController?.addListener(() {
@@ -44,7 +44,7 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
         songs: songs,
         currentSongIndex: selectedIndex,
         youtubePlayerController: youtubePlayerController!,
-      ));
+      ),);
     });
   }
 

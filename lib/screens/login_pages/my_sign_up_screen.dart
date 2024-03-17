@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,6 +13,7 @@ import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/src/provider/user_bloc.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
+import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MySignUpScreen extends StatefulWidget {
@@ -51,8 +53,9 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
         return false;
       },
       child: Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
-          backgroundColor: AppColors.appColor2,
+          backgroundColor: Colors.transparent,
           elevation: 5,
           centerTitle: true,
           leading: !emailVerified
@@ -80,28 +83,33 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
           height: double.infinity,
           width: double.infinity,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.bottomLeft,
-              end: Alignment.topRight,
-              colors: [
-                AppColors.appColor1,
-                AppColors.appColor2,
-              ],
+            image: DecorationImage(
+              image: AssetImage(
+                AppImages.cross,
+              ),
+              fit: BoxFit.fill,
             ),
           ),
-          child: !emailVerified
-              ? Column(
-                  children: [
-                    SizedBox(
-                      height: height * 0.1,
-                    ),
-                    emailField(),
-                    passwordField(),
-                    reEnterPasswordField(),
-                    signUpButton(),
-                  ],
-                )
-              : emailVerifiedWidget(),
+          child: ClipRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+              child: SafeArea(
+                child: !emailVerified
+                    ? Column(
+                        children: [
+                          SizedBox(
+                            height: height * 0.1,
+                          ),
+                          emailField(),
+                          passwordField(),
+                          reEnterPasswordField(),
+                          signUpButton(),
+                        ],
+                      )
+                    : emailVerifiedWidget(),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -141,8 +149,9 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
             width: width * 0.4,
             height: 40,
             decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(20)),
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -440,13 +449,15 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
         width: width * 0.6,
         height: 35,
         decoration: BoxDecoration(
-            color: AppColors.white, borderRadius: BorderRadius.circular(15)),
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(15),
+        ),
         child: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: !loading ? signUp : null,
           child: !loading
               ? AppText(
-                  text: AppStrings.signUp2,
+                  text: AppStrings.signUp,
                   styles: GoogleFonts.manrope(
                     color: AppColors.appColor2,
                     fontWeight: FontWeight.bold,
@@ -498,8 +509,9 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
         // Let your know that email was sent for verification
 
         toastMessage(
-            messageText:
-                '${AppStrings.verificationEmailSentTo} $email, ${AppStrings.pleaseVerify}');
+          messageText:
+              '${AppStrings.verificationEmailSentTo} $email, ${AppStrings.pleaseVerify}',
+        );
 
         // Wait for a short time to allow the email verification process to complete
         await Future.delayed(const Duration(seconds: 2));
@@ -525,8 +537,9 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
           .toString()
           .contains('The email address is already in use by another account')) {
         toastMessage(
-            messageText:
-                '${AppStrings.thisEmail} ${emailController.text} ${AppStrings.alreadyInUse}');
+          messageText:
+              '${AppStrings.thisEmail} ${emailController.text} ${AppStrings.alreadyInUse}',
+        );
       }
     }
   }
@@ -541,8 +554,10 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
           emailVerified = userCredential != null
               ? FirebaseAuth.instance.currentUser!.emailVerified
               : false;
-          log('$emailVerified - ${FirebaseAuth.instance.currentUser!.emailVerified} // ${FirebaseAuth.instance.currentUser!}',
-              name: 'Email verified');
+          log(
+            '$emailVerified - ${FirebaseAuth.instance.currentUser!.emailVerified} // ${FirebaseAuth.instance.currentUser!}',
+            name: 'Email verified',
+          );
 
           if (emailVerified) {
             //<-- Email is verified -->/
