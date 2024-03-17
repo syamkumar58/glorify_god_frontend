@@ -76,7 +76,8 @@ class AppStrings {
   static const alreadyInUse =
       'is already in use, Please try with another account';
   static const version = "Version";
-  static const songName = 'song name:';
-  static const singer = 'singer:';
-  static const lyricist = 'lyricist:';
+  static const songName = 'Song name:';
+  static const singer = 'Singer:';
+  static const lyricist = 'Lyricist:';
+  static const credits = 'Credits:';
 }
