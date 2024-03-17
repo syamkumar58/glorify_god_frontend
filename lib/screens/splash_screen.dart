@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:auto_route/annotations.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/remote_config.dart';
@@ -55,33 +56,39 @@ class _SplashScreenState extends State<SplashScreen> {
     );
     if (userLogInData != null) {
       await Navigator.of(context).pushAndRemoveUntil(
-          CupertinoPageRoute<BottomTabs>(
-            builder: (_) => const BottomTabs(),
-          ),
-          (route) => false,);
+        CupertinoPageRoute<BottomTabs>(
+          builder: (_) => const BottomTabs(),
+        ),
+        (route) => false,
+      );
     } else {
       Navigator.of(context).pushAndRemoveUntil(
-          CupertinoPageRoute(builder: (_) => const LoginPage()),
-          (route) => false,);
+        CupertinoPageRoute(builder: (_) => const LoginPage()),
+        (route) => false,
+      );
     }
   }
 
   Future setConfigData() async {
-    var remoteConfig = FirebaseRemoteConfig.instance;
-    await remoteConfig.setConfigSettings(
-      RemoteConfigSettings(
-        fetchTimeout: const Duration(seconds: 10),
-        minimumFetchInterval: const Duration(seconds: 30),
-      ),
-    );
-    final data = await remoteConfig.fetchAndActivate();
-    final configData = remoteConfig.getString('glorify_god_config');
-    remoteConfigData = remoteConfigFromJson(configData);
-    log(
+    final connection = await Connectivity().checkConnectivity();
+    if (connection != ConnectivityResult.none) {
+      var remoteConfig = FirebaseRemoteConfig.instance;
+      await remoteConfig.setConfigSettings(
+        RemoteConfigSettings(
+          fetchTimeout: const Duration(seconds: 10),
+          minimumFetchInterval: const Duration(seconds: 30),
+        ),
+      );
+      final data = await remoteConfig.fetchAndActivate();
+      final configData = remoteConfig.getString('glorify_god_config');
+      remoteConfigData = remoteConfigFromJson(configData);
+      log(
         '$data\n'
         '${json.decode(configData)}\n'
         '${remoteConfigData.bannerMessages}',
-        name: 'Config data',);
+        name: 'Config data',
+      );
+    }
   }
 
   @override

@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/all_songs/all_songs_cubit.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
@@ -81,8 +82,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         .replaceAll('.', '');
     final iosLatestVersion =
         remoteConfigData.appUpdateVersions.iosLatestVersion.replaceAll('.', '');
-    log('$versionNumber -- $androidLatestVersion -- $iosLatestVersion',
-        name: 'versionNumber ',);
+    log(
+      '$versionNumber -- $androidLatestVersion -- $iosLatestVersion',
+      name: 'versionNumber ',
+    );
     setState(() {
       if (Platform.isAndroid) {
         if (int.parse(androidLatestVersion) > int.parse(versionNumber)) {
@@ -407,8 +410,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Future<void> showMusicScreen(
-      {required Song songData, required List<Song> songs,}) async {
+  Future<void> showMusicScreen({
+    required Song songData,
+    required List<Song> songs,
+  }) async {
     await showModalBottomSheet<dynamic>(
       context: context,
       isScrollControlled: true,

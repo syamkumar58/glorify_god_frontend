@@ -13,6 +13,28 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AppState with ChangeNotifier {
+  ConnectivityResult _connectivityResult = ConnectivityResult.none;
+
+  ConnectivityResult get connectivityResult => _connectivityResult;
+
+  set connectivityResult(ConnectivityResult value) {
+    _connectivityResult = value;
+    notifyListeners();
+  }
+
+  Future checkConnection() async {
+    final checkAtLaunch = await Connectivity().checkConnectivity();
+
+    connectivityResult = checkAtLaunch;
+
+    log('$connectivityResult', name: 'checkConnection 1 -- ');
+
+    Connectivity().onConnectivityChanged.listen((result) {
+      log('$result', name: 'checkConnection 2');
+      connectivityResult = result;
+    });
+  }
+
   bool _isGuestUser = false;
 
   bool get isGuestUser => _isGuestUser;
@@ -275,15 +297,6 @@ class AppState with ChangeNotifier {
     } else {
       songs = <SongsModel>[];
     }
-  }
-
-  ConnectivityResult _connectivityResult = ConnectivityResult.other;
-
-  ConnectivityResult get connectivityResult => _connectivityResult;
-
-  set connectivityResult(ConnectivityResult value) {
-    _connectivityResult = value;
-    notifyListeners();
   }
 
   Future<bool> updateRatings({required int rating}) async {

@@ -79,4 +79,7 @@ class AppStrings {
   static const songName = 'song name:';
   static const singer = 'singer:';
   static const lyricist = 'lyricist:';
+  static const offline_mode = 'No Internet';
+  static const serverUpdate1 = "**Service Update: Servers Currently Unavailable**\n";
+  static const serverUpdate2 = "We apologize for the inconvenience, but our servers are currently down for maintenance. Please try accessing the app again later. Thank you for your understanding.";
 }
