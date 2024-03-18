@@ -98,8 +98,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     appState = Provider.of<a.AppState>(context);
     return WillPopScope(
       onWillPop: () async {
-        await changeOrientation();
-        return true;
+        final orientation = MediaQuery.of(context).orientation;
+        if (orientation == Orientation.landscape) {
+          await changeOrientation();
+        }
+        return orientation == Orientation.landscape ? false : true;
       },
       child: Scaffold(
         appBar: MediaQuery.of(context).orientation == Orientation.portrait

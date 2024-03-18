@@ -249,14 +249,14 @@
   - Bug fixes on new email implementation
   - Moved Strings from files to common file
 
+- 08/03/2024
+    - Version increment for play store upload
+    - Added email conditional check for user login
+
 - 18/03/2024
   - Merged with main
   - Working on YouTube video player for YouTube implementation
   - Need to fix bugs i player screen
-
-- 08/03/2024
-  - Version increment for play store upload
-  - Added email conditional check for user login
 
 - 11/03/2024
   - Changed the interstitial ad time from 30 to 10 minutes
@@ -282,5 +282,11 @@
 - 16/03/2024
   - Added new AdMob Account and ad App id changed in both android and IOS
   - Login Page small UI changes
+
+- 18/03/2024
+  - Bug fixed in video player screen on device back button screen orientation logic change
+  - Interstitial Ad isAfter changed from minutes to seconds
+  - Changed Interstitial Ad loading delay time from 2sec to 5sec - tested in release mode working
+  - Removed Artist ID 2 as first section condition
   - youtube_player(branch) Working on YouTube player
     implementation
