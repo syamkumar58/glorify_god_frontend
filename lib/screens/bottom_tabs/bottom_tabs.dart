@@ -466,7 +466,7 @@ class _BottomTabsState extends State<BottomTabs>
 
       if (presentTime.isAfter(
         convertStoredValueToDateTime
-            .add(Duration(minutes: remoteConfigData.interstitialAdTime)),
+            .add(Duration(seconds: remoteConfigData.interstitialAdTime)),
       )) {
         log('did ir came here after 2 mins when i launch the app');
         await box.delete(HiveKeys.storeInterstitialAdLoadedTime);
@@ -477,7 +477,7 @@ class _BottomTabsState extends State<BottomTabs>
 
   Future showInterstitialAd() async {
     loadInterstitialAds().then((_) {
-      Future.delayed(const Duration(seconds: 2), () async {
+      Future.delayed(const Duration(seconds: 5), () async {
         if (_interstitialAd != null) {
           await _interstitialAd!.show();
         } else {

@@ -276,3 +276,9 @@
 - 16/03/2024
   - Added new AdMob Account and ad App id changed in both android and IOS
   - Login Page small UI changes
+
+- 18/03/2024
+  - Bug fixed in video player screen on device back button screen orientation logic change
+  - Interstitial Ad isAfter changed from minutes to seconds
+  - Changed Interstitial Ad loading delay time from 2sec to 5sec - tested in release mode working
+  
