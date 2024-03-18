@@ -10,12 +10,13 @@ class CustomNavBarAd extends StatelessWidget {
     double width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Container(
-          height: 70,
-          width: width,
-          color: Colors.transparent,
-          child: const AdsCard(
-            adSize: AdSize.banner,
-          ),),
+        height: 70,
+        width: width,
+        color: Colors.transparent,
+        child: const AdsCard(
+          adSize: AdSize.banner,
+        ),
+      ),
     );
   }
 }

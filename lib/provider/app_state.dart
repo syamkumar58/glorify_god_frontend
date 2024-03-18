@@ -10,9 +10,22 @@ import 'package:glorify_god/models/songs_modal.dart';
 import 'package:glorify_god/models/user_models/user_login_response_model.dart';
 import 'package:glorify_god/src/api/api_calls.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AppState with ChangeNotifier {
+
+
+  BannerAd? _bannerAd;
+
+
+  BannerAd? get bannerAd => _bannerAd;
+
+  set bannerAd(BannerAd? value) {
+    _bannerAd = value;
+    notifyListeners();
+  }
+
   bool _isGuestUser = false;
 
   bool get isGuestUser => _isGuestUser;

@@ -282,3 +282,4 @@
   - Interstitial Ad isAfter changed from minutes to seconds
   - Changed Interstitial Ad loading delay time from 2sec to 5sec - tested in release mode working
   - Removed Artist ID 2 as first section condition
+  - ad_changes(branch) Working on ads common widget

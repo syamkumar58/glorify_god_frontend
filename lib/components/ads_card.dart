@@ -1,10 +1,7 @@
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:glorify_god/config/remote_config.dart';
+import 'package:glorify_god/provider/app_state.dart' as app;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:provider/provider.dart' as p;
 
 class AdsCard extends StatefulWidget {
   const AdsCard({
@@ -19,59 +16,23 @@ class AdsCard extends StatefulWidget {
 }
 
 class _AdsCardState extends State<AdsCard> {
-  late BannerAd bannerAd;
-  bool adLoaded = false;
-
-  Future<void> initializeAd() async {
-    final adUnitId = kDebugMode
-        ? remoteConfigData.testAdUnitId
-        : Platform.isAndroid
-            ? remoteConfigData.androidAdUnitId
-            : remoteConfigData.iosAdUniId;
-    log(adUnitId, name: 'The ad unit id');
-    bannerAd = BannerAd(
-      size: widget.adSize,
-      adUnitId: adUnitId,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (ad) {
-          log('${ad.adUnitId} - ti ${DateTime.now()}', name: 'Ad loaded');
-          setState(
-            () {
-              adLoaded = true;
-            },
-          );
-        },
-        onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-          log('$error', name: 'Ad failed to load');
-        },
-      ),
-    );
-
-    await bannerAd.load();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    initializeAd();
-  }
+  app.AppState appState = app.AppState();
 
   @override
   Widget build(BuildContext context) {
+    appState = p.Provider.of<app.AppState>(context);
     return Center(
       child: Container(
-        width: bannerAd.size.width.toDouble(),
-        height: bannerAd.size.height.toDouble(),
+        width: appState.bannerAd!.size.width.toDouble(),
+        height: appState.bannerAd!.size.height.toDouble(),
         // margin: const EdgeInsets.only(top: 20),
         decoration: BoxDecoration(
           // color: Colors.white,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: adLoaded
+        child: appState.bannerAd != null
             ? AdWidget(
-                ad: bannerAd,
+                ad: appState.bannerAd!,
               )
             : const Center(
                 child: CupertinoActivityIndicator(),

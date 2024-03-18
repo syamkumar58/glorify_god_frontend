@@ -66,13 +66,14 @@ class _BottomTabsState extends State<BottomTabs>
 
   @override
   void initState() {
+    appState = context.read<AppState>();
+    initializeAd();
     box = Hive.box<dynamic>(HiveKeys.openBox);
     animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     );
     animationController.repeat();
-    appState = context.read<AppState>();
     interstitialAdLogic();
     WidgetsBinding.instance.addObserver(this);
     super.initState();
@@ -150,6 +151,31 @@ class _BottomTabsState extends State<BottomTabs>
     );
     await appState.checkArtistLoginDataByEmail();
     await appState.getRatings();
+  }
+
+  Future<void> initializeAd() async {
+    final adUnitId = kDebugMode
+        ? remoteConfigData.testAdUnitId
+        : Platform.isAndroid
+            ? remoteConfigData.androidAdUnitId
+            : remoteConfigData.iosAdUniId;
+    log(adUnitId, name: 'The ad unit id');
+    appState.bannerAd = ad.BannerAd(
+      size: ad.AdSize.banner,
+      adUnitId: adUnitId,
+      request: const ad.AdRequest(),
+      listener: ad.BannerAdListener(
+        onAdLoaded: (ad) {
+          log('${ad.adUnitId} - ti ${DateTime.now()}', name: 'Ad loaded');
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          log('$error', name: 'Ad failed to load');
+        },
+      ),
+    );
+
+    await appState.bannerAd!.load();
   }
 
   @override
