@@ -281,4 +281,4 @@
   - Bug fixed in video player screen on device back button screen orientation logic change
   - Interstitial Ad isAfter changed from minutes to seconds
   - Changed Interstitial Ad loading delay time from 2sec to 5sec - tested in release mode working
-  
+  - Removed Artist ID 2 as first section condition
