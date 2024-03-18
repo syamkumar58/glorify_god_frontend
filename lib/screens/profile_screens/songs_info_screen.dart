@@ -90,8 +90,8 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
                     Icons.sync,
                     size: 25,
                     color: AppColors.white,
-                  )),
-            )
+                  ),),
+            ),
           ],
         ),
         body: BlocBuilder<SongsDataInfoCubit, SongsDataInfoState>(
@@ -178,7 +178,7 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
                                 .format(streamsCompletedAfterMonetization),
                             //'${totalStreamCount}00000000000000',
                             styles: GoogleFonts.manrope(
-                                fontSize: 16, fontWeight: FontWeight.bold),
+                                fontSize: 16, fontWeight: FontWeight.bold,),
                           ),
                         ),
                       ),
@@ -215,7 +215,7 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
                           text: NumberFormat('#,##0').format(totalStreamCount),
                           //'${totalStreamCount}00000000000000',
                           styles: GoogleFonts.manrope(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                              fontSize: 16, fontWeight: FontWeight.bold,),
                         ),
                       ),
                     ),

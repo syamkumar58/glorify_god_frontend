@@ -13,7 +13,7 @@ class SongsDataInfoCubit extends Cubit<SongsDataInfoState> {
   Future addSongStreamData(
       {required int artistId,
       required DateTime startDate,
-      required DateTime endDate}) async {
+      required DateTime endDate,}) async {
     final res = await ApiCalls().createArtistsSongData(
       artistId: artistId,
       createdAt: DateTime.now(),
@@ -33,7 +33,7 @@ class SongsDataInfoCubit extends Cubit<SongsDataInfoState> {
   Future getData(
       {required int artistId,
       required DateTime startDate,
-      required DateTime endDate}) async {
+      required DateTime endDate,}) async {
     final data = await ApiCalls().getArtistsSongDataById(
       artistId: artistId,
       startDate: startDate,
@@ -45,21 +45,21 @@ class SongsDataInfoCubit extends Cubit<SongsDataInfoState> {
     if (data.statusCode == 200) {
       final songsInformation = getArtistSongsDataByIdModelFromJson(data.body);
       log('${songsInformation.totalStreamCount}',
-          name: 'songs onfo from cubit');
+          name: 'songs onfo from cubit',);
       emit(SongsDataInfoLoaded(
         songsInformation: songsInformation.data,
         totalStreamCount: songsInformation.totalStreamCount,
         monetization: songsInformation.monetization,
         streamsCompletedAfterMonetization:
             songsInformation.streamsCompletedAfterMonetization,
-      ));
+      ),);
     } else {
       emit(SongsDataInfoLoaded(
         songsInformation: const [],
         totalStreamCount: 0,
         monetization: false,
         streamsCompletedAfterMonetization: 0,
-      ));
+      ),);
     }
   }
 }

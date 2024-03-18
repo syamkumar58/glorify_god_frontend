@@ -36,32 +36,6 @@ class ApiCalls {
     String gender = 'UNKNOWN',
     String provider = 'GOOGLE',
   }) async {
-    // var uuId = '';
-    // var platform = '';
-    // var deviceName = '';
-    // var versionBaseOs = '';
-    // var manufacture = '';
-    // var model = '';
-    //
-    // final deviceInfo = DeviceInfoPlugin();
-    //
-    // if (Platform.isIOS) {
-    //   final iosInfo = await deviceInfo.iosInfo;
-    //   uuId = iosInfo.identifierForVendor!;
-    //   platform = 'iOS';
-    //   deviceName = iosInfo.name;
-    //   versionBaseOs = iosInfo.systemVersion;
-    //   manufacture = iosInfo.model;
-    //   model = iosInfo.model;
-    // } else if (Platform.isAndroid) {
-    //   final androidInfo = await deviceInfo.androidInfo;
-    //   uuId = androidInfo.id;
-    //   platform = 'Android';
-    //   deviceName = androidInfo.device;
-    //   versionBaseOs = androidInfo.version.release;
-    //   manufacture = androidInfo.manufacturer;
-    //   model = androidInfo.device;
-    // }
 
     try {
       final body = {
@@ -81,15 +55,6 @@ class ApiCalls {
         'fcmToken': fcmToken,
         'timeZone': timeZone,
         'provider': provider,
-        // 'device_request': {
-        //   'UUID': uuId,
-        //   'platform': platform,
-        //   'device_name': deviceName,
-        //   'version_base_os': versionBaseOs,
-        //   'manufacture': manufacture,
-        //   'model': model,
-        //   'is_physical_device': true,
-        // },
       };
 
       log(json.encode(body),name:'Login request');
@@ -104,7 +69,7 @@ class ApiCalls {
 
       if (loginResponse.statusCode == 200) {
         final response = userLoginResponseModelFromJson(loginResponse.body);
-        log('${loginResponse.body}',
+        log(loginResponse.body,
             name: 'User login response from api calls');
         return response;
       } else {
@@ -128,8 +93,8 @@ class ApiCalls {
     try {
       final user = await http.get(Uri.parse(url), headers: {
         'Content-Type': 'application/json',
-        'Authorization': token
-      });
+        'Authorization': token,
+      },);
 
       log(user.body, name: 'the user by id 1');
 
@@ -230,7 +195,7 @@ class ApiCalls {
     log(uri, name: 'getFavourites request sending');
     try {
       final response = await http.get(Uri.parse(uri),
-          headers: {'Content-Type': 'application/json', authorization: token});
+          headers: {'Content-Type': 'application/json', authorization: token},);
       log('${response.statusCode}', name: 'getFavourites response');
       return response;
     } catch (e) {
@@ -252,7 +217,7 @@ class ApiCalls {
     try {
       final response = await http.post(Uri.parse(uri),
           body: json.encode(body),
-          headers: {'Content-Type': 'application/json', authorization: token});
+          headers: {'Content-Type': 'application/json', authorization: token},);
       log('${response.statusCode}', name: 'searched response');
       return response;
     } catch (e) {
@@ -265,7 +230,7 @@ class ApiCalls {
     final token = await getToken();
     try {
       final response = await http.get(Uri.parse(getAllSongs),
-          headers: {'Content-Type': 'application/json', authorization: token});
+          headers: {'Content-Type': 'application/json', authorization: token},);
 
       return response;
     } catch (e) {
@@ -288,7 +253,7 @@ class ApiCalls {
     const uri = updateRatingUrl;
     final theHeaders = {
       'Content-Type': 'application/json',
-      authorization: token
+      authorization: token,
     };
 
     try {
@@ -313,7 +278,7 @@ class ApiCalls {
     log(uri, name: 'getRating url request');
     try {
       final res = await http.get(Uri.parse(uri),
-          headers: {'Content-Type': 'application/json', authorization: token});
+          headers: {'Content-Type': 'application/json', authorization: token},);
       return res;
     } catch (e) {
       log('$e', name: 'getRating error');
@@ -356,7 +321,7 @@ class ApiCalls {
     final token = await getToken();
     try {
       final res = await http.get(Uri.parse(url),
-          headers: {'Content-Type': 'application/json', authorization: token});
+          headers: {'Content-Type': 'application/json', authorization: token},);
 
       return res;
     } catch (e) {
@@ -366,12 +331,12 @@ class ApiCalls {
   }
 
   Future<http.Response> acceptedPolicyById(
-      {required int userId, required bool check}) async {
+      {required int userId, required bool check,}) async {
     final url = '$privacyPolicyUrl/?userId=$userId&check=$check';
     final token = await getToken();
     try {
       final res = await http.post(Uri.parse(url),
-          headers: {'Content-Type': 'application/json', authorization: token});
+          headers: {'Content-Type': 'application/json', authorization: token},);
       log(res.body, name: 'acceptedPolicyById from api services');
       return res;
     } catch (e) {
@@ -381,12 +346,12 @@ class ApiCalls {
   }
 
   Future<http.Response> checkUserAcceptedPolicyById(
-      {required int userId}) async {
+      {required int userId,}) async {
     final url = '$privacyPolicyAcceptedUrl?userId=$userId';
     final token = await getToken();
     try {
       final res = await http.get(Uri.parse(url),
-          headers: {'Content-Type': 'application/json', authorization: token});
+          headers: {'Content-Type': 'application/json', authorization: token},);
 
       return res;
     } catch (e) {
@@ -396,14 +361,14 @@ class ApiCalls {
   }
 
   Future<http.Response> removeUserFromPrivacyPolicyById(
-      {required int userId}) async {
+      {required int userId,}) async {
     final url = '$removeUserFromPrivacyPolicyUrl?userId=$userId';
     final token = await getToken();
     try {
       final res = await http.delete(Uri.parse(url),
-          headers: {'Content-Type': 'application/json', authorization: token});
+          headers: {'Content-Type': 'application/json', authorization: token},);
       log('${res.body} - ${res.statusCode}',
-          name: 'removeUserFromPrivacyPolicyById response On success ');
+          name: 'removeUserFromPrivacyPolicyById response On success ',);
       return res;
     } catch (e) {
       log('$e', name: 'removeUserFromPrivacyPolicyById error');
@@ -424,7 +389,7 @@ class ApiCalls {
     final body = {
       "artistsId": artistId,
       "createdAt": formattedDate,
-      "streamCount": 1
+      "streamCount": 1,
     };
     final jsonBody = json.encode(body);
 
@@ -473,7 +438,7 @@ class ApiCalls {
   }
 
   Future<http.Response?> checkArtistLoginDataByEmail(
-      {required String email}) async {
+      {required String email,}) async {
     const url = checkArtistLoginDataByIdUrl;
     final token = await getToken();
 

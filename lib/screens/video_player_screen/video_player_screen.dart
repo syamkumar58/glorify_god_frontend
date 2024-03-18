@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,11 +14,12 @@ import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart' as a;
 import 'package:glorify_god/utils/app_colors.dart';
+import 'package:glorify_god/utils/app_strings.dart';
 import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({
@@ -48,6 +50,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool loading = false;
 
   bool landScopeMode = false;
+
+  bool showMoreDetails = false;
 
   late AnimationController animationController;
 
@@ -92,151 +96,187 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<a.AppState>(context);
-    return Scaffold(
-      appBar: MediaQuery.of(context).orientation == Orientation.portrait
-          ? AppBar(
-              leading: IconButton(
-                padding: const EdgeInsets.only(left: 12),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: Icon(
-                  Icons.keyboard_arrow_left,
-                  size: 32,
-                  color: AppColors.white,
+    return WillPopScope(
+      onWillPop: () async {
+        await changeOrientation();
+        return true;
+      },
+      child: Scaffold(
+        appBar: MediaQuery.of(context).orientation == Orientation.portrait
+            ? AppBar(
+                leading: IconButton(
+                  padding: const EdgeInsets.only(left: 12),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(
+                    Icons.keyboard_arrow_left,
+                    size: 32,
+                    color: AppColors.white,
+                  ),
                 ),
-              ),
-              actions: [
-                BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
-                  builder: (context, state) {
-                    if (state is! VideoPlayerInitialised) {
-                      return const SizedBox();
-                    }
+                actions: [
+                  BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
+                    builder: (context, state) {
+                      if (state is! VideoPlayerInitialised) {
+                        return const SizedBox();
+                      }
 
-                    final data = state;
+                      final data = state;
 
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: TextButton.icon(
-                        label: AppText(
-                          text: 'Close',
-                          styles: GoogleFonts.manrope(
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: TextButton.icon(
+                          label: AppText(
+                            text: 'Close',
+                            styles: GoogleFonts.manrope(
+                              color: data.chewieController.videoPlayerController
+                                      .value.isInitialized
+                                  ? AppColors.white
+                                  : AppColors.dullWhite,
+                            ),
+                          ),
+                          onPressed: data.chewieController.videoPlayerController
+                                  .value.isInitialized
+                              ? () async {
+                                  Navigator.pop(context);
+                                  await BlocProvider.of<VideoPlayerCubit>(
+                                    context,
+                                  ).stopVideoPlayer();
+                                }
+                              : null,
+                          icon: Icon(
+                            Icons.close,
+                            size: 21,
                             color: data.chewieController.videoPlayerController
                                     .value.isInitialized
                                 ? AppColors.white
                                 : AppColors.dullWhite,
                           ),
                         ),
-                        onPressed: data.chewieController.videoPlayerController
-                                .value.isInitialized
-                            ? () async {
-                                Navigator.pop(context);
-                                await BlocProvider.of<VideoPlayerCubit>(context)
-                                    .stopVideoPlayer();
-                              }
-                            : null,
-                        icon: Icon(
-                          Icons.close,
-                          size: 21,
-                          color: data.chewieController.videoPlayerController
-                                  .value.isInitialized
-                              ? AppColors.white
-                              : AppColors.dullWhite,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            )
-          : const PreferredSize(
-              preferredSize: Size.fromHeight(0), child: SizedBox()),
-      body: SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
-          builder: (context, state) {
-            if (state is! VideoPlayerInitialised) {
-              return waiting();
-            }
+                      );
+                    },
+                  ),
+                ],
+              )
+            : const PreferredSize(
+                preferredSize: Size.fromHeight(0),
+                child: SizedBox(),
+              ),
+        body: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
+            builder: (context, state) {
+              if (state is! VideoPlayerInitialised) {
+                return waiting();
+              }
 
-            final data = state;
-            return MediaQuery.of(context).orientation == Orientation.portrait
-                ? Column(
-                    children: [
-                      videoPortion(data: data),
-                      if (MediaQuery.of(context).orientation ==
-                          Orientation.portrait)
-                        Expanded(
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                ListTile(
-                                  tileColor: Colors.blueGrey.withOpacity(0.1),
-                                  leading: CircleAvatar(
-                                    backgroundColor: AppColors.dullBlack,
-                                    backgroundImage:
-                                        NetworkImage(data.songData.artUri),
+              final data = state;
+              return MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Column(
+                      children: [
+                        videoPortion(data: data),
+                        if (MediaQuery.of(context).orientation ==
+                            Orientation.portrait)
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  ListTile(
+                                    tileColor: Colors.blueGrey.withOpacity(0.1),
+                                    leading: CircleAvatar(
+                                      backgroundColor: AppColors.dullBlack,
+                                      backgroundImage:
+                                          NetworkImage(data.songData.artUri),
+                                    ),
+                                    title: Text(
+                                      data.songData.title,
+                                      textAlign: TextAlign.start,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.manrope(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.white,
+                                      ),
+                                    ),
+                                    subtitle: AppText(
+                                      text: data.songData.artist,
+                                      textAlign: TextAlign.start,
+                                      maxLines: 1,
+                                      styles: GoogleFonts.manrope(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.white,
+                                      ),
+                                    ),
+                                    trailing: Container(
+                                      color: Colors.transparent,
+                                      width: width * 0.3,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Icon(
+                                            showMoreDetails
+                                                ? Icons.keyboard_arrow_up
+                                                : Icons.keyboard_arrow_down,
+                                            size: 25,
+                                            color: AppColors.dullWhite,
+                                          ),
+                                          IconButton(
+                                            padding: EdgeInsets.zero,
+                                            onPressed: () async {
+                                              final favourite = await onFav();
+                                              await likedSongs();
+                                              setState(() {
+                                                appState.isSongFavourite =
+                                                    favourite;
+                                              });
+                                            },
+                                            icon: Icon(
+                                              appState.isSongFavourite
+                                                  ? Icons.favorite
+                                                  : Icons.favorite_border,
+                                              size: 21,
+                                              color: appState.isSongFavourite
+                                                  ? AppColors.redAccent
+                                                  : AppColors.dullWhite,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      setState(() {
+                                        showMoreDetails = !showMoreDetails;
+                                      });
+                                    },
                                   ),
-                                  title: Text(
-                                    data.songData.title,
-                                    textAlign: TextAlign.start,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.manrope(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.white,
+                                  if (showMoreDetails)
+                                    showMoreDetailsWidget(data),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 10),
+                                    child: otherSongs(
+                                      playingSongId: data.songData.songId,
                                     ),
                                   ),
-                                  subtitle: AppText(
-                                    text: data.songData.artist,
-                                    textAlign: TextAlign.start,
-                                    maxLines: 1,
-                                    styles: GoogleFonts.manrope(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.white,
-                                    ),
-                                  ),
-                                  trailing: IconButton(
-                                      onPressed: () async {
-                                        final favourite = await onFav();
-                                        await likedSongs();
-                                        setState(() {
-                                          appState.isSongFavourite = favourite;
-                                        });
-                                      },
-                                      icon: Icon(
-                                        appState.isSongFavourite
-                                            ? Icons.favorite
-                                            : Icons.favorite_border,
-                                        size: 21,
-                                        color: appState.isSongFavourite
-                                            ? AppColors.redAccent
-                                            : AppColors.dullWhite,
-                                      )),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: otherSongs(
-                                    playingSongId: data.songData.songId,
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                    ],
-                  )
-                : videoAspect(data: data);
-          },
+                      ],
+                    )
+                  : videoAspect(data: data);
+            },
+          ),
         ),
+        bottomNavigationBar:
+            MediaQuery.of(context).orientation == Orientation.portrait
+                ? const CustomNavBarAd()
+                : const SizedBox(),
       ),
-      bottomNavigationBar:
-          MediaQuery.of(context).orientation == Orientation.portrait
-              ? const CustomNavBarAd()
-              : const SizedBox(),
     );
   }
 
@@ -266,9 +306,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        IconButton(
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: AppColors.black.withOpacity(0.7),
+                          ),
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
                             onPressed: () async {
                               await skipPrevious();
                             },
@@ -276,7 +324,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                               Icons.skip_previous,
                               size: 30,
                               color: AppColors.white,
-                            )),
+                            ),
+                          ),
+                        ),
                         Container(
                           width: 50,
                           height: 50,
@@ -286,26 +336,35 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                           ),
                           child: Center(
                             child: IconButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: () {
-                                  if (data.chewieController
-                                      .videoPlayerController.value.isPlaying) {
-                                    data.chewieController.pause();
-                                  } else {
-                                    data.chewieController.play();
-                                  }
-                                },
-                                icon: Icon(
-                                  data.chewieController.videoPlayerController
-                                          .value.isPlaying
-                                      ? Icons.pause
-                                      : Icons.play_arrow,
-                                  size: 30,
-                                  color: AppColors.white,
-                                )),
+                              padding: EdgeInsets.zero,
+                              onPressed: () {
+                                if (data.chewieController.videoPlayerController
+                                    .value.isPlaying) {
+                                  data.chewieController.pause();
+                                } else {
+                                  data.chewieController.play();
+                                }
+                              },
+                              icon: Icon(
+                                data.chewieController.videoPlayerController
+                                        .value.isPlaying
+                                    ? Icons.pause
+                                    : Icons.play_arrow,
+                                size: 30,
+                                color: AppColors.white,
+                              ),
+                            ),
                           ),
                         ),
-                        IconButton(
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: AppColors.black.withOpacity(0.7),
+                          ),
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
                             onPressed: () async {
                               await skipNext();
                             },
@@ -313,7 +372,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                               Icons.skip_next,
                               size: 30,
                               color: AppColors.white,
-                            )),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -330,6 +391,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     width: width,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Container(
                           width: width * 0.98,
@@ -341,8 +403,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                             children: [
                               AppText(
                                 text:
-                                    '${data.chewieController.videoPlayerController.value.position.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.position.inSeconds % 60).toString().padLeft(2, '0')}'
-                                    ' / ${data.chewieController.videoPlayerController.value.duration.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.duration.inSeconds % 60).toString().padLeft(2, '0')}',
+                                    '${data.chewieController.videoPlayerController.value.position.inMinutes.toString().padLeft(2, '0')}:${(data.chewieController.videoPlayerController.value.position.inSeconds % 60).toString().padLeft(
+                                          2,
+                                          '0',
+                                        )}'
+                                    ' / ${data.chewieController.videoPlayerController.value.duration.inMinutes.toString().padLeft(
+                                          2,
+                                          '0',
+                                        )}:${(data.chewieController.videoPlayerController.value.duration.inSeconds % 60).toString().padLeft(
+                                          2,
+                                          '0',
+                                        )}',
                                 styles: GoogleFonts.manrope(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
@@ -358,19 +429,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                                       '${MediaQuery.of(context).orientation == Orientation.portrait}',
                                       name: 'The orientation',
                                     );
-                                    if (MediaQuery.of(context).orientation ==
-                                        Orientation.portrait) {
-                                      SystemChrome.setPreferredOrientations(
-                                        [
-                                          DeviceOrientation.landscapeRight,
-                                          DeviceOrientation.landscapeLeft,
-                                        ],
-                                      );
-                                    } else {
-                                      SystemChrome.setPreferredOrientations(
-                                        [DeviceOrientation.portraitUp],
-                                      );
-                                    }
+                                    changeOrientation();
                                   },
                                   child: Icon(
                                     !landScopeMode
@@ -384,37 +443,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                             ],
                           ),
                         ),
-                        Container(
-                          width: width,
-                          height: 5,
-                          padding: EdgeInsets.zero,
-                          color: AppColors.dullWhite,
-                          child: Stack(
-                            children: [
-                              FractionallySizedBox(
-                                widthFactor: (data
-                                        .chewieController
-                                        .videoPlayerController
-                                        .value
-                                        .position
-                                        .inSeconds /
-                                    data.chewieController.videoPlayerController
-                                        .value.duration.inSeconds),
-                                child: Shimmer.fromColors(
-                                  baseColor: AppColors.white,
-                                  highlightColor:
-                                      AppColors.white.withOpacity(0.7),
-                                  enabled: true,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: AppColors.white,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
+                        seekBar(data: data),
                       ],
                     ),
                   ),
@@ -426,11 +455,155 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     );
   }
 
+  Widget seekBar({required VideoPlayerInitialised data}) {
+    return ProgressBar(
+      bufferedBarColor: AppColors.dullWhite,
+      thumbCanPaintOutsideBar: false,
+      progressBarColor: AppColors.redAccent,
+      thumbColor: Colors.transparent,
+      barCapShape: BarCapShape.square,
+      thumbRadius: 0,
+      thumbGlowRadius: 0,
+      buffered: Duration(
+        seconds: data.chewieController.videoPlayerController.value.position
+                .inSeconds +
+            50,
+      ),
+      progress: Duration(
+        seconds: data
+            .chewieController.videoPlayerController.value.position.inSeconds,
+      ),
+      total: Duration(
+        seconds: data
+            .chewieController.videoPlayerController.value.duration.inSeconds,
+      ),
+      timeLabelTextStyle: const TextStyle(
+        color: Colors.transparent,
+        fontSize: 0,
+      ),
+      onSeek: (duration) {
+        data.chewieController.videoPlayerController.seekTo(duration);
+      },
+    );
+  }
+
   Widget waiting() {
     return const AspectRatio(
       aspectRatio: 16 / 9,
       child: Center(
         child: CupertinoActivityIndicator(),
+      ),
+    );
+  }
+
+  Widget showMoreDetailsWidget(VideoPlayerInitialised data) {
+    return Container(
+      width: width,
+      padding: const EdgeInsets.only(top: 20, bottom: 20, left: 12, right: 12),
+      color: AppColors.dullBlack.withOpacity(0.3),
+      child: Column(
+        children: [
+          ListTile(
+            dense: true,
+            leading: const AppText(
+              text: AppStrings.songName,
+              textAlign: TextAlign.left,
+              styles: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            title: AppText(
+              text: data.songData.title,
+              textAlign: TextAlign.left,
+              styles: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          ListTile(
+            dense: true,
+            leading: const AppText(
+              text: AppStrings.singer,
+              textAlign: TextAlign.left,
+              styles: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            title: AppText(
+              text: data.songData.artist,
+              textAlign: TextAlign.left,
+              styles: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          if (data.songData.lyricist.isNotEmpty)
+            ListTile(
+              dense: true,
+              leading: AppText(
+                text: data.songData.lyricist.contains('Credits')
+                    ? data.songData.lyricist
+                    : AppStrings.lyricist,
+                textAlign: TextAlign.left,
+                styles: GoogleFonts.manrope(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              title: AppText(
+                text: data.songData.lyricist.contains('Credits')
+                    ? ''
+                    : data.songData.lyricist,
+                textAlign: TextAlign.left,
+                styles: GoogleFonts.manrope(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+          // if (data.songData.credits.isNotEmpty)
+          //   ListTile(
+          //     dense: true,
+          //     leading:  AppText(
+          //       text: AppStrings.lyricist,
+          //       textAlign: TextAlign.left,
+          //       styles: GoogleFonts.manrope(
+          //         fontSize: 16,
+          //         fontWeight: FontWeight.w400,
+          //       ),
+          //     ),
+          //     title: AppText(
+          //       text: data.songData.lyricist,
+          //       textAlign: TextAlign.left,
+          //       styles: GoogleFonts.manrope(
+          //         fontSize: 16,
+          //         fontWeight: FontWeight.w400,
+          //       ),
+          //     ),
+          //   ),
+          if (data.songData.ytUrl.isNotEmpty)
+            ListTile(
+              dense: true,
+              title: AppText(
+                text: data.songData.ytUrl,
+                textAlign: TextAlign.left,
+                styles: GoogleFonts.manrope(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.blue,
+                ),
+              ),
+              onTap: () async {
+                if (await canLaunchUrlString(data.songData.ytUrl)) {
+                  await launchUrlString(data.songData.ytUrl);
+                }
+              },
+            ),
+        ],
       ),
     );
   }
@@ -458,16 +631,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 height: 80,
                 width: 100,
                 decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 1,
-                      color: AppColors.white,
+                  border: Border.all(
+                    width: 1,
+                    color: AppColors.white,
+                  ),
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(
+                      songData.artUri,
                     ),
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: NetworkImage(
-                        songData.artUri,
-                      ),
-                    )),
+                  ),
+                ),
                 child: Center(
                   child: Container(
                     height: 30,
@@ -513,9 +687,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 await BlocProvider.of<VideoPlayerCubit>(context)
                     .setToInitialState();
                 await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
-                    songData: songData,
-                    songs: widget.songs,
-                    selectedSongIndex: selectedSongIndex);
+                  songData: songData,
+                  songs: widget.songs,
+                  selectedSongIndex: selectedSongIndex,
+                );
               },
             ),
           ),
@@ -567,6 +742,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Future likedSongs() async {
     await BlocProvider.of<LikedCubit>(context)
         .likedSongs(appState.userData.userId);
+  }
+
+  Future changeOrientation() async {
+    if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      SystemChrome.setPreferredOrientations(
+        [
+          DeviceOrientation.landscapeRight,
+          DeviceOrientation.landscapeLeft,
+        ],
+      );
+    } else {
+      SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp],
+      );
+    }
   }
 
   @override

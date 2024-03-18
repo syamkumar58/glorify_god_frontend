@@ -78,8 +78,7 @@ Future<UserLoginResponseModel?> googleLogin() async {
 }
 
 Future<UserLoginResponseModel?> userLoginCall(
-    {UserCredential? userCredentials, String provider = ''}) async {
-  log('${userCredentials!.user!.email}',name: 'userCredentials!.user!.email');
+    {UserCredential? userCredentials, String provider = '',}) async {
   try {
     final userLogin = await ApiCalls().logIn(
       email: userCredentials!.user!.email ?? '',
@@ -89,7 +88,7 @@ Future<UserLoginResponseModel?> userLoginCall(
       provider: provider,
     );
     log('\n\n $userLogin -- ${LoginProviders.GOOGLE.toString().split('.')[1]} \n\n',
-        name: 'userLogin!.body from user bloc');
+        name: 'userLogin!.body from user bloc',);
     await storeLogInDetailsInHive(userLogin!);
     return userLogin;
   } catch (er) {
@@ -102,7 +101,7 @@ Future<UserLoginResponseModel?> userLoginCall(
 }
 
 Future<dynamic> storeLogInDetailsInHive(
-    UserLoginResponseModel userLoginResponse) async {
+    UserLoginResponseModel userLoginResponse,) async {
   final glorifyGodBox = Hive.box<dynamic>(HiveKeys.openBox);
 
   final userLogInData = await glorifyGodBox.get(
@@ -207,7 +206,7 @@ Future<UserLoginResponseModel?> phoneNumberUserLogin({
       provider: LoginProviders.PHONENUMBER.toString().split('.')[1],
     );
     log('\n\n ${userLogin!.mobileNumber} \n\n',
-        name: 'userLogin!.body from user bloc');
+        name: 'userLogin!.body from user bloc',);
     await storeLogInDetailsInHive(userLogin);
     return userLogin;
   } catch (er) {

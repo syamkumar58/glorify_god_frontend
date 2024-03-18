@@ -14,7 +14,7 @@ class LikedCubit extends Cubit<LikedState> {
     final data = await ApiCalls().getFavourites(userId: userId);
 
     if (data != null && data.statusCode == 200) {
-      log('${data.body}',name:'Check the fav body');
+      log(data.body,name:'Check the fav body');
       final likedSongs = getFavouritesModelFromJson(data.body);
       emit(LikedLoaded(likedSongs: likedSongs));
     } else {

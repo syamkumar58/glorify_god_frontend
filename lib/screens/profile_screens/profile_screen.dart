@@ -10,6 +10,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
+import 'package:glorify_god/components/profile_components/version_number.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/screens/login_pages/login_page.dart';
@@ -74,8 +75,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   songsInformationTile(),
                 restOfScreen(),
                 const SizedBox(
-                  height: 20,
+                  height: 40,
                 ),
+                const VersionNumber(),
               ],
             ),
           ),
@@ -98,11 +100,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  border: Border.all(
-                    width: appState.userData.profileUrl.isNotEmpty ? 4 : 0,
-                    color: AppColors.white,
-                  )),
+                borderRadius: BorderRadius.circular(50),
+                border: Border.all(
+                  width: appState.userData.profileUrl.isNotEmpty ? 4 : 0,
+                  color: AppColors.white,
+                ),
+              ),
               child: CircleAvatar(
                 radius: 40,
                 backgroundColor: AppColors.dullBlack,
@@ -193,7 +196,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         width: width * 0.9,
         padding: const EdgeInsets.only(top: 12),
         margin: EdgeInsets.only(
-            top: appState.artistLoginDataByEmail != null ? 0 : 20),
+          top: appState.artistLoginDataByEmail != null ? 0 : 20,
+        ),
         decoration: BoxDecoration(
           color: AppColors.dullBlack.withOpacity(0.3),
           borderRadius: BorderRadius.circular(15),
@@ -206,8 +210,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.contact_support_outlined,
               text: AppStrings.helpAndSupport,
               onTap: () {
-                Navigator.of(context).push(CupertinoPageRoute(
-                    builder: (_) => const ContactSupportScreen()));
+                Navigator.of(context).push(
+                  CupertinoPageRoute(
+                    builder: (_) => const ContactSupportScreen(),
+                  ),
+                );
               },
             ),
             tile(
@@ -215,27 +222,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
               text: AppStrings.reportIssue,
               onTap: () {
                 Navigator.of(context).push(
-                    CupertinoPageRoute(builder: (_) => const ReportAProblem()));
+                  CupertinoPageRoute(builder: (_) => const ReportAProblem()),
+                );
               },
             ),
             tile(
-                icon: Icons.verified_user_outlined,
-                text: 'Privacy Policy',
-                onTap: () async {
-                  // final url = 'http://glorifyGod.in/privacyPolicy';
+              icon: Icons.verified_user_outlined,
+              text: 'Privacy Policy',
+              onTap: () async {
+                // final url = 'http://glorifyGod.in/privacyPolicy';
 
-                  // if (await canLaunchUrlString(url)) {
-                  //   await launchUrlString(url);
-                  // }
+                // if (await canLaunchUrlString(url)) {
+                //   await launchUrlString(url);
+                // }
 
-                  Navigator.of(context).push(
-                    CupertinoPageRoute(
-                      builder: (_) => const PrivacyPolicyScreen(
-                        showNavBack: true,
-                      ),
+                Navigator.of(context).push(
+                  CupertinoPageRoute(
+                    builder: (_) => const PrivacyPolicyScreen(
+                      showNavBack: true,
                     ),
-                  );
-                }),
+                  ),
+                );
+              },
+            ),
             tile(
               icon: Icons.logout_rounded,
               text: AppStrings.logout,
@@ -262,7 +271,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   });
                 } else {
                   toastMessage(
-                      message: 'Check your internet connection and try again');
+                    message: 'Check your internet connection and try again',
+                  );
                 }
               },
             ),
@@ -299,26 +309,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           RatingBar.builder(
-              itemPadding: const EdgeInsets.only(bottom: 12),
-              itemCount: 5,
-              itemSize: 25,
-              initialRating: appState.userGivenRating.toDouble(),
-              itemBuilder: (context, index) => const Icon(
-                    Icons.star,
-                    color: Colors.amber,
-                  ),
-              onRatingUpdate: (rating) async {
-                await appState
-                    .updateRatings(rating: rating.toInt())
-                    .then((value) {})
-                    .catchError((dynamic onError) {
-                  if (onError.toString().contains('Connection error')) {
-                    toastMessage(
-                        message:
-                            'Connection error. Server is under maintenance. Try again later in some time');
-                  }
-                });
-              }),
+            itemPadding: const EdgeInsets.only(bottom: 12),
+            itemCount: 5,
+            itemSize: 25,
+            initialRating: appState.userGivenRating.toDouble(),
+            itemBuilder: (context, index) => const Icon(
+              Icons.star,
+              color: Colors.amber,
+            ),
+            onRatingUpdate: (rating) async {
+              await appState
+                  .updateRatings(rating: rating.toInt())
+                  .then((value) {})
+                  .catchError((dynamic onError) {
+                if (onError.toString().contains('Connection error')) {
+                  toastMessage(
+                    message:
+                        'Connection error. Server is under maintenance. Try again later in some time',
+                  );
+                }
+              });
+            },
+          ),
           AppText(
             text: AppStrings.rateUsQuote,
             maxLines: 5,
@@ -334,15 +346,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget tile(
-      {required IconData icon, required String text, required Function onTap}) {
+  Widget tile({
+    required IconData icon,
+    required String text,
+    required Function onTap,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: Container(
           decoration: BoxDecoration(
-              color: AppColors.black.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(50)),
+            color: AppColors.black.withOpacity(0.4),
+            borderRadius: BorderRadius.circular(50),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Icon(
@@ -370,8 +386,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future onLogOutPushScreen() async {
     await Navigator.of(context).pushAndRemoveUntil(
-        CupertinoPageRoute(builder: (_) => const LoginPage()),
-        (route) => false);
+      CupertinoPageRoute(builder: (_) => const LoginPage()),
+      (route) => false,
+    );
     setState(() {
       onLogout = false;
     });

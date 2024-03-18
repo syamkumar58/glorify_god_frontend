@@ -58,11 +58,11 @@ class _SplashScreenState extends State<SplashScreen> {
           CupertinoPageRoute<BottomTabs>(
             builder: (_) => const BottomTabs(),
           ),
-          (route) => false);
+          (route) => false,);
     } else {
       Navigator.of(context).pushAndRemoveUntil(
           CupertinoPageRoute(builder: (_) => const LoginPage()),
-          (route) => false);
+          (route) => false,);
     }
   }
 
@@ -81,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen> {
         '$data\n'
         '${json.decode(configData)}\n'
         '${remoteConfigData.bannerMessages}',
-        name: 'Config data');
+        name: 'Config data',);
   }
 
   @override

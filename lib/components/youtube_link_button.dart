@@ -9,7 +9,7 @@ class YoutubeLinkButton extends StatelessWidget {
       {Key? key,
       required this.ytTitle,
       required this.ytImage,
-      required this.ytUrl})
+      required this.ytUrl,})
       : super(key: key);
 
   final String ytTitle;
@@ -36,7 +36,7 @@ class YoutubeLinkButton extends StatelessWidget {
                 styles: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                )),
+                ),),
           ),
           const SizedBox(
             height: 14,
@@ -50,7 +50,7 @@ class YoutubeLinkButton extends StatelessWidget {
               tileColor: Colors.blueGrey.withOpacity(0.3),
               dense: true,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),),
               leading: Container(
                 height: 60,
                 width: 80,
@@ -65,7 +65,7 @@ class YoutubeLinkButton extends StatelessWidget {
                       image: NetworkImage(
                         ytImage,
                       ),
-                    )),
+                    ),),
                 child: Center(
                   child: Container(
                     height: 30,

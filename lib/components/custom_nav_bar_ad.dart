@@ -15,7 +15,7 @@ class CustomNavBarAd extends StatelessWidget {
           color: Colors.transparent,
           child: const AdsCard(
             adSize: AdSize.banner,
-          )),
+          ),),
     );
   }
 }

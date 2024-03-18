@@ -149,6 +149,10 @@
 - 16/1/2024
   - Added a new wallet screen (Not clearly Done)
 
+- 17/03/2024
+  - Working on No Internet Connection
+  - Code formation
+
 - 21/1/2024
   - Done with song completion tracker
   - Added required API calls for collecting song data on each track with artist U-ID
@@ -245,6 +249,36 @@
   - Bug fixes on new email implementation
   - Moved Strings from files to common file
 
+- 18/03/2024
+  - Merged with main
+  - Working on YouTube video player for YouTube implementation
+  - Need to fix bugs i player screen
+
 - 08/03/2024
   - Version increment for play store upload
   - Added email conditional check for user login
+
+- 11/03/2024
+  - Changed the interstitial ad time from 30 to 10 minutes
+  - Home screen UI changed
+  - Stick Golden Old songs on top with whereas artistUi is 2   logics written
+  - Added version number to the profile screen
+  - Added Update popup in home screen for each latest update user will get the popup to update
+  - Logical changes
+  - Bug fixes
+  - Ui changes
+
+- 13/03/2024
+  - Added trailing comma separation analysis
+  - Video player seek bar changes with onSeek added
+    and also added see more with drop down icon for song details regarding the song playing
+  - In Banner card added background color to the text for separation to BG image
+  - Fetching all songs api call moved to home_tabs from home screen initial call and also changed from app_state provider to cubit system for better and speed loading
+  - Contact number removed and changed the gmail to app's mail from Help and Support screen
+
+- 14/03/2024
+  - Login Page UI changed now
+
+- 16/03/2024
+  - Added new AdMob Account and ad App id changed in both android and IOS
+  - Login Page small UI changes

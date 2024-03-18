@@ -8,7 +8,6 @@ import 'package:glorify_god/bloc/profile_bloc/songs_info_cubit/songs_data_info_c
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/utils/app_colors.dart';
-import 'package:meta/meta.dart';
 import 'package:video_player/video_player.dart';
 
 part 'video_player_state.dart';
@@ -65,13 +64,13 @@ class VideoPlayerCubit extends Cubit<VideoPlayerState> {
         songs: songs,
         chewieController: playerController!,
         currentSongIndex: currentSongIndex,
-      ));
+      ),);
 
       log(
           '${playerController!.videoPlayerController.value.position} // ${playerController!.videoPlayerController.value.duration}'
           '\n1.${playerController!.videoPlayerController.value.position != Duration.zero}'
           '\n2.${playerController!.videoPlayerController.value.position >= playerController!.videoPlayerController.value.duration}',
-          name: 'The nme from the cubit');
+          name: 'The nme from the cubit',);
 
       if (playerController!.videoPlayerController.value.position !=
               Duration.zero &&
@@ -114,7 +113,7 @@ class VideoPlayerCubit extends Cubit<VideoPlayerState> {
     final songData = songs[currentSongIndex];
 
     startPlayer(
-        songData: songData, songs: songs, selectedSongIndex: currentSongIndex);
+        songData: songData, songs: songs, selectedSongIndex: currentSongIndex,);
   }
 
   Future skipToPrevious({
@@ -129,7 +128,7 @@ class VideoPlayerCubit extends Cubit<VideoPlayerState> {
     final songData = songs[currentSongIndex];
 
     startPlayer(
-        songData: songData, songs: songs, selectedSongIndex: currentSongIndex);
+        songData: songData, songs: songs, selectedSongIndex: currentSongIndex,);
   }
 
   Future stopVideoPlayer() async {

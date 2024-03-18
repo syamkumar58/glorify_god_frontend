@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
@@ -271,7 +270,7 @@ class _SearchScreenState extends State<SearchScreen>
               );
 
               musicScreenNavigation(context,
-                  songData: songData, songs: collectedSongs);
+                  songData: songData, songs: collectedSongs,);
 
               await BlocProvider.of<VideoPlayerCubit>(context)
                   .setToInitialState();

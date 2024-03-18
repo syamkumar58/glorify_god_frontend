@@ -88,7 +88,7 @@ class _ReportAProblemState extends State<ReportAProblem> {
                                   });
                                   FocusScope.of(context).unfocus();
                                   final res = await appState.updateFeedback(
-                                      message: reportedIssue.trim());
+                                      message: reportedIssue.trim(),);
 
                                   if (res) {
                                     issueController.clear();
@@ -96,7 +96,7 @@ class _ReportAProblemState extends State<ReportAProblem> {
                                       isLoading = false;
                                     });
                                     toastMessage(
-                                        message: 'Feedback sent successfully');
+                                        message: 'Feedback sent successfully',);
                                     // Navigator.pop(context);
                                   } else {
                                     setState(() {

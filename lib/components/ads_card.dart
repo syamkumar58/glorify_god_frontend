@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -29,7 +28,7 @@ class _AdsCardState extends State<AdsCard> {
         : Platform.isAndroid
             ? remoteConfigData.androidAdUnitId
             : remoteConfigData.iosAdUniId;
-    log(adUnitId,name:'The ad unit id');
+    log(adUnitId, name: 'The ad unit id');
     bannerAd = BannerAd(
       size: widget.adSize,
       adUnitId: adUnitId,
