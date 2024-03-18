@@ -201,44 +201,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     //     },
                     //     child: const Text('Test Button'),
                     //   ),
-
-                    //<-- Show only Golden songs here ART ID - 2 -->/
                     if (allSongs.isNotEmpty)
-                      ...allSongs
-                          .where((element) => element.artistUid == 2)
-                          .map((e) {
-                        return Container(
-                          color: Colors.transparent,
-                          margin: const EdgeInsets.only(bottom: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (e.songs.isNotEmpty)
-                                TitleTile(
-                                  title: e.artistName,
-                                  showViewAll: false,
-                                  onPressViewAll: () {},
-                                  pastorImage: e.artistImage,
-                                ),
-                              if (e.songs.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 12,
-                                    left: 5,
-                                    right: 5,
-                                  ),
-                                  child: songCard(e.songs),
-                                ),
-                            ],
-                          ),
-                        );
-                      }),
-
-                    //<-- Show only All songs here except ART ID - 2 -->/
-                    if (allSongs.isNotEmpty)
-                      ...allSongs
-                          .where((element) => element.artistUid != 2)
-                          .map((e) {
+                      ...allSongs.map((e) {
                         return Container(
                           color: Colors.transparent,
                           margin: const EdgeInsets.only(bottom: 20),
