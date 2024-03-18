@@ -74,6 +74,8 @@ class _YoutubeVideoPlayerScreenState extends State<YoutubeVideoPlayerScreen>
           final ytController = state.youtubePlayerController;
           final songData = state.songData;
 
+          log('${songData.title} - ${songData.artist}',name:'From widget youtube videos');
+
           return YoutubePlayerBuilder(
             player: YoutubePlayer(
               controller: ytController,
@@ -391,28 +393,13 @@ class _YoutubeVideoPlayerScreenState extends State<YoutubeVideoPlayerScreen>
                   : const SizedBox(),
               onTap: () async {
                 final selectedSongIndex = widget.songs.indexOf(songData);
-                // await BlocProvider.of<VideoPlayerCubit>(context)
-                //     .setToInitialState();
-                // await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
-                //   songData: songData,
-                //   songs: widget.songs,
-                //   selectedSongIndex: selectedSongIndex,
-                // );
-
+                BlocProvider.of<YoutubePlayerCubit>(context).initialiseThePlayer();
                 BlocProvider.of<YoutubePlayerCubit>(context).selectedOtherSong(
                   videoId: songData.ytUrl,
                   songData: songData,
                   songs: widget.songs,
+                  currentPlayingIndex: selectedSongIndex,
                 );
-
-                // BlocProvider.of<YoutubePlayerCubit>(context)
-                //     .initialiseThePlayer();
-                //
-                // BlocProvider.of<YoutubePlayerCubit>(context).start(
-                //   songData: songData,
-                //   songs: widget.songs,
-                //   currentSongIndex: selectedSongIndex,
-                // );
               },
             ),
           ),

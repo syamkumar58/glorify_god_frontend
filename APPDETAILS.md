@@ -282,3 +282,5 @@
 - 16/03/2024
   - Added new AdMob Account and ad App id changed in both android and IOS
   - Login Page small UI changes
+  - youtube_player(branch) Working on YouTube player
+    implementation

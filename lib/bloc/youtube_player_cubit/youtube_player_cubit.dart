@@ -52,24 +52,26 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
     );
 
     //<-- once started the the listener handles the rest -->/
-    youtubePlayerController?.addListener(() {
-      log('handle the listener');
-      emit(
-        YoutubePlayerInitialised(
-          songs: songs,
-          currentSongIndex: selectedIndex,
-          youtubePlayerController: youtubePlayerController!,
-          songData: songData,
-        ),
-      );
-    });
+    // youtubePlayerController?.addListener(() {
+    //   log('handle the listener');
+    //   emit(
+    //     YoutubePlayerInitialised(
+    //       songs: songs,
+    //       currentSongIndex: selectedIndex,
+    //       youtubePlayerController: youtubePlayerController!,
+    //       songData: songData,
+    //     ),
+    //   );
+    // });
   }
 
   Future selectedOtherSong({
     required String videoId,
     required List<Song> songs,
     required Song songData,
+    required int currentPlayingIndex,
   }) async {
+    selectedIndex = currentPlayingIndex;
     youtubePlayerController!.load(videoId);
     emit(
       YoutubePlayerInitialised(
@@ -98,7 +100,16 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
       selectedIndex = 0;
     }
 
+    final songData = songs[selectedIndex];
     youtubePlayerController?.load(songs[selectedIndex].ytUrl);
+    emit(
+      YoutubePlayerInitialised(
+        songs: songs,
+        currentSongIndex: selectedIndex,
+        youtubePlayerController: youtubePlayerController!,
+        songData: songData,
+      ),
+    );
   }
 
   Future skipToPrevious({
@@ -109,6 +120,15 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
     } else {
       selectedIndex = songs.length - 1;
     }
+    final songData = songs[selectedIndex];
     youtubePlayerController?.load(songs[selectedIndex].ytUrl);
+    emit(
+      YoutubePlayerInitialised(
+        songs: songs,
+        currentSongIndex: selectedIndex,
+        youtubePlayerController: youtubePlayerController!,
+        songData: songData,
+      ),
+    );
   }
 }
