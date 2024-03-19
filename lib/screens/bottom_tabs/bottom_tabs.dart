@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glorify_god/bloc/ads_cubit/ads_cubit.dart';
 import 'package:glorify_god/bloc/all_songs/all_songs_cubit.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
@@ -66,14 +67,15 @@ class _BottomTabsState extends State<BottomTabs>
 
   @override
   void initState() {
+    BlocProvider.of<AdsCubit>(context).initializeAd();
     box = Hive.box<dynamic>(HiveKeys.openBox);
+    interstitialAdLogic();
     animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     );
     animationController.repeat();
     appState = context.read<AppState>();
-    interstitialAdLogic();
     WidgetsBinding.instance.addObserver(this);
     super.initState();
     initialUserCall();
@@ -145,11 +147,11 @@ class _BottomTabsState extends State<BottomTabs>
     );
     log('$userLogInData', name: 'cached userLoginData from bottom tabs');
 
-    await appState.initiallySetUserDataGlobally(
+    appState.initiallySetUserDataGlobally(
       userLogInData,
     );
-    await appState.checkArtistLoginDataByEmail();
-    await appState.getRatings();
+    appState.checkArtistLoginDataByEmail();
+    appState.getRatings();
   }
 
   @override
@@ -162,25 +164,37 @@ class _BottomTabsState extends State<BottomTabs>
       child: Scaffold(
         extendBodyBehindAppBar: true,
         body: screens[_screenIndex],
-        bottomNavigationBar: navBar(),
+        bottomNavigationBar: SafeArea(child: navBar()),
       ),
     );
   }
 
   Widget navBar() {
-    return Container(
-      color: Colors.transparent,
-      width: width,
-      height: Platform.isIOS ? height * 0.18 : height * 0.16,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const AdsCard(
-            adSize: ad.AdSize.banner,
+    return BlocBuilder<AdsCubit, AdsState>(
+      builder: (context, state) {
+        if (state is! AdsLoaded) {
+          return SizedBox(
+            width: width,
+            height: height * 0.08,
+            child: bottomBar(),
+          );
+        }
+
+        return Container(
+          color: Colors.transparent,
+          width: width,
+          height: Platform.isIOS ? height * 0.13 : height * 0.14,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const AdsCard(
+                adSize: ad.AdSize.banner,
+              ),
+              bottomBar(),
+            ],
           ),
-          bottomBar(),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -353,8 +367,8 @@ class _BottomTabsState extends State<BottomTabs>
             }
           },
           child: Container(
-            width: Platform.isAndroid ? 50 : 60,
-            height: Platform.isAndroid ? 50 : 60,
+            width: Platform.isAndroid ? 50 : 55,
+            height: Platform.isAndroid ? 50 : 55,
             margin: const EdgeInsets.only(top: 5, bottom: 5),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
@@ -465,8 +479,11 @@ class _BottomTabsState extends State<BottomTabs>
           DateTime.parse(getStoredAdShownTime.toString());
 
       if (presentTime.isAfter(
-        convertStoredValueToDateTime
-            .add(Duration(seconds: remoteConfigData.interstitialAdTime)),
+        convertStoredValueToDateTime.add(
+          Duration(
+            seconds: remoteConfigData.interstitialAdTime,
+          ),
+        ),
       )) {
         log('did ir came here after 2 mins when i launch the app');
         await box.delete(HiveKeys.storeInterstitialAdLoadedTime);
@@ -477,7 +494,7 @@ class _BottomTabsState extends State<BottomTabs>
 
   Future showInterstitialAd() async {
     loadInterstitialAds().then((_) {
-      Future.delayed(const Duration(seconds: 5), () async {
+      Future.delayed(const Duration(seconds: 4), () async {
         if (_interstitialAd != null) {
           await _interstitialAd!.show();
         } else {
@@ -501,9 +518,7 @@ class _BottomTabsState extends State<BottomTabs>
       request: const ad.AdRequest(),
       adLoadCallback: ad.InterstitialAdLoadCallback(
         onAdLoaded: (ad.InterstitialAd advertisement) {
-          log('$advertisement', name: 'Step 1');
           _interstitialAd = advertisement;
-          log('$_interstitialAd', name: 'Step 2');
           _interstitialAd!.fullScreenContentCallback =
               ad.FullScreenContentCallback(
             onAdDismissedFullScreenContent: (advertisement) async {

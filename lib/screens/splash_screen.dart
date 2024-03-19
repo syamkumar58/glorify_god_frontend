@@ -37,8 +37,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     glorifyGodBox = Hive.box(HiveKeys.openBox);
-    super.initState();
     setConfigData();
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Future.delayed(const Duration(seconds: 2), navigations);
       // if (Platform.isAndroid) {
