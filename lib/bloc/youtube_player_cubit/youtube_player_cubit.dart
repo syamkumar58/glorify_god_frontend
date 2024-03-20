@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:meta/meta.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 part 'youtube_player_state.dart';
 
@@ -29,17 +29,16 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
         '${songs[selectedIndex].ytUrl} 7& ${songs[selectedIndex].title}',
         name: 'Song playing dispose activated',
       );
-      youtubePlayerController?.dispose();
+      youtubePlayerController?.close();
     }
 
     youtubePlayerController = YoutubePlayerController(
-      initialVideoId: songs[selectedIndex].ytUrl,
-      flags: const YoutubePlayerFlags(
-        autoPlay: true,
+      params: const YoutubePlayerParams(
         mute: false,
-        hideControls: false,
       ),
     );
+
+    youtubePlayerController?.loadVideo('https://www.youtube.com/watch?v=${songs[selectedIndex].ytUrl}');
 
     //<-- Initial start to the cubit  -->/
     emit(
@@ -72,7 +71,7 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
     required int currentPlayingIndex,
   }) async {
     selectedIndex = currentPlayingIndex;
-    youtubePlayerController!.load(videoId);
+    youtubePlayerController?.loadVideo('https://www.youtube.com/watch?v=$videoId');
     emit(
       YoutubePlayerInitialised(
         songs: songs,
@@ -84,11 +83,11 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
   }
 
   Future play() async {
-    youtubePlayerController?.play();
+    youtubePlayerController?.playVideo();
   }
 
   Future pause() async {
-    youtubePlayerController?.pause();
+    youtubePlayerController?.pauseVideo();
   }
 
   Future skipToNext({
@@ -101,7 +100,7 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
     }
 
     final songData = songs[selectedIndex];
-    youtubePlayerController?.load(songs[selectedIndex].ytUrl);
+    youtubePlayerController?.loadVideo('https://www.youtube.com/watch?v=${songs[selectedIndex].ytUrl}');
     emit(
       YoutubePlayerInitialised(
         songs: songs,
@@ -121,7 +120,7 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
       selectedIndex = songs.length - 1;
     }
     final songData = songs[selectedIndex];
-    youtubePlayerController?.load(songs[selectedIndex].ytUrl);
+    youtubePlayerController?.loadVideo('https://www.youtube.com/watch?v=${songs[selectedIndex].ytUrl}');
     emit(
       YoutubePlayerInitialised(
         songs: songs,

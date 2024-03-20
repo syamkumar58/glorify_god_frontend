@@ -14,7 +14,7 @@ import 'package:glorify_god/components/home_components/home_loading_shimmer_effe
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/song_card_component.dart';
 import 'package:glorify_god/components/title_tile_component.dart';
-import 'package:glorify_god/components/youtube_video_player.dart';
+import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart' as app;
@@ -190,15 +190,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         onPressed: () {
                           // Navigator.of(context).push(
                           //   CupertinoPageRoute(
-                          //     builder: (_) => YoutubeVideoPlayerScreen(
-                          //       songs: testingSongs,
-                          //     ),
+                          //     builder: (_) => const TestingPlayer(),
                           //   ),
-                          // );
-                          //
-                          // BlocProvider.of<YoutubePlayerCubit>(context).start(
-                          //   songs: testingSongs,
-                          //   currentSongIndex: 0,
                           // );
                         },
                         child: const Text('Test Button'),
@@ -403,14 +396,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
                   //<-- Youtube video player direction -->/
                   final currentSongIndex = songs.indexOf(e);
-                  Navigator.of(context).push(
-                    CupertinoPageRoute(
-                      builder: (_) => YoutubeVideoPlayerScreen(
-                        songs: songs,
-                        songData: e,
-                      ),
-                    ),
+
+                  openYTPlayerScreen(
+                    context,
+                    songs: songs,
+                    songData: e,
                   );
+
+                  // Navigator.of(context).push(
+                  //   CupertinoPageRoute(
+                  //     builder: (_) => YoutubeVideoPlayerScreen(
+                  //       songs: songs,
+                  //       songData: e,
+                  //     ),
+                  //   ),
+                  // );
 
                   BlocProvider.of<YoutubePlayerCubit>(context)
                       .initialiseThePlayer();

@@ -75,6 +75,7 @@ dependencies:
   video_player: ^2.8.2
   wakelock_plus: ^1.1.4
   youtube_player_flutter: ^9.0.0
+  youtube_player_iframe: ^4.0.4
 #  webview_flutter: ^4.4.3
   flutter:
     sdk: flutter
