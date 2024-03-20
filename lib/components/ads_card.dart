@@ -3,7 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/remote_config.dart';
+import 'package:glorify_god/utils/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdsCard extends StatefulWidget {
@@ -21,6 +24,7 @@ class AdsCard extends StatefulWidget {
 class _AdsCardState extends State<AdsCard> {
   late BannerAd bannerAd;
   bool adLoaded = false;
+  String text = 'test 1';
 
   Future<void> initializeAd() async {
     final adUnitId = kDebugMode
@@ -29,6 +33,9 @@ class _AdsCardState extends State<AdsCard> {
             ? remoteConfigData.androidAdUnitId
             : remoteConfigData.iosAdUniId;
     log(adUnitId, name: 'The ad unit id');
+    setState(() {
+      text = 'test 2 $adUnitId';
+    });
     bannerAd = BannerAd(
       size: widget.adSize,
       adUnitId: adUnitId,
@@ -39,18 +46,24 @@ class _AdsCardState extends State<AdsCard> {
           setState(
             () {
               adLoaded = true;
+              text = 'test 3 $adUnitId & adLoaded';
             },
           );
         },
         onAdFailedToLoad: (ad, error) {
           ad.dispose();
           log('$error', name: 'Ad failed to load');
+          setState(() {
+            text = 'test 4 $adUnitId & ad Not loaded';
+          });
         },
       ),
     );
 
     await bannerAd.load();
-    setState(() {});
+    setState(() {
+      text = 'test 5 all way down';
+    });
   }
 
   @override
@@ -76,8 +89,15 @@ class _AdsCardState extends State<AdsCard> {
             ? AdWidget(
                 ad: bannerAd,
               )
-            : const Center(
-                child: CupertinoActivityIndicator(),
+            : Center(
+                child: AppText(
+                  text: text,
+                  styles: GoogleFonts.manrope(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.white,
+                  ),
+                ),
               ),
       ),
     );
