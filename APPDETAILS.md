@@ -288,3 +288,8 @@
   - Changed the interstitial Ad load position and along with delay time from 5 to 4 secs (Testing required)
   - Remote config fetching position changed in init state
   - Version increment
+
+- 20/03/2024
+  - (Hot Fix branch) Interstitial Ad logic and Banner Ad logics reverted back to main branch logics and added setState system with reducing delay time to interstitial ad
+  - Deleted un-used or created cubits for banner ad
+  - Version increment

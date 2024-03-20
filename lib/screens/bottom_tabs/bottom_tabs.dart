@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:glorify_god/bloc/ads_cubit/ads_cubit.dart';
 import 'package:glorify_god/bloc/all_songs/all_songs_cubit.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
@@ -67,7 +66,6 @@ class _BottomTabsState extends State<BottomTabs>
 
   @override
   void initState() {
-    BlocProvider.of<AdsCubit>(context).initializeAd();
     box = Hive.box<dynamic>(HiveKeys.openBox);
     interstitialAdLogic();
     animationController = AnimationController(
@@ -147,11 +145,11 @@ class _BottomTabsState extends State<BottomTabs>
     );
     log('$userLogInData', name: 'cached userLoginData from bottom tabs');
 
-    appState.initiallySetUserDataGlobally(
+    await appState.initiallySetUserDataGlobally(
       userLogInData,
     );
-    appState.checkArtistLoginDataByEmail();
-    appState.getRatings();
+    await appState.checkArtistLoginDataByEmail();
+    await appState.getRatings();
   }
 
   @override
@@ -164,37 +162,25 @@ class _BottomTabsState extends State<BottomTabs>
       child: Scaffold(
         extendBodyBehindAppBar: true,
         body: screens[_screenIndex],
-        bottomNavigationBar: SafeArea(child: navBar()),
+        bottomNavigationBar: navBar(),
       ),
     );
   }
 
   Widget navBar() {
-    return BlocBuilder<AdsCubit, AdsState>(
-      builder: (context, state) {
-        if (state is! AdsLoaded) {
-          return SizedBox(
-            width: width,
-            height: height * 0.08,
-            child: bottomBar(),
-          );
-        }
-
-        return Container(
-          color: Colors.transparent,
-          width: width,
-          height: Platform.isIOS ? height * 0.13 : height * 0.14,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const AdsCard(
-                adSize: ad.AdSize.banner,
-              ),
-              bottomBar(),
-            ],
+    return Container(
+      color: Colors.transparent,
+      width: width,
+      height: Platform.isIOS ? height * 0.18 : height * 0.16,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const AdsCard(
+            adSize: ad.AdSize.banner,
           ),
-        );
-      },
+          bottomBar(),
+        ],
+      ),
     );
   }
 
@@ -367,8 +353,8 @@ class _BottomTabsState extends State<BottomTabs>
             }
           },
           child: Container(
-            width: Platform.isAndroid ? 50 : 55,
-            height: Platform.isAndroid ? 50 : 55,
+            width: Platform.isAndroid ? 50 : 60,
+            height: Platform.isAndroid ? 50 : 60,
             margin: const EdgeInsets.only(top: 5, bottom: 5),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
@@ -481,7 +467,7 @@ class _BottomTabsState extends State<BottomTabs>
       if (presentTime.isAfter(
         convertStoredValueToDateTime.add(
           Duration(
-            seconds: remoteConfigData.interstitialAdTime,
+            seconds: kDebugMode ? 1 : remoteConfigData.interstitialAdTime,
           ),
         ),
       )) {
@@ -494,7 +480,9 @@ class _BottomTabsState extends State<BottomTabs>
 
   Future showInterstitialAd() async {
     loadInterstitialAds().then((_) {
-      Future.delayed(const Duration(seconds: 4), () async {
+      log('${DateTime.now()}', name: 'Step 4');
+      Future.delayed(const Duration(seconds: 3), () async {
+        log('${DateTime.now()}', name: 'Step 5');
         if (_interstitialAd != null) {
           await _interstitialAd!.show();
         } else {
@@ -518,11 +506,15 @@ class _BottomTabsState extends State<BottomTabs>
       request: const ad.AdRequest(),
       adLoadCallback: ad.InterstitialAdLoadCallback(
         onAdLoaded: (ad.InterstitialAd advertisement) {
-          _interstitialAd = advertisement;
+          log('${DateTime.now()}', name: 'Step 1');
+          setState(() {
+            _interstitialAd = advertisement;
+          });
+          log('${DateTime.now()}', name: 'Step 2');
           _interstitialAd!.fullScreenContentCallback =
               ad.FullScreenContentCallback(
             onAdDismissedFullScreenContent: (advertisement) async {
-              log('', name: 'Step 3');
+              log('${DateTime.now()}', name: 'Step 3');
               advertisement.dispose();
               await box.put(
                 HiveKeys.storeInterstitialAdLoadedTime,

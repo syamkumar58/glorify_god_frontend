@@ -36,8 +36,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    glorifyGodBox = Hive.box(HiveKeys.openBox);
     setConfigData();
+    glorifyGodBox = Hive.box(HiveKeys.openBox);
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Future.delayed(const Duration(seconds: 2), navigations);
@@ -55,14 +55,16 @@ class _SplashScreenState extends State<SplashScreen> {
     );
     if (userLogInData != null) {
       await Navigator.of(context).pushAndRemoveUntil(
-          CupertinoPageRoute<BottomTabs>(
-            builder: (_) => const BottomTabs(),
-          ),
-          (route) => false,);
+        CupertinoPageRoute<BottomTabs>(
+          builder: (_) => const BottomTabs(),
+        ),
+        (route) => false,
+      );
     } else {
       Navigator.of(context).pushAndRemoveUntil(
-          CupertinoPageRoute(builder: (_) => const LoginPage()),
-          (route) => false,);
+        CupertinoPageRoute(builder: (_) => const LoginPage()),
+        (route) => false,
+      );
     }
   }
 
@@ -78,10 +80,11 @@ class _SplashScreenState extends State<SplashScreen> {
     final configData = remoteConfig.getString('glorify_god_config');
     remoteConfigData = remoteConfigFromJson(configData);
     log(
-        '$data\n'
-        '${json.decode(configData)}\n'
-        '${remoteConfigData.bannerMessages}',
-        name: 'Config data',);
+      '$data\n'
+      '${json.decode(configData)}\n'
+      '${remoteConfigData.bannerMessages}',
+      name: 'Config data',
+    );
   }
 
   @override
