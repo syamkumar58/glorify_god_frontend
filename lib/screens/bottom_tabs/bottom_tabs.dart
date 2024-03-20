@@ -481,7 +481,7 @@ class _BottomTabsState extends State<BottomTabs>
   Future showInterstitialAd() async {
     loadInterstitialAds().then((_) {
       log('${DateTime.now()}', name: 'Step 4');
-      Future.delayed(const Duration(seconds: 3), () async {
+      Future.delayed(const Duration(seconds: 5), () async {
         log('${DateTime.now()}', name: 'Step 5');
         if (_interstitialAd != null) {
           await _interstitialAd!.show();

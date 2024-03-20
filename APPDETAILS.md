@@ -292,4 +292,5 @@
 - 20/03/2024
   - (Hot Fix branch) Interstitial Ad logic and Banner Ad logics reverted back to main branch logics and added setState system with reducing delay time to interstitial ad
   - Deleted un-used or created cubits for banner ad
+  - Interstitial Ad delay time changed to 5 sec due to no presence or not loading the ad in any device now
   - Version increment
