@@ -38,7 +38,9 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
       ),
     );
 
-    youtubePlayerController?.loadVideo('https://www.youtube.com/watch?v=${songs[selectedIndex].ytUrl}');
+    final list = songs.map((e) => e.ytUrl).toList();
+
+    youtubePlayerController?.loadPlaylist(list: list);
 
     //<-- Initial start to the cubit  -->/
     emit(
@@ -51,17 +53,17 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
     );
 
     //<-- once started the the listener handles the rest -->/
-    // youtubePlayerController?.addListener(() {
-    //   log('handle the listener');
-    //   emit(
-    //     YoutubePlayerInitialised(
-    //       songs: songs,
-    //       currentSongIndex: selectedIndex,
-    //       youtubePlayerController: youtubePlayerController!,
-    //       songData: songData,
-    //     ),
-    //   );
-    // });
+    youtubePlayerController!.listen((event) {
+      log('handle the listener ${event.playerState}');
+      emit(
+        YoutubePlayerInitialised(
+          songs: songs,
+          currentSongIndex: selectedIndex,
+          youtubePlayerController: youtubePlayerController!,
+          songData: songData,
+        ),
+      );
+    });
   }
 
   Future selectedOtherSong({
@@ -71,7 +73,7 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
     required int currentPlayingIndex,
   }) async {
     selectedIndex = currentPlayingIndex;
-    youtubePlayerController?.loadVideo('https://www.youtube.com/watch?v=$videoId');
+    youtubePlayerController?.loadVideo(videoId);
     emit(
       YoutubePlayerInitialised(
         songs: songs,
@@ -100,7 +102,7 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
     }
 
     final songData = songs[selectedIndex];
-    youtubePlayerController?.loadVideo('https://www.youtube.com/watch?v=${songs[selectedIndex].ytUrl}');
+    youtubePlayerController?.loadVideo(songs[selectedIndex].ytUrl);
     emit(
       YoutubePlayerInitialised(
         songs: songs,
@@ -120,7 +122,7 @@ class YoutubePlayerCubit extends Cubit<YoutubePlayerState> {
       selectedIndex = songs.length - 1;
     }
     final songData = songs[selectedIndex];
-    youtubePlayerController?.loadVideo('https://www.youtube.com/watch?v=${songs[selectedIndex].ytUrl}');
+    youtubePlayerController?.loadVideo(songs[selectedIndex].ytUrl);
     emit(
       YoutubePlayerInitialised(
         songs: songs,

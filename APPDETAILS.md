@@ -290,3 +290,6 @@
   - Removed Artist ID 2 as first section condition
   - youtube_player(branch) Working on YouTube player
     implementation
+
+- 21/03/2024
+  -( YouTube player Branch) testing phase not completed with good output  

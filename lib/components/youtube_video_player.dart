@@ -1,11 +1,7 @@
-import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
-import 'package:glorify_god/bloc/profile_bloc/songs_info_cubit/songs_data_info_cubit.dart';
 import 'package:glorify_god/bloc/youtube_player_cubit/youtube_player_cubit.dart';
 import 'package:glorify_god/components/custom_nav_bar_ad.dart';
 import 'package:glorify_god/components/noisey_text.dart';
@@ -80,24 +76,14 @@ class _YoutubeVideoPlayerScreenState extends State<YoutubeVideoPlayerScreen>
       ),
       body: BlocBuilder<YoutubePlayerCubit, YoutubePlayerState>(
         builder: (context, state) {
-          log('$state', name: 'The state');
-
           if (state is! YoutubePlayerInitialised) {
-            return const Center(
-              child: CupertinoActivityIndicator(),
-            );
+            return SizedBox();
           }
-          final data = state;
-          final ytController = state.youtubePlayerController;
-          final songData = state.songData;
 
-          log(
-            '${songData.title} - ${songData.artist}',
-            name: 'From widget youtube videos',
-          );
+          final controller = state.youtubePlayerController;
 
           return YoutubePlayer(
-            controller: ytController,
+            controller: controller,
             // width: width,
             aspectRatio: 16 / 9,
           );

@@ -13,8 +13,9 @@ import 'package:glorify_god/components/home_components/copy_right_text.dart';
 import 'package:glorify_god/components/home_components/home_loading_shimmer_effect.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/song_card_component.dart';
+import 'package:glorify_god/components/test_player.dart';
 import 'package:glorify_god/components/title_tile_component.dart';
-import 'package:glorify_god/config/helpers.dart';
+import 'package:glorify_god/components/youtube_video_player.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart' as app;
@@ -31,6 +32,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -55,12 +57,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController lottieController;
   bool showUpdateBanner = false;
 
-  // List<String> testingSongs = [
-  //   'g1KiQRqfhNc',
-  //   'irvw4_562BM',
-  //   'BlVD1-bxABg',
-  //   'qvVBZ0rYvOg',
-  // ];
+  List<String> testingSongs = [
+    'g1KiQRqfhNc',
+    'irvw4_562BM',
+    'BlVD1-bxABg',
+    'qvVBZ0rYvOg',
+  ];
 
   @override
   void initState() {
@@ -99,6 +101,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       }
     });
   }
+
+  YoutubePlayerController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -184,19 +188,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     commonWidget(),
-                    if (kDebugMode)
-                      CupertinoButton(
-                        color: AppColors.redAccent,
-                        onPressed: () {
-                          // Navigator.of(context).push(
-                          //   CupertinoPageRoute(
-                          //     builder: (_) => const TestingPlayer(),
-                          //   ),
-                          // );
-                        },
-                        child: const Text('Test Button'),
-                      ),
-
                     //<-- Show only Golden songs here ART ID - 2 -->/
                     if (allSongs.isNotEmpty)
                       ...allSongs
@@ -208,6 +199,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              if (kDebugMode)
+                                CupertinoButton(
+                                  color: AppColors.redAccent,
+                                  onPressed: () {
+                                    controller = YoutubePlayerController(
+                                      params: const YoutubePlayerParams(
+                                        showControls: true,
+                                        loop: true,
+                                      ),
+                                    );
+
+                                    controller!
+                                        .loadPlaylist(list: testingSongs);
+
+                                    Navigator.of(context).push(
+                                      CupertinoPageRoute(
+                                        builder: (_) => TestPlayer(
+                                          youtubePlayerController: controller!,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('Test Button'),
+                                ),
                               if (e.songs.isNotEmpty)
                                 TitleTile(
                                   title: e.artistName,
@@ -228,6 +243,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ),
                         );
                       }),
+
+                    //<-- testing video -->/
+                    if (controller != null)
+                      YoutubePlayer(
+                        controller: controller!,
+                        // width: width,
+                        aspectRatio: 16 / 9,
+                      ),
 
                     //<-- Show only All songs here except ART ID - 2 -->/
                     // if (allSongs.isNotEmpty)
@@ -397,20 +420,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   //<-- Youtube video player direction -->/
                   final currentSongIndex = songs.indexOf(e);
 
-                  openYTPlayerScreen(
-                    context,
-                    songs: songs,
-                    songData: e,
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (_) => YoutubeVideoPlayerScreen(
+                        songs: songs,
+                        songData: e,
+                        ctx: context,
+                      ),
+                    ),
                   );
-
-                  // Navigator.of(context).push(
-                  //   CupertinoPageRoute(
-                  //     builder: (_) => YoutubeVideoPlayerScreen(
-                  //       songs: songs,
-                  //       songData: e,
-                  //     ),
-                  //   ),
-                  // );
 
                   BlocProvider.of<YoutubePlayerCubit>(context)
                       .initialiseThePlayer();
