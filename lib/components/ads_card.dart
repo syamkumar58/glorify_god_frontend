@@ -54,7 +54,7 @@ class _AdsCardState extends State<AdsCard> {
           ad.dispose();
           log('$error', name: 'Ad failed to load');
           setState(() {
-            text = 'test 4 $adUnitId & ad Not loaded';
+            text = 'test 4 $error';
           });
         },
       ),
@@ -93,8 +93,8 @@ class _AdsCardState extends State<AdsCard> {
                 child: AppText(
                   text: text,
                   styles: GoogleFonts.manrope(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
                     color: AppColors.white,
                   ),
                 ),
