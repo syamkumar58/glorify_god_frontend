@@ -92,8 +92,9 @@ class _AdsCardState extends State<AdsCard> {
             : Center(
                 child: AppText(
                   text: text,
+                  maxLines: 5,
                   styles: GoogleFonts.manrope(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w400,
                     color: AppColors.white,
                   ),
