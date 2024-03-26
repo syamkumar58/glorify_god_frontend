@@ -293,3 +293,12 @@
 
 - 21/03/2024
   -( YouTube player Branch) testing phase not completed with good output  
+
+- 22/03/2024 - 26/3/2024
+  - YouTube player implementation
+  - Minimizing player with floating and adjustable player on top of the bottom tabs for all tabs it will work
+  - Custom Controls for both the main player and minimized player
+  - Home screen Card increased in size width and height for better looking UI
+  - Remote config data of UniAdIds changed from test ads to actual adIds (Bug fix case sometimes in some mobiles it is showing test ad in the real devices may be fetching from the firebase is issue there or slow)
+  - Still work pending on testing part
+  - Need to implement Users choice of selecting the artists according to there choice the list shows (Major change)

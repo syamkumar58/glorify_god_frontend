@@ -80,4 +80,5 @@ class AppStrings {
   static const singer = 'Singer:';
   static const lyricist = 'Lyricist:';
   static const credits = 'Credits:';
+  static const close = 'Close';
 }

@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/all_songs/all_songs_cubit.dart';
 import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
-import 'package:glorify_god/bloc/youtube_player_cubit/youtube_player_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/helpers.dart';
@@ -16,10 +15,12 @@ import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
+import 'package:glorify_god/provider/youtube_player_handler.dart';
 import 'package:glorify_god/screens/favourites_screen/liked_screen.dart';
 import 'package:glorify_god/screens/home_screens/home_screen.dart';
 import 'package:glorify_god/screens/profile_screens/profile_screen.dart';
 import 'package:glorify_god/screens/search_screens/search_screen.dart';
+import 'package:glorify_god/screens/video_player_screen/floating_youtube_player.dart';
 import 'package:glorify_god/screens/video_player_screen/video_player_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
@@ -49,10 +50,16 @@ class _BottomTabsState extends State<BottomTabs>
   double get height => MediaQuery.of(context).size.height;
   AppState appState = AppState();
   GlobalVariables globalVariables = GlobalVariables();
+  YoutubePlayerHandler youtubePlayerHandler = YoutubePlayerHandler();
   bool isLoading = false;
   ChewieController? chewieController;
   late AnimationController animationController;
-
+  Offset position = const Offset(170, 478); ////<-  Bottom right alignment ->//
+  //<-- const Offset(
+  //     26,
+  //     15,
+  //   );  for top left corner -->/
+  bool keyBoardCheckOnce = false;
   ad.InterstitialAd? _interstitialAd;
   bool interstitialAdClosed = false;
   int _screenIndex = 0;
@@ -81,60 +88,27 @@ class _BottomTabsState extends State<BottomTabs>
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    final mediaQueryData = MediaQuery.of(context);
+    final keyBoardHeight = mediaQueryData.viewInsets.bottom;
 
-    if (mounted) {
-      VideoPlayerCubit videoPlayerCubit =
-          BlocProvider.of<VideoPlayerCubit>(context);
-
-      if (videoPlayerCubit.playerController != null &&
-          videoPlayerCubit
-              .playerController!.videoPlayerController.value.isInitialized) {
-        chewieController = BlocProvider.of<VideoPlayerCubit>(context)
-                .playerController!
-                .videoPlayerController
-                .value
-                .isInitialized
-            ? BlocProvider.of<VideoPlayerCubit>(context).playerController
-            : null;
-        log(
-          '$chewieController && state - $state',
-          name: 'checking the state and the controller',
-        );
-        switch (state) {
-          case AppLifecycleState.detached:
-            if (chewieController != null &&
-                chewieController!.videoPlayerController.value.isInitialized) {
-              chewieController!.dispose();
-              BlocProvider.of<VideoPlayerCubit>(context).pause();
-            }
-            break;
-          case AppLifecycleState.resumed:
-            // if (chewieController != null &&
-            //     chewieController!.videoPlayerController.value.isInitialized) {
-            //   BlocProvider.of<VideoPlayerCubit>(context).pause();
-            // }
-            break;
-          case AppLifecycleState.inactive:
-            // if (chewieController != null &&
-            //     chewieController!.videoPlayerController.value.isInitialized) {
-            //   BlocProvider.of<VideoPlayerCubit>(context).pause();
-            // }
-            break;
-          case AppLifecycleState.hidden:
-            if (chewieController != null &&
-                chewieController!.videoPlayerController.value.isInitialized) {
-              BlocProvider.of<VideoPlayerCubit>(context).pause();
-            }
-            break;
-          case AppLifecycleState.paused:
-            if (chewieController != null &&
-                chewieController!.videoPlayerController.value.isInitialized) {
-              BlocProvider.of<VideoPlayerCubit>(context).pause();
-            }
-            break;
-        }
+    if (keyBoardHeight > 0) {
+      if (!keyBoardCheckOnce) {
+      log('KeyBoard opened');
+        setState(() {
+          keyBoardCheckOnce = true;
+          position = const Offset(181, 333);
+        });
+      }
+    } else {
+      if (keyBoardCheckOnce) {
+      log('KeyBoard closed');
+        setState(() {
+          keyBoardCheckOnce = false;
+          position = const Offset(170, 478);
+          // position = const Offset(200, 500);
+        });
       }
     }
   }
@@ -157,29 +131,65 @@ class _BottomTabsState extends State<BottomTabs>
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
     globalVariables = Provider.of<GlobalVariables>(context);
+    youtubePlayerHandler = Provider.of<YoutubePlayerHandler>(context);
     return ModalProgressHUD(
       inAsyncCall: isLoading,
       progressIndicator: const CupertinoActivityIndicator(),
       child: Scaffold(
         extendBodyBehindAppBar: true,
-        body: screens[_screenIndex],
-        bottomNavigationBar: navBar(),
+        body: Stack(
+          children: [
+            screens[_screenIndex],
+            if (youtubePlayerHandler.youtubePlayerController != null &&
+                youtubePlayerHandler
+                    .youtubePlayerController!.initialVideoId.isNotEmpty)
+              Positioned(
+                left: youtubePlayerHandler.extendToFullScreen ? 0 : position.dx,
+                top: youtubePlayerHandler.extendToFullScreen ? 0 : position.dy,
+                child: GestureDetector(
+                  onPanUpdate: (details) {
+                    setState(() {
+                      position += details.delta;
+                      log('${position.dx} && ${position.dy}', name: 'position');
+                    });
+                  },
+                  child: FloatingYoutubePlayer(
+                    songs: youtubePlayerHandler.selectedSongsList,
+                    songData: youtubePlayerHandler.selectedSongData,
+                  ),
+                ),
+              )
+            else
+              const SizedBox.shrink(),
+          ],
+        ),
+        bottomNavigationBar: SafeArea(
+          child: MediaQuery.of(context).orientation == Orientation.portrait
+              ? navBar()
+              : const SizedBox.shrink(),
+        ),
       ),
     );
   }
 
   Widget navBar() {
+    final android = youtubePlayerHandler.extendToFullScreen
+        ? height * 0.07
+        : height * 0.138;
+    final ios = youtubePlayerHandler.extendToFullScreen
+        ? height * 0.06
+        : height * 0.132;
     return Container(
       color: Colors.transparent,
       width: width,
-      height: Platform.isIOS ? height * 0.18 : height * 0.16,
+      height: Platform.isIOS ? ios : android,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           const AdsCard(
             adSize: ad.AdSize.banner,
           ),
-          bottomBar(),
+          if (!youtubePlayerHandler.extendToFullScreen) bottomBar(),
         ],
       ),
     );
@@ -542,3 +552,19 @@ class _BottomTabsState extends State<BottomTabs>
     super.dispose();
   }
 }
+
+// if (appState.ytPlayerController != null)
+// BlocBuilder<YoutubePlayerCubit, YoutubePlayerState>(
+// builder: (context, state) {
+// if (state is! YoutubePlayerInitialised2) {
+// return const SizedBox();
+// }
+//
+// final data = state;
+//
+// return FloatingYoutubePlayer(
+// songs: data.songs,
+// songData: data.songData,
+// );
+// },
+// ),

@@ -2,15 +2,14 @@ import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
-import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
-import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/get_favourites_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
+import 'package:glorify_god/provider/youtube_player_handler.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,6 +29,7 @@ class LikedScreen extends StatefulWidget {
 
 class _LikedScreenState extends State<LikedScreen> {
   AppState appState = AppState();
+  YoutubePlayerHandler youtubePlayerHandler = YoutubePlayerHandler();
   bool isLoading = true;
   List<Song> collectedSongs = [];
 
@@ -65,6 +65,7 @@ class _LikedScreenState extends State<LikedScreen> {
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
+    youtubePlayerHandler = Provider.of<YoutubePlayerHandler>(context);
     return Scaffold(
       appBar: customAppbar('LIKED'),
       body: BlocBuilder<LikedCubit, LikedState>(
@@ -201,8 +202,12 @@ class _LikedScreenState extends State<LikedScreen> {
     );
   }
 
-  Future<void> onPlay(List<GetFavouritesModel> likedSongsList,
-      GetFavouritesModel songDetails, int initialId,) async {
+  Future<void> onPlay(
+    List<GetFavouritesModel> likedSongsList,
+    GetFavouritesModel songDetails,
+    int initialId,
+  ) async {
+    collectedSongs.clear();
     for (final song in likedSongsList) {
       final eachSong = Song(
         songId: song.songId,
@@ -234,13 +239,12 @@ class _LikedScreenState extends State<LikedScreen> {
       songId: songDetails.songId,
     );
 
-    musicScreenNavigation(context, songData: songData, songs: collectedSongs);
+    youtubePlayerHandler.extendToFullScreen = true;
 
-    await BlocProvider.of<VideoPlayerCubit>(context).setToInitialState();
-    await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
+    youtubePlayerHandler.startPlayer(
       songData: songData,
       songs: collectedSongs,
-      selectedSongIndex: initialId,
+      currentSongIndex: initialId,
     );
   }
 }
