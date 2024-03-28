@@ -3,11 +3,14 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:glorify_god/bloc/all_songs/all_songs_cubit.dart';
+import 'package:glorify_god/bloc/all_songs_cubit/all_songs_cubit.dart';
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/home_components/copy_right_text.dart';
 import 'package:glorify_god/components/home_components/home_loading_shimmer_effect.dart';
+import 'package:glorify_god/components/home_components/users_choice_component.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/song_card_component.dart';
 import 'package:glorify_god/components/title_tile_component.dart';
@@ -24,7 +27,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/utils/asset_images.dart';
+import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -38,6 +43,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  Box? box;
   app.AppState appState = app.AppState();
   YoutubePlayerHandler youtubePlayerHandler = YoutubePlayerHandler();
   GlobalVariables globalVariables = GlobalVariables();
@@ -53,15 +59,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController lottieController;
   bool showUpdateBanner = false;
 
-  List<String> testingSongs = [
-    'g1KiQRqfhNc',
-    'irvw4_562BM',
-    'BlVD1-bxABg',
-    'qvVBZ0rYvOg',
-  ];
+  // List<String> testingSongs = [
+  //   'g1KiQRqfhNc',
+  //   'irvw4_562BM',
+  //   'BlVD1-bxABg',
+  //   'qvVBZ0rYvOg',
+  // ];
 
   @override
   void initState() {
+    box = Hive.box<dynamic>(HiveKeys.openBox);
     lottieController =
         AnimationController(vsync: this, duration: const Duration(seconds: 2));
     lottieController.repeat();
@@ -70,6 +77,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       packageInformation();
+      Future.delayed(const Duration(seconds: 1), () async {
+        final dynamic getStoreSelectedArtistIds =
+            await box!.get(HiveKeys.storeSelectedArtistIds);
+        if (getStoreSelectedArtistIds == null) {
+          artistsOrderOptionsSheet(context: context);
+        }
+      });
     });
   }
 
@@ -186,25 +200,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     commonWidget(),
-                    // if (kDebugMode)
-                    //   CupertinoButton(
-                    //     color: AppColors.redAccent,
-                    //     onPressed: () {
-                    //       // Navigator.of(context).push(
-                    //       //   CupertinoPageRoute(
-                    //       //     builder: (_) => TestPlayer(
-                    //       //       youtubePlayerController: controller!,
-                    //       //     ),
-                    //       //   ),
-                    //       // );
-                    //     },
-                    //     child: const Text('Test Button'),
-                    //   ),
-                    //<-- Show only Golden songs here ART ID - 2 -->/
+                    if (kDebugMode)
+                      CupertinoButton(
+                        color: AppColors.redAccent,
+                        onPressed: () async {
+                          artistsOrderOptionsSheet(context: context);
+                        },
+                        child: const Text('Test Button'),
+                      ),
                     if (allSongs.isNotEmpty)
-                      ...allSongs
-                          // .where((element) => element.artistUid == 2)
-                          .map((e) {
+                      ...allSongs.map((e) {
                         return Container(
                           color: Colors.transparent,
                           margin: const EdgeInsets.only(bottom: 20),
@@ -226,58 +231,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     right: 5,
                                   ),
                                   child: songCard(e.songs),
-                                )
-                              else
-                                TitleTile(
-                                  title: 'e.artistName + ${e.artistName}',
-                                  showViewAll: false,
-                                  onPressViewAll: () {},
-                                  pastorImage: e.artistImage,
                                 ),
                             ],
                           ),
                         );
                       }),
-
-                    //<-- Show only All songs here except ART ID - 2 -->/
-                    // if (allSongs.isNotEmpty)
-                    //   ...allSongs
-                    //       .where((element) => element.artistUid != 2)
-                    //       .map((e) {
-                    //     return Container(
-                    //       color: Colors.transparent,
-                    //       margin: const EdgeInsets.only(bottom: 20),
-                    //       child: Column(
-                    //         crossAxisAlignment: CrossAxisAlignment.start,
-                    //         children: [
-                    //           if (e.songs.isNotEmpty)
-                    //             TitleTile(
-                    //               title: e.artistName,
-                    //               showViewAll: false,
-                    //               onPressViewAll: () {},
-                    //               pastorImage: e.artistImage,
-                    //             ),
-                    //           if (e.songs.isNotEmpty)
-                    //             Padding(
-                    //               padding: const EdgeInsets.only(
-                    //                 top: 12,
-                    //                 left: 5,
-                    //                 right: 5,
-                    //               ),
-                    //               child: songCard(e.songs),
-                    //             ),
-                    //         ],
-                    //       ),
-                    //     );
-                    //   })
-                    // else
-                    //   const HomeShimmerEffect(),
-
-                    // TitleTile(
-                    //   title: 'Most played',
-                    //   onPressViewAll: () {},
-                    // ),
-                    // mostPlayedSongs(),
                     const CopyRightText(),
                   ],
                 ),

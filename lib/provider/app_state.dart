@@ -39,6 +39,8 @@ class AppState with ChangeNotifier {
     artist: '',
     artUri: '',
     lyricist: '',
+    credits: '',
+    otherData: '',
     ytTitle: '',
     ytUrl: '',
     ytImage: '',
@@ -53,6 +55,8 @@ class AppState with ChangeNotifier {
     artist: '',
     artUri: '',
     lyricist: '',
+    credits: '',
+    otherData: '',
     ytTitle: '',
     ytUrl: '',
     ytImage: '',
@@ -140,8 +144,8 @@ class AppState with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<List<GetArtistsWithSongs>?> getAllArtistsWithSongs() async {
-    final data = await ApiCalls().getAllArtistsWithSongs();
+  Future<List<GetArtistsWithSongs>?> getAllArtistsWithSongs({required List<int> selectedList}) async {
+    final data = await ApiCalls().getArtistWithSongsOnChoice(selectedList: selectedList);
 
     if (data != null && data.statusCode == 200) {
       final allSongs = getArtistsWithSongsFromJson(data.body);

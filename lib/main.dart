@@ -4,10 +4,11 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:glorify_god/bloc/all_songs/all_songs_cubit.dart';
-import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
-import 'package:glorify_god/bloc/profile_bloc/songs_info_cubit/songs_data_info_cubit.dart';
-import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
+import 'package:glorify_god/bloc/all_songs_cubit/all_songs_cubit.dart';
+import 'package:glorify_god/bloc/profile_cubit/liked_cubit/liked_cubit.dart';
+import 'package:glorify_god/bloc/profile_cubit/songs_info_cubit/songs_data_info_cubit.dart';
+import 'package:glorify_god/bloc/video_player_cubit/video_player_cubit.dart';
+
 import 'package:glorify_god/bloc/youtube_player_cubit/youtube_player_cubit.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';

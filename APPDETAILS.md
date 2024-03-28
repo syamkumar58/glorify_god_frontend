@@ -302,3 +302,9 @@
   - Remote config data of UniAdIds changed from test ads to actual adIds (Bug fix case sometimes in some mobiles it is showing test ad in the real devices may be fetching from the firebase is issue there or slow)
   - Still work pending on testing part
   - Need to implement Users choice of selecting the artists according to there choice the list shows (Major change)
+
+- 27/03/2024 - 28/3/2024
+  - Added users choice UI with api call implementation
+  - Added credits text and otherData for more information
+  - Player fixes and Ui fixes
+  - Version increment

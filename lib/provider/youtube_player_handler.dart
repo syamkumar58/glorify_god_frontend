@@ -13,6 +13,8 @@ class YoutubePlayerHandler extends ChangeNotifier {
     artist: '',
     artUri: '',
     lyricist: '',
+    credits: '',
+    otherData: '',
     ytTitle: '',
     ytUrl: '',
     ytImage: '',
@@ -57,6 +59,8 @@ class YoutubePlayerHandler extends ChangeNotifier {
     artist: '',
     artUri: '',
     lyricist: '',
+    credits: '',
+    otherData: '',
     ytTitle: '',
     ytUrl: '',
     ytImage: '',
@@ -82,6 +86,11 @@ class YoutubePlayerHandler extends ChangeNotifier {
   }
 
   int selectedIndex = 0;
+
+  Future<String> decodeVideoId(String url) async {
+    final decodedUrl = YoutubePlayer.convertUrlToId(url);
+    return decodedUrl.toString();
+  }
 
   Future startPlayer({
     required Song songData,
@@ -111,6 +120,7 @@ class YoutubePlayerHandler extends ChangeNotifier {
         hideControls: true,
       ),
     );
+    log('easy 2');
 
     youtubePlayerController!.load(songData.ytUrl);
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
+import 'package:glorify_god/bloc/profile_cubit/liked_cubit/liked_cubit.dart';
 import 'package:glorify_god/bloc/youtube_player_cubit/youtube_player_cubit.dart';
 import 'package:glorify_god/components/custom_nav_bar_ad.dart';
 import 'package:glorify_god/components/noisey_text.dart';

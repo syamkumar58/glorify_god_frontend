@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
-import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
+import 'package:glorify_god/bloc/profile_cubit/liked_cubit/liked_cubit.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/youtube_player_components/minimized_screen_overlay.dart';
 import 'package:glorify_god/components/youtube_player_components/play_pause_components.dart';
@@ -512,10 +512,7 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
             ListTile(
               dense: true,
               leading: AppText(
-                text: youtubePlayerHandler.selectedSongData.lyricist
-                        .contains('Credits')
-                    ? youtubePlayerHandler.selectedSongData.lyricist
-                    : AppStrings.lyricist,
+                text: AppStrings.lyricist,
                 textAlign: TextAlign.left,
                 styles: GoogleFonts.manrope(
                   fontSize: 16,
@@ -523,10 +520,7 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                 ),
               ),
               title: AppText(
-                text: youtubePlayerHandler.selectedSongData.lyricist
-                        .contains('Credits')
-                    ? ''
-                    : 'https://www.youtube.com/watch?v=${youtubePlayerHandler.selectedSongData.lyricist}',
+                text: youtubePlayerHandler.selectedSongData.lyricist,
                 textAlign: TextAlign.left,
                 styles: GoogleFonts.manrope(
                   fontSize: 16,
@@ -534,31 +528,42 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                 ),
               ),
             ),
-          // if (youtubePlayerHandler.selectedSongData.credits.isNotEmpty)
-          //   ListTile(
-          //     dense: true,
-          //     leading:  AppText(
-          //       text: AppStrings.lyricist,
-          //       textAlign: TextAlign.left,
-          //       styles: GoogleFonts.manrope(
-          //         fontSize: 16,
-          //         fontWeight: FontWeight.w400,
-          //       ),
-          //     ),
-          //     title: AppText(
-          //       text: youtubePlayerHandler.selectedSongData.lyricist,
-          //       textAlign: TextAlign.left,
-          //       styles: GoogleFonts.manrope(
-          //         fontSize: 16,
-          //         fontWeight: FontWeight.w400,
-          //       ),
-          //     ),
-          //   ),
+          if (youtubePlayerHandler.selectedSongData.credits.isNotEmpty &&
+              !youtubePlayerHandler.selectedSongData.credits.contains('null'))
+            ListTile(
+              dense: true,
+              leading: AppText(
+                text: AppStrings.credits,
+                textAlign: TextAlign.left,
+                styles: GoogleFonts.manrope(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              title: AppText(
+                text: youtubePlayerHandler.selectedSongData.credits,
+                textAlign: TextAlign.left,
+                styles: GoogleFonts.manrope(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
           if (youtubePlayerHandler.selectedSongData.ytUrl.isNotEmpty)
             ListTile(
               dense: true,
               title: AppText(
-                text: youtubePlayerHandler.selectedSongData.ytUrl,
+                text: 'Watch video in YouTube',
+                textAlign: TextAlign.left,
+                styles: GoogleFonts.manrope(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.white,
+                ),
+              ),
+              subtitle: AppText(
+                text:
+                    'https://www.youtube.com/watch?v=${youtubePlayerHandler.selectedSongData.ytUrl}',
                 textAlign: TextAlign.left,
                 styles: GoogleFonts.manrope(
                   fontSize: 16,
@@ -567,15 +572,28 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                 ),
               ),
               onTap: () async {
-                if (await canLaunchUrlString(
-                  youtubePlayerHandler.selectedSongData.ytUrl,
-                )) {
-                  await launchUrlString(
-                    youtubePlayerHandler.selectedSongData.ytUrl,
-                  );
+                final ytUrl =
+                    'https://www.youtube.com/watch?v=${youtubePlayerHandler.selectedSongData.ytUrl}';
+                if (await canLaunchUrlString(ytUrl)) {
+                  await launchUrlString(ytUrl);
                 }
               },
             ),
+          if (youtubePlayerHandler.selectedSongData.otherData.isNotEmpty &&
+              !youtubePlayerHandler.selectedSongData.otherData.contains('null'))
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: AppText(
+                text: youtubePlayerHandler.selectedSongData.otherData,
+                maxLines: 2000,
+                textAlign: TextAlign.left,
+                styles: GoogleFonts.manrope(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.white,
+                ),
+              ),
+            )
         ],
       ),
     );

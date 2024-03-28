@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
+import 'package:glorify_god/bloc/profile_cubit/liked_cubit/liked_cubit.dart';
 import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
@@ -43,7 +43,7 @@ class _LikedScreenState extends State<LikedScreen> {
       appState.userData.userId,
     )
         .whenComplete(() {
-      Future.delayed(const Duration(seconds: 2), () async {
+      Future.delayed(const Duration(seconds: 1), () async {
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -221,6 +221,8 @@ class _LikedScreenState extends State<LikedScreen> {
         ytTitle: song.ytTitle,
         ytImage: song.ytImage,
         artistUID: song.artistUID,
+        credits: song.credits,
+        otherData: song.otherData,
       );
       collectedSongs.add(eachSong);
     }
@@ -232,6 +234,8 @@ class _LikedScreenState extends State<LikedScreen> {
       artist: songDetails.artist,
       artUri: songDetails.artUri,
       lyricist: songDetails.lyricist,
+      credits: songDetails.credits,
+      otherData: songDetails.otherData,
       ytTitle: songDetails.ytTitle,
       ytUrl: songDetails.ytUrl,
       ytImage: songDetails.ytImage,

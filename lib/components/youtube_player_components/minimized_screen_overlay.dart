@@ -46,7 +46,7 @@ class MinimizedScreenOverLay extends StatelessWidget {
               },
               icon: Icon(
                 youtubePlayerHandler.youtubePlayerController!.value.isPlaying
-                    ? Icons.pause_circle_outline
+                    ? Icons.pause_circle
                     : Icons.play_arrow,
                 color: AppColors.white,
                 size: 24,

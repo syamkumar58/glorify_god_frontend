@@ -7,8 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
-import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
-import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
+import 'package:glorify_god/bloc/profile_cubit/liked_cubit/liked_cubit.dart';
+import 'package:glorify_god/bloc/video_player_cubit/video_player_cubit.dart';
+
 import 'package:glorify_god/components/custom_nav_bar_ad.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';

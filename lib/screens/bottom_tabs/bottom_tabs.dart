@@ -1,13 +1,14 @@
 // ignore_for_file: strict_raw_type
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:glorify_god/bloc/all_songs/all_songs_cubit.dart';
-import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
+import 'package:glorify_god/bloc/all_songs_cubit/all_songs_cubit.dart';
+import 'package:glorify_god/bloc/video_player_cubit/video_player_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/helpers.dart';
@@ -81,10 +82,10 @@ class _BottomTabsState extends State<BottomTabs>
     );
     animationController.repeat();
     appState = context.read<AppState>();
+    initialUserCall();
     interstitialAdLogic();
     WidgetsBinding.instance.addObserver(this);
     super.initState();
-    initialUserCall();
   }
 
   @override
@@ -95,7 +96,7 @@ class _BottomTabsState extends State<BottomTabs>
 
     if (keyBoardHeight > 0) {
       if (!keyBoardCheckOnce) {
-      log('KeyBoard opened');
+        log('KeyBoard opened');
         setState(() {
           keyBoardCheckOnce = true;
           position = const Offset(181, 333);
@@ -103,7 +104,7 @@ class _BottomTabsState extends State<BottomTabs>
       }
     } else {
       if (keyBoardCheckOnce) {
-      log('KeyBoard closed');
+        log('KeyBoard closed');
         setState(() {
           keyBoardCheckOnce = false;
           position = const Offset(170, 478);
@@ -113,18 +114,30 @@ class _BottomTabsState extends State<BottomTabs>
     }
   }
 
+  List<int> storedList = [0];
+
   Future initialUserCall() async {
-    await BlocProvider.of<AllSongsCubit>(context).getAllSongs();
+    final dynamic getStoreSelectedArtistIds =
+        await box.get(HiveKeys.storeSelectedArtistIds);
+    if (getStoreSelectedArtistIds != null) {
+      final decodedList =
+          json.decode(getStoreSelectedArtistIds) as List<dynamic>;
+      storedList = decodedList.map((e) => int.parse(e.toString())).toList();
+    }
     final dynamic userLogInData = await box.get(
       HiveKeys.logInKey,
     );
-    log('$userLogInData', name: 'cached userLoginData from bottom tabs');
-
     await appState.initiallySetUserDataGlobally(
       userLogInData,
     );
     await appState.checkArtistLoginDataByEmail();
+    await getAllSongsCall(storedList);
     await appState.getRatings();
+  }
+
+  Future getAllSongsCall(List<int> storedList) async {
+    await BlocProvider.of<AllSongsCubit>(context)
+        .getAllSongs(selectedList: storedList);
   }
 
   @override
@@ -476,8 +489,11 @@ class _BottomTabsState extends State<BottomTabs>
           DateTime.parse(getStoredAdShownTime.toString());
 
       if (presentTime.isAfter(
-        convertStoredValueToDateTime
-            .add(Duration(seconds: remoteConfigData.interstitialAdTime)),
+        convertStoredValueToDateTime.add(
+          Duration(
+            seconds: remoteConfigData.interstitialAdTime,
+          ),
+        ),
       )) {
         log('did ir came here after 2 mins when i launch the app');
         await box.delete(HiveKeys.storeInterstitialAdLoadedTime);
