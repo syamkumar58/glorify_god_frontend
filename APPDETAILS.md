@@ -308,3 +308,8 @@
   - Added credits text and otherData for more information
   - Player fixes and Ui fixes
   - Version increment
+
+- 29/03/2024
+  - Player Ui fixes
+  - On center app icon on tap for selection of artists for choice
+  - Version increment

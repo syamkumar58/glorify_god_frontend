@@ -7,9 +7,11 @@ import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/bloc/all_songs_cubit/all_songs_cubit.dart';
 import 'package:glorify_god/bloc/video_player_cubit/video_player_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
+import 'package:glorify_god/components/home_components/users_choice_component.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/config/remote_config.dart';
@@ -55,7 +57,10 @@ class _BottomTabsState extends State<BottomTabs>
   bool isLoading = false;
   ChewieController? chewieController;
   late AnimationController animationController;
-  Offset position = const Offset(170, 478); ////<-  Bottom right alignment ->//
+  double positionXRatio = 0.45;
+  double positionYRatio = 0.6;
+
+  //Offset position = const Offset(170, 478); ////<-  Bottom right alignment ->//
   //<-- const Offset(
   //     26,
   //     15,
@@ -99,7 +104,9 @@ class _BottomTabsState extends State<BottomTabs>
         log('KeyBoard opened');
         setState(() {
           keyBoardCheckOnce = true;
-          position = const Offset(181, 333);
+          // position = const Offset(181, 333);
+          positionXRatio = 0.45;
+          positionYRatio = 0.4;
         });
       }
     } else {
@@ -107,7 +114,9 @@ class _BottomTabsState extends State<BottomTabs>
         log('KeyBoard closed');
         setState(() {
           keyBoardCheckOnce = false;
-          position = const Offset(170, 478);
+          positionXRatio = 0.45;
+          positionYRatio = 0.6;
+          // position = const Offset(170, 478);
           // position = const Offset(200, 500);
         });
       }
@@ -157,13 +166,22 @@ class _BottomTabsState extends State<BottomTabs>
                 youtubePlayerHandler
                     .youtubePlayerController!.initialVideoId.isNotEmpty)
               Positioned(
-                left: youtubePlayerHandler.extendToFullScreen ? 0 : position.dx,
-                top: youtubePlayerHandler.extendToFullScreen ? 0 : position.dy,
+                left: youtubePlayerHandler.extendToFullScreen
+                    ? 0
+                    : width * positionXRatio,
+                top: youtubePlayerHandler.extendToFullScreen
+                    ? 0
+                    : height * positionYRatio,
                 child: GestureDetector(
                   onPanUpdate: (details) {
                     setState(() {
-                      position += details.delta;
-                      log('${position.dx} && ${position.dy}', name: 'position');
+                      positionXRatio += details.delta.dx / width;
+                      positionYRatio += details.delta.dy / height;
+                      // Clamp the position within the screen bounds
+                      positionXRatio = positionXRatio.clamp(0.0, 1.0);
+                      positionYRatio = positionYRatio.clamp(0.0, 1.0);
+                      // position += details.delta;
+                      // log('${position.dx} && ${position.dy}', name: 'position');
                     });
                   },
                   child: FloatingYoutubePlayer(
@@ -171,9 +189,7 @@ class _BottomTabsState extends State<BottomTabs>
                     songData: youtubePlayerHandler.selectedSongData,
                   ),
                 ),
-              )
-            else
-              const SizedBox.shrink(),
+              ),
           ],
         ),
         bottomNavigationBar: SafeArea(
@@ -186,18 +202,17 @@ class _BottomTabsState extends State<BottomTabs>
   }
 
   Widget navBar() {
-    final android = youtubePlayerHandler.extendToFullScreen
-        ? height * 0.07
-        : height * 0.138;
+    final android =
+        youtubePlayerHandler.extendToFullScreen ? height * 0.08 : height * 0.14;
     final ios = youtubePlayerHandler.extendToFullScreen
         ? height * 0.06
         : height * 0.132;
     return Container(
-      color: Colors.transparent,
+      color: AppColors.black,
       width: width,
       height: Platform.isIOS ? ios : android,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const AdsCard(
             adSize: ad.AdSize.banner,
@@ -352,70 +367,26 @@ class _BottomTabsState extends State<BottomTabs>
   }
 
   Widget centerPlayerIcon() {
-    return BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
-      builder: (context, state) {
-        VideoPlayerInitialised? data;
-
-        if (state is VideoPlayerInitial) {
-        } else if (state is VideoPlayerInitialised) {
-          data = state;
-        }
-
-        final playing = data != null &&
-            data.chewieController.videoPlayerController.value.isInitialized;
-
-        return GestureDetector(
-          onTap: () {
-            if (data != null &&
-                data.chewieController.videoPlayerController.value
-                    .isInitialized) {
-              musicScreenNavigation(
-                context,
-                songData: data.songData,
-                songs: data.songs,
-              );
-            }
-          },
-          child: Container(
-            width: Platform.isAndroid ? 50 : 60,
-            height: Platform.isAndroid ? 50 : 60,
-            margin: const EdgeInsets.only(top: 5, bottom: 5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              color: AppColors.dullWhite,
-              border: Border.all(
-                width: !playing ? 0 : 2,
-                color: !playing ? Colors.transparent : AppColors.dullWhite,
-              ),
-              image: !playing
-                  ? DecorationImage(
-                      image: AssetImage(
-                        AppImages.appIcon,
-                      ),
-                      fit: BoxFit.contain,
-                    )
-                  : DecorationImage(
-                      image: NetworkImage(
-                        data.songData.artUri,
-                      ),
-                      fit: BoxFit.contain,
-                      opacity: 0.8,
-                    ),
-            ),
-            child: !playing
-                ? const SizedBox.shrink()
-                : Center(
-                    child: Icon(
-                      data.chewieController.isPlaying
-                          ? Icons.pause
-                          : Icons.play_arrow,
-                      size: 34,
-                      color: AppColors.white,
-                    ),
-                  ),
-          ),
-        );
+    return Bounce(
+      duration: const Duration(milliseconds: 50),
+      onPressed: () {
+        artistsOrderOptionsSheet(context: context);
       },
+      child: Container(
+        width: Platform.isAndroid ? 50 : 60,
+        height: Platform.isAndroid ? 50 : 60,
+        margin: const EdgeInsets.only(top: 5, bottom: 5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          color: AppColors.darkGreyBlue,
+          image: DecorationImage(
+            image: AssetImage(
+              AppImages.appIcon,
+            ),
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
     );
   }
 

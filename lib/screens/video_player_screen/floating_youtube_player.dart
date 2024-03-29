@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/bloc/profile_cubit/liked_cubit/liked_cubit.dart';
+import 'package:glorify_god/bloc/profile_cubit/songs_info_cubit/songs_data_info_cubit.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/youtube_player_components/minimized_screen_overlay.dart';
 import 'package:glorify_god/components/youtube_player_components/play_pause_components.dart';
@@ -179,8 +180,14 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
               player: YoutubePlayer(
                 controller: youtubePlayerHandler.youtubePlayerController!,
                 onEnded: (metaData) {
+                  SongsDataInfoCubit songsDataInfoCubit = SongsDataInfoCubit();
                   youtubePlayerHandler.skipToNext(
                     songs: youtubePlayerHandler.selectedSongsList,
+                  );
+                  songsDataInfoCubit.addSongStreamData(
+                    artistId: youtubePlayerHandler.selectedSongData.artistUID,
+                    startDate: DateTime(DateTime.now().year, 1, 1),
+                    endDate: DateTime.now(),
                   );
                 },
                 // aspectRatio: 16 / 9,
