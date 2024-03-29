@@ -312,4 +312,7 @@
 - 29/03/2024
   - Player Ui fixes
   - On center app icon on tap for selection of artists for choice
+  - Ui fixes for player (10:20pm below 3)
+  - Banner ad, ad failed to show a failed text at center
+  - user choice component changed to gridview instead of wrap for better experience
   - Version increment

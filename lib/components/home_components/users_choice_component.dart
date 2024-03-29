@@ -167,10 +167,14 @@ class _UsersChoiceComponentState extends State<UsersChoiceComponent> {
           artistsList.length > 3 ? Alignment.topLeft : Alignment.topCenter,
       margin: const EdgeInsets.only(top: 5),
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Wrap(
-        spacing: 10,
-        runSpacing: 15,
-        children: artistsList.map((e) {
+      child: GridView.builder(
+        itemCount: artistsList.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: 0.7,
+        ),
+        itemBuilder: (context, index) {
+          final e = artistsList[index];
           return Bounce(
             duration: const Duration(milliseconds: 50),
             onPressed: () {
@@ -224,7 +228,7 @@ class _UsersChoiceComponentState extends State<UsersChoiceComponent> {
               ),
             ),
           );
-        }).toList(),
+        },
       ),
     );
   }

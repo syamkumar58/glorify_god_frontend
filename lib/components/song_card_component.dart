@@ -24,25 +24,25 @@ class _SongCardState extends State<SongCard> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
-      margin: const EdgeInsets.only(left: 2),
+      margin: const EdgeInsets.only(left: 10),
       // Added due to grid view can remove this line when it comes to normal flow
-      width: 160,
+      width: 150,
       // 120 for non grid view
-      height: 150,
+      height: 140,
       // 160 for non grid view
       child: Column(
         children: [
           Container(
             width: 150, // 110 for non grid view
-            height: 100, // 110 for non grid view
+            height: 90, // 110 for non grid view
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: AppColors.dullBlack,
+              color: AppColors.darkGreyBlue2,
               image: DecorationImage(
                 image: NetworkImage(
                   widget.image,
                 ),
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
                 onError: (error, stackTrace) {
                   log(
                     'er - $error\n st - $stackTrace',

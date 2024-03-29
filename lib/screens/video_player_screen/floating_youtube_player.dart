@@ -15,7 +15,9 @@ import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/youtube_player_handler.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
+import 'package:glorify_god/utils/asset_images.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -633,45 +635,62 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
       },
       child: Container(
         width: width * 0.95,
-        margin: const EdgeInsets.only(top: 12),
+        margin: const EdgeInsets.only(top: 13),
         decoration: const BoxDecoration(
           color: Colors.transparent,
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(12),
-            bottomLeft: Radius.circular(12),
+            topLeft: Radius.circular(8),
+            bottomLeft: Radius.circular(8),
           ),
         ),
         child: Row(
           children: [
             Container(
               margin: const EdgeInsets.only(right: 12),
-              height: 98,
-              width: 140,
+              height: 80,
+              width: 130,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                // border: Border.all(
-                //   width: 1,
-                //   color: AppColors.white,
-                // ),
+                borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
-                  fit: BoxFit.cover,
+                  fit: BoxFit.fill,
                   image: NetworkImage(
                     songData.artUri,
                   ),
                 ),
               ),
               child: Center(
-                child: Container(
-                  height: 30,
-                  width: 30,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: AppColors.dullBlack,
-                  ),
-                  child: const Icon(
-                    Icons.play_arrow_outlined,
-                  ),
-                ),
+                child: youtubePlayerHandler.selectedSongData.songId ==
+                        songData.songId
+                    ? Container(
+                        height: 80,
+                        width: 130,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.7),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Lottie.asset(
+                              LottieAnimations.musicAnimation,
+                              controller: animationController,
+                              height: 30,
+                              width: 80,
+                              fit: BoxFit.fill
+                            ),
+                          ],
+                        ),
+                      )
+                    : Container(
+                        height: 30,
+                        width: 30,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color: AppColors.dullBlack,
+                        ),
+                        child: const Icon(
+                          Icons.play_arrow_outlined,
+                        ),
+                      ),
               ),
             ),
             SizedBox(
@@ -683,7 +702,7 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                     text: songData.title,
                     textAlign: TextAlign.left,
                     styles: GoogleFonts.manrope(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AppColors.white,
                     ),
@@ -703,17 +722,6 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                 ],
               ),
             ),
-            // playingSongId == songData.songId
-            //     ? Container(
-            //         color: Colors.green,
-            //         height: 30,
-            //         width: 30,
-            //         child: Lottie.asset(
-            //           LottieAnimations.musicAnimation,
-            //           controller: animationController,
-            //         ),
-            //       )
-            //     : const SizedBox(),
           ],
         ),
       ),

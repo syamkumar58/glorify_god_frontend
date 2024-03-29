@@ -58,7 +58,7 @@ class _BottomTabsState extends State<BottomTabs>
   ChewieController? chewieController;
   late AnimationController animationController;
   double positionXRatio = 0.45;
-  double positionYRatio = 0.6;
+  double positionYRatio = 0.57;
 
   //Offset position = const Offset(170, 478); ////<-  Bottom right alignment ->//
   //<-- const Offset(
@@ -106,7 +106,7 @@ class _BottomTabsState extends State<BottomTabs>
           keyBoardCheckOnce = true;
           // position = const Offset(181, 333);
           positionXRatio = 0.45;
-          positionYRatio = 0.4;
+          positionYRatio = 0.3;
         });
       }
     } else {
@@ -115,7 +115,7 @@ class _BottomTabsState extends State<BottomTabs>
         setState(() {
           keyBoardCheckOnce = false;
           positionXRatio = 0.45;
-          positionYRatio = 0.6;
+          positionYRatio = 0.57;
           // position = const Offset(170, 478);
           // position = const Offset(200, 500);
         });
@@ -203,7 +203,7 @@ class _BottomTabsState extends State<BottomTabs>
 
   Widget navBar() {
     final android =
-        youtubePlayerHandler.extendToFullScreen ? height * 0.08 : height * 0.14;
+        youtubePlayerHandler.extendToFullScreen ? height * 0.08 : height * 0.15;
     final ios = youtubePlayerHandler.extendToFullScreen
         ? height * 0.06
         : height * 0.132;
@@ -212,7 +212,7 @@ class _BottomTabsState extends State<BottomTabs>
       width: width,
       height: Platform.isIOS ? ios : android,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           const AdsCard(
             adSize: ad.AdSize.banner,
