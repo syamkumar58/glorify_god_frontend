@@ -536,6 +536,7 @@ class _BottomTabsState extends State<BottomTabs>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     animationController.dispose();
+    youtubePlayerHandler.youtubePlayerController!.dispose();
     super.dispose();
   }
 }

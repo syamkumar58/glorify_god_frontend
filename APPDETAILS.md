@@ -316,3 +316,8 @@
   - Banner ad, ad failed to show a failed text at center
   - user choice component changed to gridview instead of wrap for better experience
   - Version increment
+
+- 31/03/2024
+  - Ui fixes for player
+  - Test Release ready
+  - Version increment

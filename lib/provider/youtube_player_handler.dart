@@ -151,7 +151,8 @@ class YoutubePlayerHandler extends ChangeNotifier {
     } else {
       selectedIndex = 0;
     }
-
+    selectedSongData = emptySongData;
+    selectedSongData = songs[selectedIndex];
     youtubePlayerController!.load(songs[selectedIndex].ytUrl);
   }
 
@@ -161,7 +162,8 @@ class YoutubePlayerHandler extends ChangeNotifier {
     } else {
       selectedIndex = songs.length - 1;
     }
-
+    selectedSongData = emptySongData;
+    selectedSongData = songs[selectedIndex];
     youtubePlayerController!.load(songs[selectedIndex].ytUrl);
   }
 }

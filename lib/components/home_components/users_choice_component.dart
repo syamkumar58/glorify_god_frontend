@@ -102,27 +102,29 @@ class _UsersChoiceComponentState extends State<UsersChoiceComponent> {
                   topRight: Radius.circular(15),
                 ),
               ),
-              padding: const EdgeInsets.only(top: 20, bottom: 20),
-              child: BlocBuilder<ArtistsListCubit, ArtistsListState>(
-                bloc: BlocProvider.of(context)..getArtistsList(),
-                builder: (context, state) {
-                  if (state is! ArtistsListLoaded) {
-                    return const Center(
-                      child: CupertinoActivityIndicator(),
+              padding: const EdgeInsets.only(top: 25, bottom: 25),
+              child: SafeArea(
+                child: BlocBuilder<ArtistsListCubit, ArtistsListState>(
+                  bloc: BlocProvider.of(context)..getArtistsList(),
+                  builder: (context, state) {
+                    if (state is! ArtistsListLoaded) {
+                      return const Center(
+                        child: CupertinoActivityIndicator(),
+                      );
+                    }
+
+                    final artistsList = state.artistsList;
+
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        titleBar(),
+                        artists(artistsList: artistsList),
+                        doneButton(),
+                      ],
                     );
-                  }
-
-                  final artistsList = state.artistsList;
-
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      titleBar(),
-                      artists(artistsList: artistsList),
-                      doneButton(),
-                    ],
-                  );
-                },
+                  },
+                ),
               ),
             );
           },
@@ -191,8 +193,8 @@ class _UsersChoiceComponentState extends State<UsersChoiceComponent> {
               child: Column(
                 children: [
                   Container(
-                    width: 90,
-                    height: 90,
+                    width: 80,
+                    height: 80,
                     margin: const EdgeInsets.only(bottom: 8),
                     decoration: BoxDecoration(
                       color: AppColors.appColor1,
@@ -220,6 +222,7 @@ class _UsersChoiceComponentState extends State<UsersChoiceComponent> {
                     text: e.artistName,
                     maxLines: 2,
                     styles: GoogleFonts.manrope(
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: AppColors.white,
                     ),

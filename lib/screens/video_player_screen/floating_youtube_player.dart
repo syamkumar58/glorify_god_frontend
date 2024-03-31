@@ -195,8 +195,10 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                 // aspectRatio: 16 / 9,
               ),
               builder: (context, player) {
-                log('${youtubePlayerHandler.youtubePlayerController!.value.playerState}',
-                    name: 'The state here');
+                log(
+                  '${youtubePlayerHandler.youtubePlayerController!.value.playerState}',
+                  name: 'The state here',
+                );
                 final buffering = youtubePlayerHandler
                         .youtubePlayerController!.value.playerState ==
                     PlayerState.buffering;
@@ -241,7 +243,9 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                           ),
                         ),
                       if (youtubePlayerHandler.extendToFullScreen &&
-                          showControls)
+                          showControls &&
+                          !buffering &&
+                          !unKnown)
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: seekBar(),
@@ -602,7 +606,7 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                   color: AppColors.white,
                 ),
               ),
-            )
+            ),
         ],
       ),
     );
@@ -675,7 +679,7 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                               controller: animationController,
                               height: 30,
                               width: 80,
-                              fit: BoxFit.fill
+                              fit: BoxFit.fill,
                             ),
                           ],
                         ),
