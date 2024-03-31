@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/bloc/profile_cubit/liked_cubit/liked_cubit.dart';
 import 'package:glorify_god/bloc/profile_cubit/songs_info_cubit/songs_data_info_cubit.dart';
+import 'package:glorify_god/components/close_button.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/youtube_player_components/minimized_screen_overlay.dart';
 import 'package:glorify_god/components/youtube_player_components/play_pause_components.dart';
@@ -94,63 +95,76 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
     youtubePlayerHandler = Provider.of<YoutubePlayerHandler>(context);
-    return SafeArea(
-      top: !youtubePlayerHandler.fullScreenEnabled,
-      left: !youtubePlayerHandler.fullScreenEnabled,
-      right: youtubePlayerHandler.fullScreenEnabled,
-      bottom: youtubePlayerHandler.fullScreenEnabled,
-      child: Padding(
-        padding: EdgeInsets.only(
-          right: youtubePlayerHandler.extendToFullScreen ? 0 : 0,
-          top: youtubePlayerHandler.extendToFullScreen ? 0 : 60,
-        ),
-        child: Container(
-          height:
-              !youtubePlayerHandler.extendToFullScreen ? height * 0.14 : height,
-          width: !youtubePlayerHandler.extendToFullScreen ? width * 0.5 : width,
-          color: Colors.black,
-          child: Center(
-            child: Container(
-              width: !youtubePlayerHandler.fullScreenEnabled
-                  ? youtubePlayerHandler.extendToFullScreen
-                      ? width
-                      : width * 0.5
-                  : width * 0.8,
-              height: !youtubePlayerHandler.fullScreenEnabled
-                  ? youtubePlayerHandler.extendToFullScreen
-                      ? height
-                      : height * 0.14
-                  : height,
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(
-                  youtubePlayerHandler.extendToFullScreen ? 0 : 2,
+    return WillPopScope(
+      onWillPop: () async {
+        final mediaQueryData = MediaQuery.of(context);
+        await changeOrientation();
+        if (mediaQueryData.orientation == Orientation.portrait) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+      child: SafeArea(
+        top: !youtubePlayerHandler.fullScreenEnabled,
+        left: !youtubePlayerHandler.fullScreenEnabled,
+        right: youtubePlayerHandler.fullScreenEnabled,
+        bottom: youtubePlayerHandler.fullScreenEnabled,
+        child: Padding(
+          padding: EdgeInsets.only(
+            right: youtubePlayerHandler.extendToFullScreen ? 0 : 0,
+            top: youtubePlayerHandler.extendToFullScreen ? 0 : 60,
+          ),
+          child: Container(
+            height: !youtubePlayerHandler.extendToFullScreen
+                ? height * 0.14
+                : height,
+            width:
+                !youtubePlayerHandler.extendToFullScreen ? width * 0.5 : width,
+            color: Colors.black,
+            child: Center(
+              child: Container(
+                width: !youtubePlayerHandler.fullScreenEnabled
+                    ? youtubePlayerHandler.extendToFullScreen
+                        ? width
+                        : width * 0.5
+                    : width * 0.8,
+                height: !youtubePlayerHandler.fullScreenEnabled
+                    ? youtubePlayerHandler.extendToFullScreen
+                        ? height
+                        : height * 0.14
+                    : height,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(
+                    youtubePlayerHandler.extendToFullScreen ? 0 : 2,
+                  ),
                 ),
-              ),
-              child: Column(
-                mainAxisAlignment: youtubePlayerHandler.fullScreenEnabled
-                    ? MainAxisAlignment.center
-                    : youtubePlayerHandler.extendToFullScreen
-                        ? MainAxisAlignment.start
-                        : MainAxisAlignment.center,
-                children: [
-                  ClipRect(child: youtubePlayerWidget()),
-                  if (youtubePlayerHandler.extendToFullScreen &&
-                      !youtubePlayerHandler.fullScreenEnabled)
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.only(bottom: 200),
-                        physics: const ClampingScrollPhysics(),
-                        child: Column(
-                          children: [
-                            playingSongDetails(),
-                            if (showMoreDetails) showMoreDetailsWidget(),
-                            otherSongs(),
-                          ],
+                child: Column(
+                  mainAxisAlignment: youtubePlayerHandler.fullScreenEnabled
+                      ? MainAxisAlignment.center
+                      : youtubePlayerHandler.extendToFullScreen
+                          ? MainAxisAlignment.start
+                          : MainAxisAlignment.center,
+                  children: [
+                    ClipRect(child: youtubePlayerWidget()),
+                    if (youtubePlayerHandler.extendToFullScreen &&
+                        !youtubePlayerHandler.fullScreenEnabled)
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.only(bottom: 200),
+                          physics: const ClampingScrollPhysics(),
+                          child: Column(
+                            children: [
+                              playingSongDetails(),
+                              if (showMoreDetails) showMoreDetailsWidget(),
+                              otherSongs(),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -166,18 +180,29 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
             // youtubePlayerHandler.extendToFullScreen
             //     ? _toggleControlsVisibility
             //     : null,
-            onVerticalDragEnd: (dragDownDetails) {
-              if (youtubePlayerHandler.extendToFullScreen) {
-                youtubePlayerHandler.extendToFullScreen =
-                    !youtubePlayerHandler.extendToFullScreen;
-              }
-            },
+            onVerticalDragEnd:
+                MediaQuery.of(context).orientation == Orientation.portrait
+                    ? (dragDownDetails) {
+                        if (youtubePlayerHandler.extendToFullScreen) {
+                          youtubePlayerHandler.extendToFullScreen =
+                              !youtubePlayerHandler.extendToFullScreen;
+                        }
+                      }
+                    : null,
             child: YoutubePlayerBuilder(
               onEnterFullScreen: () {
                 youtubePlayerHandler.fullScreenEnabled = true;
+                SystemChrome.setEnabledSystemUIMode(
+                  SystemUiMode.manual,
+                  overlays: [],
+                );
               },
               onExitFullScreen: () {
                 youtubePlayerHandler.fullScreenEnabled = false;
+                SystemChrome.setEnabledSystemUIMode(
+                  SystemUiMode.manual,
+                  overlays: SystemUiOverlay.values,
+                );
               },
               player: YoutubePlayer(
                 controller: youtubePlayerHandler.youtubePlayerController!,
@@ -223,8 +248,8 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                         unKnown: unKnown,
                       ),
                       Positioned(
-                        top: 2,
-                        right: 10,
+                        top: 20,
+                        right: 20,
                         child: closeOption(),
                       ),
                       if (youtubePlayerHandler.extendToFullScreen &&
@@ -295,31 +320,23 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
             ),
           )
         : !youtubePlayerHandler.extendToFullScreen && showControls
-            ? MinimizedScreenOverLay(
-                youtubePlayerHandler: youtubePlayerHandler,
+            ? Align(
+                alignment: Alignment.centerRight,
+                child: MinimizedScreenOverLay(
+                  youtubePlayerHandler: youtubePlayerHandler,
+                ),
               )
             : const SizedBox();
   }
 
   Widget closeOption() {
     return youtubePlayerHandler.extendToFullScreen && showControls
-        ? TextButton.icon(
-            label: AppText(
-              styles: GoogleFonts.manrope(
-                color: AppColors.white,
-              ),
-              text: AppStrings.close,
-            ),
+        ? CloseOption(
             onPressed: () {
               youtubePlayerHandler.extendToFullScreen = false;
               youtubePlayerHandler.youtubePlayerController!.dispose();
               youtubePlayerHandler.youtubePlayerController = null;
             },
-            icon: Icon(
-              Icons.close,
-              color: AppColors.white,
-              size: 20,
-            ),
           )
         : const SizedBox();
   }
@@ -744,7 +761,10 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
     } else {
       youtubePlayerHandler.fullScreenEnabled = true;
       SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp],
+        [
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ],
       );
     }
   }

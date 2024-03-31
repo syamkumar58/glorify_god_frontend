@@ -10,7 +10,9 @@ class MinimizedScreenOverLay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: MediaQuery.of(context).size.width * 0.1,
       decoration: BoxDecoration(
+        // color: AppColors.red,
         color: AppColors.black.withOpacity(0.5),
       ),
       child: Column(

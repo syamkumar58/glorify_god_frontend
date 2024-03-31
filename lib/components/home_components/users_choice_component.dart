@@ -207,15 +207,26 @@ class _UsersChoiceComponentState extends State<UsersChoiceComponent> {
                               image: AssetImage(AppImages.appWhiteIcon),
                             ),
                     ),
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: Icon(
-                        Icons.check_circle,
-                        size: 25,
-                        color: selectedIds.contains(e.artistUid)
-                            ? AppColors.white
-                            : Colors.transparent,
-                      ),
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Icon(
+                            Icons.check_circle,
+                            size: 25,
+                            color: selectedIds.contains(e.artistUid)
+                                ? AppColors.white
+                                : Colors.transparent,
+                          ),
+                        ),
+                        // Center(
+                        //   child: AppText(
+                        //       styles: GoogleFonts.manrope(),
+                        //       text: selectedIds.contains(e.artistUid)
+                        //           ? '$selectionCount'
+                        //           : ''),
+                        // ),
+                      ],
                     ),
                   ),
                   AppText(

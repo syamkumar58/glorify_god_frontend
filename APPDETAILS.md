@@ -320,4 +320,8 @@
 - 31/03/2024
   - Ui fixes for player
   - Test Release ready
+  - Minimized screen the controls moved to right align from left align Ui change
+  - Issue - On full screen drag enabled - fixed
+  - Issue - Went to full screen and back to portrait the system overlay of top and bottom are getting vanished - fixed
+  - Issue - On logOut the YouTube player is not disposed and while re-login it is autoplaying from the leftover place
   - Version increment
