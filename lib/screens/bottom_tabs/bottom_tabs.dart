@@ -57,8 +57,6 @@ class _BottomTabsState extends State<BottomTabs>
   bool isLoading = false;
   ChewieController? chewieController;
   late AnimationController animationController;
-  double positionXRatio = 0.45;
-  double positionYRatio = 0.57;
 
   //Offset position = const Offset(170, 478); ////<-  Bottom right alignment ->//
   //<-- const Offset(
@@ -105,8 +103,8 @@ class _BottomTabsState extends State<BottomTabs>
         setState(() {
           keyBoardCheckOnce = true;
           // position = const Offset(181, 333);
-          positionXRatio = 0.45;
-          positionYRatio = 0.3;
+          appState.positionXRatio = 0.45;
+          appState.positionYRatio = 0.3;
         });
       }
     } else {
@@ -114,8 +112,8 @@ class _BottomTabsState extends State<BottomTabs>
         log('KeyBoard closed');
         setState(() {
           keyBoardCheckOnce = false;
-          positionXRatio = 0.45;
-          positionYRatio = 0.57;
+          appState.positionXRatio = 0.45;
+          appState.positionYRatio = 0.57;
           // position = const Offset(170, 478);
           // position = const Offset(200, 500);
         });
@@ -168,18 +166,20 @@ class _BottomTabsState extends State<BottomTabs>
               Positioned(
                 left: youtubePlayerHandler.extendToFullScreen
                     ? 0
-                    : width * positionXRatio,
+                    : width * appState.positionXRatio,
                 top: youtubePlayerHandler.extendToFullScreen
                     ? 0
-                    : height * positionYRatio,
+                    : height * appState.positionYRatio,
                 child: GestureDetector(
                   onPanUpdate: (details) {
                     setState(() {
-                      positionXRatio += details.delta.dx / width;
-                      positionYRatio += details.delta.dy / height;
+                      appState.positionXRatio += details.delta.dx / width;
+                      appState.positionYRatio += details.delta.dy / height;
                       // Clamp the position within the screen bounds
-                      positionXRatio = positionXRatio.clamp(0.0, 1.0);
-                      positionYRatio = positionYRatio.clamp(0.0, 1.0);
+                      appState.positionXRatio =
+                          appState.positionXRatio.clamp(0.0, 1.0);
+                      appState.positionYRatio =
+                          appState.positionYRatio.clamp(0.0, 1.0);
                       // position += details.delta;
                       // log('${position.dx} && ${position.dy}', name: 'position');
                     });
@@ -536,7 +536,9 @@ class _BottomTabsState extends State<BottomTabs>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     animationController.dispose();
-    youtubePlayerHandler.youtubePlayerController!.dispose();
+    if (youtubePlayerHandler.youtubePlayerController != null) {
+      youtubePlayerHandler.youtubePlayerController!.dispose();
+    }
     super.dispose();
   }
 }

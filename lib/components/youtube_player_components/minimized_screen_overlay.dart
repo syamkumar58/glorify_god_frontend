@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/youtube_player_handler.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 
 class MinimizedScreenOverLay extends StatelessWidget {
-  const MinimizedScreenOverLay({super.key, required this.youtubePlayerHandler});
+  const MinimizedScreenOverLay({super.key, required this.youtubePlayerHandler, required this.appState});
 
   final YoutubePlayerHandler youtubePlayerHandler;
+   final AppState appState;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,8 @@ class MinimizedScreenOverLay extends StatelessWidget {
             child: IconButton(
               padding: EdgeInsets.zero,
               onPressed: () {
+                appState.positionXRatio = 0.45;
+                appState.positionYRatio = 0.57;
                 youtubePlayerHandler.extendToFullScreen =
                     !youtubePlayerHandler.extendToFullScreen;
               },

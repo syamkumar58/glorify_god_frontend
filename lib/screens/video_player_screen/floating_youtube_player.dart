@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:ui';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart' as pb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -324,6 +325,7 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                 alignment: Alignment.centerRight,
                 child: MinimizedScreenOverLay(
                   youtubePlayerHandler: youtubePlayerHandler,
+                  appState: appState,
                 ),
               )
             : const SizedBox();
@@ -674,44 +676,63 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                 borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
                   fit: BoxFit.fill,
+                  opacity: 0.4,
                   image: NetworkImage(
                     songData.artUri,
                   ),
                 ),
               ),
-              child: Center(
-                child: youtubePlayerHandler.selectedSongData.songId ==
-                        songData.songId
-                    ? Container(
-                        height: 80,
-                        width: 130,
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.7),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Lottie.asset(
-                              LottieAnimations.musicAnimation,
-                              controller: animationController,
-                              height: 30,
-                              width: 80,
-                              fit: BoxFit.fill,
-                            ),
-                          ],
-                        ),
-                      )
-                    : Container(
-                        height: 30,
-                        width: 30,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: AppColors.dullBlack,
-                        ),
-                        child: const Icon(
-                          Icons.play_arrow_outlined,
+              child: ClipRRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                  child: Container(
+                    height: 80,
+                    width: 130,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      image: DecorationImage(
+                        fit: BoxFit.contain,
+                        image: NetworkImage(
+                          songData.artUri,
                         ),
                       ),
+                    ),
+                    child: Center(
+                      child: youtubePlayerHandler.selectedSongData.songId ==
+                              songData.songId
+                          ? Container(
+                              height: 80,
+                              width: 130,
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.7),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Lottie.asset(
+                                    LottieAnimations.musicWavesAnimation,
+                                    controller: animationController,
+                                    height: 30,
+                                    width: 80,
+                                    fit: BoxFit.fill,
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Container(
+                              height: 30,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: AppColors.dullBlack,
+                              ),
+                              child: const Icon(
+                                Icons.play_arrow_outlined,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
               ),
             ),
             SizedBox(

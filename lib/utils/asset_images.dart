@@ -12,4 +12,5 @@ class LottieAnimations {
   static String path = 'assets/animations';
   static String searchMusicAni = '$path/music_search_animation.json';
   static String musicAnimation = '$path/music_animation.json';
+  static String musicWavesAnimation = '$path/music_waves_animation.json';
 }

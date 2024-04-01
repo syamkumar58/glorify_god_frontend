@@ -325,3 +325,9 @@
   - Issue - Went to full screen and back to portrait the system overlay of top and bottom are getting vanished - fixed
   - Issue - On logOut the YouTube player is not disposed and while re-login it is autoplaying from the leftover place
   - Version increment
+
+- 01/04/2024
+  - Home screen and on playing video bottom UI image UI changes
+  - if Ad failed load the ad again after 30secs
+  - Small UI changes
+  - Version increment

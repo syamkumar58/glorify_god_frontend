@@ -13,12 +13,20 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AppState with ChangeNotifier {
-  bool _isGuestUser = false;
+  double _positionXRatio = 0.45;
+  double _positionYRatio = 0.57;
 
-  bool get isGuestUser => _isGuestUser;
+  double get positionXRatio => _positionXRatio;
 
-  set isGuestUser(bool value) {
-    _isGuestUser = value;
+  set positionXRatio(double value) {
+    _positionXRatio = value;
+    notifyListeners();
+  }
+
+  double get positionYRatio => _positionYRatio;
+
+  set positionYRatio(double value) {
+    _positionYRatio = value;
     notifyListeners();
   }
 
@@ -144,8 +152,10 @@ class AppState with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<List<GetArtistsWithSongs>?> getAllArtistsWithSongs({required List<int> selectedList}) async {
-    final data = await ApiCalls().getArtistWithSongsOnChoice(selectedList: selectedList);
+  Future<List<GetArtistsWithSongs>?> getAllArtistsWithSongs(
+      {required List<int> selectedList}) async {
+    final data =
+        await ApiCalls().getArtistWithSongsOnChoice(selectedList: selectedList);
 
     if (data != null && data.statusCode == 200) {
       final allSongs = getArtistsWithSongsFromJson(data.body);
