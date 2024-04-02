@@ -325,3 +325,12 @@
   - Issue - Went to full screen and back to portrait the system overlay of top and bottom are getting vanished - fixed
   - Issue - On logOut the YouTube player is not disposed and while re-login it is autoplaying from the leftover place
   - Version increment
+
+- 02/04/2024
+  - Created a new branch from 31/3/24 commit due to player lag and slow response screen
+  - Home screen and player other songs info images fitting changed
+  - ad card failed to load again after 30sec
+  - Removed unUsed packages and code from the project
+  - On close On exit and in bottom tabs to clear the player data
+  - Testing build to be given
+  - Version increment 

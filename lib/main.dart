@@ -7,9 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/all_songs_cubit/all_songs_cubit.dart';
 import 'package:glorify_god/bloc/profile_cubit/liked_cubit/liked_cubit.dart';
 import 'package:glorify_god/bloc/profile_cubit/songs_info_cubit/songs_data_info_cubit.dart';
-import 'package:glorify_god/bloc/video_player_cubit/video_player_cubit.dart';
-
-import 'package:glorify_god/bloc/youtube_player_cubit/youtube_player_cubit.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
 import 'package:glorify_god/provider/youtube_player_handler.dart';
@@ -95,17 +92,7 @@ class _MainState extends State<Main> {
           create: (_) => SongsDataInfoCubit(),
         ),
         BlocProvider(
-          create: (context) => VideoPlayerCubit(
-            appState: appState,
-            songsDataInfoCubit: BlocProvider.of<SongsDataInfoCubit>(context),
-          ),
-        ),
-        BlocProvider(
           create: (_) => LikedCubit(),
-        ),
-        //<-- In future if moved to YT player enable this -->/
-        BlocProvider(
-          create: (_) => YoutubePlayerCubit(appState: appState),
         ),
       ],
       child: MaterialApp(

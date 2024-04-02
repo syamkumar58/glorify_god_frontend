@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:flutter/material.dart';
@@ -23,13 +24,16 @@ class _SongCardState extends State<SongCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.transparent,
       margin: const EdgeInsets.only(left: 10),
       // Added due to grid view can remove this line when it comes to normal flow
       width: 150,
       // 120 for non grid view
       height: 140,
       // 160 for non grid view
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Column(
         children: [
           Container(
@@ -51,19 +55,38 @@ class _SongCardState extends State<SongCard> {
                 },
               ),
             ),
-            child: const Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(
-                    Icons.play_circle,
-                    size: 30,
-                    color: Colors.white,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaY: 5, sigmaX: 5),
+                child: Container(
+                  width: 150, // 110 for non grid view
+                  height: 90, // 110 for non grid view
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        widget.image,
+                      ),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  child: const Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.play_circle,
+                          size: 30,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
           const SizedBox(

@@ -386,8 +386,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future stopYoutubePlayer() async {
     youtubePlayerHandler.extendToFullScreen = false;
-    youtubePlayerHandler.youtubePlayerController!.dispose();
+    if(youtubePlayerHandler.youtubePlayerController != null){
+      youtubePlayerHandler.youtubePlayerController!.dispose();
     youtubePlayerHandler.youtubePlayerController = null;
+    }
   }
 
   Future onLogOutPushScreen() async {

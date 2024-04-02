@@ -5,6 +5,26 @@ import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class YoutubePlayerHandler extends ChangeNotifier {
+
+  //<-- Minimizing and maximizing the player -->/
+  double _positionXRatio = 0.45;
+  double _positionYRatio = 0.57;
+
+  double get positionXRatio => _positionXRatio;
+
+  set positionXRatio(double value) {
+    _positionXRatio = value;
+    notifyListeners();
+  }
+
+  double get positionYRatio => _positionYRatio;
+
+  set positionYRatio(double value) {
+    _positionYRatio = value;
+    notifyListeners();
+  }
+
+
   Song emptySongData = Song(
     songId: 0,
     artistUID: 0,
@@ -22,14 +42,14 @@ class YoutubePlayerHandler extends ChangeNotifier {
   );
 
   //<-- LandScope Mode-->/
-  bool _fullScreenEnabled = false;
-
-  bool get fullScreenEnabled => _fullScreenEnabled;
-
-  set fullScreenEnabled(bool value) {
-    _fullScreenEnabled = value;
-    notifyListeners();
-  }
+  // bool _fullScreenEnabled = false;
+  //
+  // bool get fullScreenEnabled => _fullScreenEnabled;
+  //
+  // set fullScreenEnabled(bool value) {
+  //   _fullScreenEnabled = value;
+  //   notifyListeners();
+  // }
 
   //<-- Extend to normal screen or minimize to short screen -->/
   bool _extendToFullScreen = false;

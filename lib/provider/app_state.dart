@@ -144,8 +144,10 @@ class AppState with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<List<GetArtistsWithSongs>?> getAllArtistsWithSongs({required List<int> selectedList}) async {
-    final data = await ApiCalls().getArtistWithSongsOnChoice(selectedList: selectedList);
+  Future<List<GetArtistsWithSongs>?> getAllArtistsWithSongs(
+      {required List<int> selectedList}) async {
+    final data =
+        await ApiCalls().getArtistWithSongsOnChoice(selectedList: selectedList);
 
     if (data != null && data.statusCode == 200) {
       final allSongs = getArtistsWithSongsFromJson(data.body);

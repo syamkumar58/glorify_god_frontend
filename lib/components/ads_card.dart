@@ -1,12 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/remote_config.dart';
-import 'package:glorify_god/utils/app_colors.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdsCard extends StatefulWidget {
@@ -24,7 +20,6 @@ class AdsCard extends StatefulWidget {
 class _AdsCardState extends State<AdsCard> {
   late BannerAd bannerAd;
   bool adLoaded = false;
-  String adFailedToLoad = '';
 
   Future<void> initializeAd() async {
     final adUnitId = kDebugMode
@@ -47,11 +42,14 @@ class _AdsCardState extends State<AdsCard> {
           );
         },
         onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-          setState(() {
-            adFailedToLoad = 'Ad failed to load..';
-          });
+          // Retry loading the ad after a delay
           log('$error', name: 'Ad failed to load');
+          Future.delayed(const Duration(seconds: 30), () {
+            if (!adLoaded) {
+              ad.dispose(); // Dispose the failed ad
+              initializeAd(); // Attempt to load the ad again
+            }
+          });
         },
       ),
     );
@@ -62,7 +60,9 @@ class _AdsCardState extends State<AdsCard> {
   @override
   void initState() {
     super.initState();
-    initializeAd();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      initializeAd();
+    });
   }
 
   @override
@@ -80,17 +80,8 @@ class _AdsCardState extends State<AdsCard> {
             ? AdWidget(
                 ad: bannerAd,
               )
-            : Center(
-                child: adFailedToLoad.isNotEmpty
-                    ? AppText(
-                        styles: GoogleFonts.manrope(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.dullWhite,
-                        ),
-                        text: adFailedToLoad,
-                      )
-                    : const CupertinoActivityIndicator(),
+            : const Center(
+                child: CupertinoActivityIndicator(),
               ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:ui';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart' as pb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -98,7 +99,7 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
     return WillPopScope(
       onWillPop: () async {
         final mediaQueryData = MediaQuery.of(context);
-        await changeOrientation();
+        await onDeviceBack();
         if (mediaQueryData.orientation == Orientation.portrait) {
           return true;
         } else {
@@ -106,10 +107,10 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
         }
       },
       child: SafeArea(
-        top: !youtubePlayerHandler.fullScreenEnabled,
-        left: !youtubePlayerHandler.fullScreenEnabled,
-        right: youtubePlayerHandler.fullScreenEnabled,
-        bottom: youtubePlayerHandler.fullScreenEnabled,
+        top: MediaQuery.of(context).orientation == Orientation.portrait,
+        left: MediaQuery.of(context).orientation == Orientation.portrait,
+        right: MediaQuery.of(context).orientation != Orientation.portrait,
+        bottom: MediaQuery.of(context).orientation != Orientation.portrait,
         child: Padding(
           padding: EdgeInsets.only(
             right: youtubePlayerHandler.extendToFullScreen ? 0 : 0,
@@ -124,16 +125,18 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
             color: Colors.black,
             child: Center(
               child: Container(
-                width: !youtubePlayerHandler.fullScreenEnabled
-                    ? youtubePlayerHandler.extendToFullScreen
-                        ? width
-                        : width * 0.5
-                    : width * 0.8,
-                height: !youtubePlayerHandler.fullScreenEnabled
-                    ? youtubePlayerHandler.extendToFullScreen
-                        ? height
-                        : height * 0.14
-                    : height,
+                width:
+                    MediaQuery.of(context).orientation == Orientation.portrait
+                        ? youtubePlayerHandler.extendToFullScreen
+                            ? width
+                            : width * 0.5
+                        : width * 0.8,
+                height:
+                    MediaQuery.of(context).orientation == Orientation.portrait
+                        ? youtubePlayerHandler.extendToFullScreen
+                            ? height
+                            : height * 0.14
+                        : height,
                 decoration: BoxDecoration(
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(
@@ -141,15 +144,17 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                   ),
                 ),
                 child: Column(
-                  mainAxisAlignment: youtubePlayerHandler.fullScreenEnabled
-                      ? MainAxisAlignment.center
-                      : youtubePlayerHandler.extendToFullScreen
-                          ? MainAxisAlignment.start
-                          : MainAxisAlignment.center,
+                  mainAxisAlignment:
+                      MediaQuery.of(context).orientation != Orientation.portrait
+                          ? MainAxisAlignment.center
+                          : youtubePlayerHandler.extendToFullScreen
+                              ? MainAxisAlignment.start
+                              : MainAxisAlignment.center,
                   children: [
                     ClipRect(child: youtubePlayerWidget()),
                     if (youtubePlayerHandler.extendToFullScreen &&
-                        !youtubePlayerHandler.fullScreenEnabled)
+                        MediaQuery.of(context).orientation ==
+                            Orientation.portrait)
                       Expanded(
                         child: SingleChildScrollView(
                           padding: const EdgeInsets.only(bottom: 200),
@@ -191,14 +196,14 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                     : null,
             child: YoutubePlayerBuilder(
               onEnterFullScreen: () {
-                youtubePlayerHandler.fullScreenEnabled = true;
+                // youtubePlayerHandler.fullScreenEnabled = true;
                 SystemChrome.setEnabledSystemUIMode(
                   SystemUiMode.manual,
                   overlays: [],
                 );
               },
               onExitFullScreen: () {
-                youtubePlayerHandler.fullScreenEnabled = false;
+                // youtubePlayerHandler.fullScreenEnabled = false;
                 SystemChrome.setEnabledSystemUIMode(
                   SystemUiMode.manual,
                   overlays: SystemUiOverlay.values,
@@ -334,8 +339,10 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
         ? CloseOption(
             onPressed: () {
               youtubePlayerHandler.extendToFullScreen = false;
-              youtubePlayerHandler.youtubePlayerController!.dispose();
-              youtubePlayerHandler.youtubePlayerController = null;
+              if (youtubePlayerHandler.youtubePlayerController != null) {
+                youtubePlayerHandler.youtubePlayerController = null;
+                youtubePlayerHandler.youtubePlayerController!.dispose();
+              }
             },
           )
         : const SizedBox();
@@ -377,7 +384,7 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
               changeOrientation();
             },
             child: Icon(
-              !youtubePlayerHandler.fullScreenEnabled
+              MediaQuery.of(context).orientation == Orientation.portrait
                   ? Icons.fullscreen
                   : Icons.fullscreen_exit,
               size: 22,
@@ -679,39 +686,58 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                   ),
                 ),
               ),
-              child: Center(
-                child: youtubePlayerHandler.selectedSongData.songId ==
-                        songData.songId
-                    ? Container(
-                        height: 80,
-                        width: 130,
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.7),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Lottie.asset(
-                              LottieAnimations.musicAnimation,
-                              controller: animationController,
-                              height: 30,
-                              width: 80,
-                              fit: BoxFit.fill,
-                            ),
-                          ],
-                        ),
-                      )
-                    : Container(
-                        height: 30,
-                        width: 30,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: AppColors.dullBlack,
-                        ),
-                        child: const Icon(
-                          Icons.play_arrow_outlined,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaY: 5, sigmaX: 5),
+                  child: Container(
+                    height: 80,
+                    width: 130,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      image: DecorationImage(
+                        fit: BoxFit.contain,
+                        image: NetworkImage(
+                          songData.artUri,
                         ),
                       ),
+                    ),
+                    child: Center(
+                      child: youtubePlayerHandler.selectedSongData.songId ==
+                              songData.songId
+                          ? Container(
+                              height: 80,
+                              width: 130,
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.7),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Lottie.asset(
+                                    LottieAnimations.musicAnimation,
+                                    controller: animationController,
+                                    height: 30,
+                                    width: 80,
+                                    fit: BoxFit.fill,
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Container(
+                              height: 30,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: AppColors.dullBlack,
+                              ),
+                              child: const Icon(
+                                Icons.play_arrow_outlined,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
               ),
             ),
             SizedBox(
@@ -749,9 +775,21 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
     );
   }
 
+  Future onDeviceBack() async {
+    if (MediaQuery.of(context).orientation != Orientation.portrait) {
+      // youtubePlayerHandler.fullScreenEnabled = true;
+      SystemChrome.setPreferredOrientations(
+        [
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ],
+      );
+    }
+  }
+
   Future changeOrientation() async {
     if (MediaQuery.of(context).orientation == Orientation.portrait) {
-      youtubePlayerHandler.fullScreenEnabled = false;
+      // youtubePlayerHandler.fullScreenEnabled = false;
       SystemChrome.setPreferredOrientations(
         [
           DeviceOrientation.landscapeRight,
@@ -759,7 +797,7 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
         ],
       );
     } else {
-      youtubePlayerHandler.fullScreenEnabled = true;
+      // youtubePlayerHandler.fullScreenEnabled = true;
       SystemChrome.setPreferredOrientations(
         [
           DeviceOrientation.portraitUp,

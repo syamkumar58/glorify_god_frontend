@@ -20,7 +20,6 @@ import 'package:glorify_god/provider/app_state.dart' as app;
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
 import 'package:glorify_god/provider/youtube_player_handler.dart';
-import 'package:glorify_god/screens/video_player_screen/video_player_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -56,22 +55,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   // bool connectionError = false;
   List<int> showShimmers = [1, 2, 3, 4];
-  late AnimationController lottieController;
-  bool showUpdateBanner = false;
 
-  // List<String> testingSongs = [
-  //   'g1KiQRqfhNc',
-  //   'irvw4_562BM',
-  //   'BlVD1-bxABg',
-  //   'qvVBZ0rYvOg',
-  // ];
+  bool showUpdateBanner = false;
 
   @override
   void initState() {
     box = Hive.box<dynamic>(HiveKeys.openBox);
-    lottieController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 2));
-    lottieController.repeat();
     appState = context.read<app.AppState>();
     globalVariables = context.read<GlobalVariables>();
     super.initState();
@@ -371,40 +360,5 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             .toList(),
       ),
     );
-  }
-
-  Future<void> showMusicScreen({
-    required Song songData,
-    required List<Song> songs,
-  }) async {
-    await showModalBottomSheet<dynamic>(
-      context: context,
-      isScrollControlled: true,
-      // showDragHandle: true,
-      backgroundColor: AppColors.black,
-      barrierColor: AppColors.black.withOpacity(0.5),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-        ),
-      ),
-      builder: (ctx) {
-        return SizedBox(
-          width: width,
-          height: height * 0.9,
-          child: VideoPlayerScreen(
-            songData: songData,
-            songs: songs,
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    lottieController.dispose();
-    super.dispose();
   }
 }
