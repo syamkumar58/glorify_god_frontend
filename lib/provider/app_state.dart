@@ -13,22 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AppState with ChangeNotifier {
-  double _positionXRatio = 0.45;
-  double _positionYRatio = 0.57;
-
-  double get positionXRatio => _positionXRatio;
-
-  set positionXRatio(double value) {
-    _positionXRatio = value;
-    notifyListeners();
-  }
-
-  double get positionYRatio => _positionYRatio;
-
-  set positionYRatio(double value) {
-    _positionYRatio = value;
-    notifyListeners();
-  }
 
   AudioPlayer _audioPlayer = AudioPlayer();
 

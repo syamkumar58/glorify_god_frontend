@@ -26,8 +26,8 @@ class MinimizedScreenOverLay extends StatelessWidget {
             child: IconButton(
               padding: EdgeInsets.zero,
               onPressed: () {
-                appState.positionXRatio = 0.45;
-                appState.positionYRatio = 0.57;
+                // appState.positionXRatio = 0.45;
+                // appState.positionYRatio = 0.57;
                 youtubePlayerHandler.extendToFullScreen =
                     !youtubePlayerHandler.extendToFullScreen;
               },

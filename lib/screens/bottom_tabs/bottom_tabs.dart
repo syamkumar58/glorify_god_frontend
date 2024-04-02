@@ -49,7 +49,8 @@ class BottomTabs extends StatefulWidget {
 class _BottomTabsState extends State<BottomTabs>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   double get width => MediaQuery.of(context).size.width;
-
+  double positionXRatio = 0.45;
+  double positionYRatio = 0.57;
   double get height => MediaQuery.of(context).size.height;
   AppState appState = AppState();
   GlobalVariables globalVariables = GlobalVariables();
@@ -100,20 +101,20 @@ class _BottomTabsState extends State<BottomTabs>
     if (keyBoardHeight > 0) {
       if (!keyBoardCheckOnce) {
         log('KeyBoard opened');
+        positionXRatio = 0.45;
+        positionYRatio = 0.3;
         setState(() {
           keyBoardCheckOnce = true;
           // position = const Offset(181, 333);
-          appState.positionXRatio = 0.45;
-          appState.positionYRatio = 0.3;
         });
       }
     } else {
       if (keyBoardCheckOnce) {
         log('KeyBoard closed');
+        positionXRatio = 0.45;
+        positionYRatio = 0.57;
         setState(() {
           keyBoardCheckOnce = false;
-          appState.positionXRatio = 0.45;
-          appState.positionYRatio = 0.57;
           // position = const Offset(170, 478);
           // position = const Offset(200, 500);
         });
@@ -166,20 +167,20 @@ class _BottomTabsState extends State<BottomTabs>
               Positioned(
                 left: youtubePlayerHandler.extendToFullScreen
                     ? 0
-                    : width * appState.positionXRatio,
+                    : width * positionXRatio,
                 top: youtubePlayerHandler.extendToFullScreen
                     ? 0
-                    : height * appState.positionYRatio,
+                    : height * positionYRatio,
                 child: GestureDetector(
                   onPanUpdate: (details) {
                     setState(() {
-                      appState.positionXRatio += details.delta.dx / width;
-                      appState.positionYRatio += details.delta.dy / height;
+                      positionXRatio += details.delta.dx / width;
+                      positionYRatio += details.delta.dy / height;
                       // Clamp the position within the screen bounds
-                      appState.positionXRatio =
-                          appState.positionXRatio.clamp(0.0, 1.0);
-                      appState.positionYRatio =
-                          appState.positionYRatio.clamp(0.0, 1.0);
+                      positionXRatio =
+                          positionXRatio.clamp(0.0, 1.0);
+                      positionYRatio =
+                          positionYRatio.clamp(0.0, 1.0);
                       // position += details.delta;
                       // log('${position.dx} && ${position.dy}', name: 'position');
                     });
