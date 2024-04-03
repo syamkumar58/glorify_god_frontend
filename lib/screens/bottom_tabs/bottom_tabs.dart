@@ -48,6 +48,8 @@ class _BottomTabsState extends State<BottomTabs>
   GlobalVariables globalVariables = GlobalVariables();
   YoutubePlayerHandler youtubePlayerHandler = YoutubePlayerHandler();
   bool isLoading = false;
+  double positionXRatio = 0.45;
+  double positionYRatio = 0.57;
 
   //Offset position = const Offset(170, 478); ////<-  Bottom right alignment ->//
   //<-- const Offset(
@@ -89,8 +91,8 @@ class _BottomTabsState extends State<BottomTabs>
         setState(() {
           keyBoardCheckOnce = true;
           // position = const Offset(181, 333);
-          youtubePlayerHandler.positionXRatio = 0.45;
-          youtubePlayerHandler.positionYRatio = 0.3;
+          positionXRatio = 0.45;
+          positionYRatio = 0.3;
         });
       }
     } else {
@@ -98,8 +100,8 @@ class _BottomTabsState extends State<BottomTabs>
         log('KeyBoard closed');
         setState(() {
           keyBoardCheckOnce = false;
-          youtubePlayerHandler.positionXRatio = 0.45;
-          youtubePlayerHandler.positionYRatio = 0.57;
+          positionXRatio = 0.45;
+          positionYRatio = 0.57;
           // position = const Offset(170, 478);
           // position = const Offset(200, 500);
         });
@@ -152,18 +154,18 @@ class _BottomTabsState extends State<BottomTabs>
               Positioned(
                 left: youtubePlayerHandler.extendToFullScreen
                     ? 0
-                    : width * youtubePlayerHandler.positionXRatio,
+                    : width * positionXRatio,
                 top: youtubePlayerHandler.extendToFullScreen
                     ? 0
-                    : height * youtubePlayerHandler.positionYRatio,
+                    : height * positionYRatio,
                 child: GestureDetector(
                   onPanUpdate: (details) {
                     setState(() {
-                      youtubePlayerHandler.positionXRatio += details.delta.dx / width;
-                      youtubePlayerHandler.positionYRatio += details.delta.dy / height;
+                      positionXRatio += details.delta.dx / width;
+                      positionYRatio += details.delta.dy / height;
                       // Clamp the position within the screen bounds
-                      youtubePlayerHandler.positionXRatio = youtubePlayerHandler.positionXRatio.clamp(0.0, 1.0);
-                      youtubePlayerHandler.positionYRatio = youtubePlayerHandler.positionYRatio.clamp(0.0, 1.0);
+                      positionXRatio = positionXRatio.clamp(0.0, 1.0);
+                      positionYRatio = positionYRatio.clamp(0.0, 1.0);
                       // position += details.delta;
                       // log('${position.dx} && ${position.dy}', name: 'position');
                     });

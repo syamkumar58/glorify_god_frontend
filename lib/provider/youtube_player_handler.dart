@@ -6,23 +6,23 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class YoutubePlayerHandler extends ChangeNotifier {
 
-  //<-- Minimizing and maximizing the player -->/
-  double _positionXRatio = 0.45;
-  double _positionYRatio = 0.57;
-
-  double get positionXRatio => _positionXRatio;
-
-  set positionXRatio(double value) {
-    _positionXRatio = value;
-    notifyListeners();
-  }
-
-  double get positionYRatio => _positionYRatio;
-
-  set positionYRatio(double value) {
-    _positionYRatio = value;
-    notifyListeners();
-  }
+  // //<-- Minimizing and maximizing the player -->/
+  // double _positionXRatio = 0.45;
+  // double _positionYRatio = 0.57;
+  //
+  // double get positionXRatio => _positionXRatio;
+  //
+  // set positionXRatio(double value) {
+  //   _positionXRatio = value;
+  //   notifyListeners();
+  // }
+  //
+  // double get positionYRatio => _positionYRatio;
+  //
+  // set positionYRatio(double value) {
+  //   _positionYRatio = value;
+  //   notifyListeners();
+  // }
 
 
   Song emptySongData = Song(

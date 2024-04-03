@@ -26,10 +26,6 @@ class MinimizedScreenOverLay extends StatelessWidget {
               onPressed: () {
                 youtubePlayerHandler.extendToFullScreen =
                     !youtubePlayerHandler.extendToFullScreen;
-                if (youtubePlayerHandler.extendToFullScreen) {
-                  youtubePlayerHandler.positionXRatio = 0.45;
-                  youtubePlayerHandler.positionYRatio = 0.57;
-                }
               },
               icon: Icon(
                 Icons.north_west,
