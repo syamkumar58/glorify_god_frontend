@@ -162,7 +162,7 @@ class _UsersChoiceComponentState extends State<UsersChoiceComponent> {
 
   Widget artists({required List<ArtistsListModel> artistsList}) {
     return Container(
-      height: height * 0.8,
+      height: height * 0.75,
       width: width,
       color: Colors.transparent,
       alignment:

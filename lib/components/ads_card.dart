@@ -60,9 +60,7 @@ class _AdsCardState extends State<AdsCard> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      initializeAd();
-    });
+    initializeAd();
   }
 
   @override
