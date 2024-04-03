@@ -334,3 +334,12 @@
   - On close On exit and in bottom tabs to clear the player data
   - Testing build to be given
   - Version increment 
+
+- 03/04/2024
+  - Player seek bar thumb pointer enabled for user experience
+  - Added gesture button to the player for user intimation
+  - on device back button navigation
+  - If in landscape mode on back turns to portrait mode
+  - If player in extended mode then it will minimize the player
+  - If the tab index is not zero then it will bring the user to home screen means first tab(0)
+  - Double click to exit app implementation with toast message

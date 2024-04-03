@@ -9,6 +9,7 @@ import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/bloc/profile_cubit/liked_cubit/liked_cubit.dart';
 import 'package:glorify_god/bloc/profile_cubit/songs_info_cubit/songs_data_info_cubit.dart';
 import 'package:glorify_god/components/close_button.dart';
+import 'package:glorify_god/components/minimize_option.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/youtube_player_components/minimized_screen_overlay.dart';
 import 'package:glorify_god/components/youtube_player_components/play_pause_components.dart';
@@ -252,6 +253,15 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                         buffering: buffering,
                         unKnown: unKnown,
                       ),
+                      if (youtubePlayerHandler.extendToFullScreen &&
+                          showControls)
+                        Positioned(
+                          top: 20,
+                          left: 20,
+                          child: MinimizeOption(
+                            youtubePlayerHandler: youtubePlayerHandler,
+                          ),
+                        ),
                       Positioned(
                         top: 20,
                         right: 20,
@@ -401,10 +411,10 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
       bufferedBarColor: AppColors.dullWhite,
       thumbCanPaintOutsideBar: false,
       progressBarColor: AppColors.redAccent,
-      thumbColor: Colors.transparent,
+      thumbColor: AppColors.redAccent.withOpacity(0.5),
       barCapShape: pb.BarCapShape.square,
-      thumbRadius: 0,
-      thumbGlowRadius: 0,
+      thumbRadius: 8,
+      thumbGlowRadius: 10,
       buffered: Duration(
         seconds: youtubePlayerHandler
                 .youtubePlayerController!.value.position.inSeconds +

@@ -1,6 +1,4 @@
 import 'dart:developer';
-import 'dart:ui';
-
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:flutter/material.dart';
 import 'package:glorify_god/utils/app_colors.dart';

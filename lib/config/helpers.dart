@@ -17,6 +17,7 @@ String convertDurations(Duration duration) {
 void toastMessage({required String message}) {
   Fluttertoast.showToast(
     msg: message,
+    fontSize: 16,
     backgroundColor: AppColors.white,
     textColor: AppColors.black,
     gravity: ToastGravity.SNACKBAR,

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/profile_models/user_reported_isses_model.dart';
 import 'package:glorify_god/models/search_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
@@ -130,7 +129,7 @@ class AppState with ChangeNotifier {
       }
     } catch (er) {
       log('$er', name: 'The error while loading data');
-      toastMessage(message: 'Connection error. Server is under maintenance');
+      // toastMessage(message: 'Connection error. Server is under maintenance');
     }
   }
 
