@@ -18,6 +18,8 @@ class SearchModel {
     required this.songId,
     required this.artistUID,
     required this.lyricist,
+    required this.credits,
+    required this.otherData,
     required this.artistUid,
     required this.title,
     required this.artUri,
@@ -31,8 +33,10 @@ class SearchModel {
         artist: json['artist'].toString(),
         videoUrl: json['videoUrl'].toString(),
         songId: int.parse(json['songId'].toString()),
-    artistUID: int.parse(json['artistUID'].toString()),
+        artistUID: int.parse(json['artistUID'].toString()),
         lyricist: json['lyricist'].toString(),
+        credits: json['credits'].toString(),
+    otherData: json['otherData'].toString(),
         artistUid: int.parse(json['artistUID'].toString()),
         title: json['title'].toString(),
         artUri: json['artUri'].toString(),
@@ -46,6 +50,8 @@ class SearchModel {
   final int songId;
   final int artistUID;
   final String lyricist;
+  final String credits;
+  final String otherData;
   final int artistUid;
   final String title;
   final String artUri;
@@ -59,6 +65,8 @@ class SearchModel {
         'videoUrl': videoUrl,
         'songId': songId,
         'lyricist': lyricist,
+        'credits': credits,
+        'otherData': otherData,
         'artistUID': artistUid,
         'title': title,
         'artUri': artUri,

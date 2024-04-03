@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:glorify_god/models/artists_model/artists_list_model.dart';
 import 'package:glorify_god/models/user_models/user_login_response_model.dart';
 import 'package:glorify_god/src/api/end_points.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -36,7 +37,6 @@ class ApiCalls {
     String gender = 'UNKNOWN',
     String provider = 'GOOGLE',
   }) async {
-
     try {
       final body = {
         'email': email,
@@ -57,7 +57,7 @@ class ApiCalls {
         'provider': provider,
       };
 
-      log(json.encode(body),name:'Login request');
+      log(json.encode(body), name: 'Login request');
 
       final loginEndpoint = '$loginUrl?gender=$gender';
 
@@ -69,8 +69,7 @@ class ApiCalls {
 
       if (loginResponse.statusCode == 200) {
         final response = userLoginResponseModelFromJson(loginResponse.body);
-        log(loginResponse.body,
-            name: 'User login response from api calls');
+        log(loginResponse.body, name: 'User login response from api calls');
         return response;
       } else {
         log(
@@ -91,10 +90,13 @@ class ApiCalls {
     final token = await getToken();
     log(token, name: 'token to getUserById');
     try {
-      final user = await http.get(Uri.parse(url), headers: {
-        'Content-Type': 'application/json',
-        'Authorization': token,
-      },);
+      final user = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token,
+        },
+      );
 
       log(user.body, name: 'the user by id 1');
 
@@ -109,15 +111,64 @@ class ApiCalls {
     }
   }
 
-  Future<http.Response?> getAllArtistsWithSongs() async {
-    log(getArtistWithSongsUrl, name: 'getArtistWithSongsUrl url');
+  Future<List<ArtistsListModel>> getAllArtists() async {
     final token = await getToken();
+
     try {
-      final response = await http.get(
-        Uri.parse(getArtistWithSongsUrl),
+      final getArtistsList = await http.get(
+        Uri.parse(getArtistsListUrl),
         headers: {'Content-Type': 'application/json', authorization: token},
       );
-      return response;
+
+      if (getArtistsList.statusCode == 200) {
+        final artistsList = artistsListModelFromJson(getArtistsList.body);
+        log('$artistsList', name: 'getAllArtists response');
+        return artistsList;
+      } else {
+        log('', name: 'getAllArtists else call again');
+        return <ArtistsListModel>[];
+      }
+    } catch (e) {
+      log('$e', name: 'getAllArtistsWithSongs error');
+      rethrow;
+    }
+  }
+
+  // Future<http.Response?> getAllArtistsWithSongs() async {
+  //   log(getArtistWithSongsUrl, name: 'getArtistWithSongsUrl url');
+  //   final token = await getToken();
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse(getArtistWithSongsUrl),
+  //       headers: {'Content-Type': 'application/json', authorization: token},
+  //     );
+  //     return response;
+  //   } catch (e) {
+  //     log('$e', name: 'getAllArtistsWithSongs error');
+  //     return null;
+  //   }
+  // }
+
+  Future<http.Response?> getArtistWithSongsOnChoice({
+    required List<int> selectedList,
+  }) async {
+    log(getArtistWithSongsOnChoiceUrl, name: 'getArtistWithSongsUrl url 2');
+    final token = await getToken();
+
+    final body = json.encode(selectedList);
+    log(body, name: 'getArtistWithSongsOnChoice body');
+    try {
+      final response = await http.post(
+        Uri.parse(getArtistWithSongsOnChoiceUrl),
+        body: body,
+        headers: {'Content-Type': 'application/json', authorization: token},
+      );
+      if (response.statusCode == 200) {
+        log(response.body, name: 'getArtistWithSongsOnChoice response');
+        return response;
+      } else {
+        return null;
+      }
     } catch (e) {
       log('$e', name: 'getAllArtistsWithSongs error');
       return null;
@@ -194,8 +245,10 @@ class ApiCalls {
     final uri = '$getFavouritesUrl?userId=$userId';
     log(uri, name: 'getFavourites request sending');
     try {
-      final response = await http.get(Uri.parse(uri),
-          headers: {'Content-Type': 'application/json', authorization: token},);
+      final response = await http.get(
+        Uri.parse(uri),
+        headers: {'Content-Type': 'application/json', authorization: token},
+      );
       log('${response.statusCode}', name: 'getFavourites response');
       return response;
     } catch (e) {
@@ -215,9 +268,11 @@ class ApiCalls {
     };
     log('$uri -', name: 'search api url or request');
     try {
-      final response = await http.post(Uri.parse(uri),
-          body: json.encode(body),
-          headers: {'Content-Type': 'application/json', authorization: token},);
+      final response = await http.post(
+        Uri.parse(uri),
+        body: json.encode(body),
+        headers: {'Content-Type': 'application/json', authorization: token},
+      );
       log('${response.statusCode}', name: 'searched response');
       return response;
     } catch (e) {
@@ -229,8 +284,10 @@ class ApiCalls {
   Future<http.Response> getSongs() async {
     final token = await getToken();
     try {
-      final response = await http.get(Uri.parse(getAllSongs),
-          headers: {'Content-Type': 'application/json', authorization: token},);
+      final response = await http.get(
+        Uri.parse(getAllSongs),
+        headers: {'Content-Type': 'application/json', authorization: token},
+      );
 
       return response;
     } catch (e) {
@@ -277,8 +334,10 @@ class ApiCalls {
     final uri = '$getRatingUrl?userId=$userId';
     log(uri, name: 'getRating url request');
     try {
-      final res = await http.get(Uri.parse(uri),
-          headers: {'Content-Type': 'application/json', authorization: token},);
+      final res = await http.get(
+        Uri.parse(uri),
+        headers: {'Content-Type': 'application/json', authorization: token},
+      );
       return res;
     } catch (e) {
       log('$e', name: 'getRating error');
@@ -320,8 +379,10 @@ class ApiCalls {
     final url = '$getUserReportedIssuesByIdUrl?userId=$userId';
     final token = await getToken();
     try {
-      final res = await http.get(Uri.parse(url),
-          headers: {'Content-Type': 'application/json', authorization: token},);
+      final res = await http.get(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json', authorization: token},
+      );
 
       return res;
     } catch (e) {
@@ -330,13 +391,17 @@ class ApiCalls {
     }
   }
 
-  Future<http.Response> acceptedPolicyById(
-      {required int userId, required bool check,}) async {
+  Future<http.Response> acceptedPolicyById({
+    required int userId,
+    required bool check,
+  }) async {
     final url = '$privacyPolicyUrl/?userId=$userId&check=$check';
     final token = await getToken();
     try {
-      final res = await http.post(Uri.parse(url),
-          headers: {'Content-Type': 'application/json', authorization: token},);
+      final res = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json', authorization: token},
+      );
       log(res.body, name: 'acceptedPolicyById from api services');
       return res;
     } catch (e) {
@@ -345,13 +410,16 @@ class ApiCalls {
     }
   }
 
-  Future<http.Response> checkUserAcceptedPolicyById(
-      {required int userId,}) async {
+  Future<http.Response> checkUserAcceptedPolicyById({
+    required int userId,
+  }) async {
     final url = '$privacyPolicyAcceptedUrl?userId=$userId';
     final token = await getToken();
     try {
-      final res = await http.get(Uri.parse(url),
-          headers: {'Content-Type': 'application/json', authorization: token},);
+      final res = await http.get(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json', authorization: token},
+      );
 
       return res;
     } catch (e) {
@@ -360,15 +428,20 @@ class ApiCalls {
     }
   }
 
-  Future<http.Response> removeUserFromPrivacyPolicyById(
-      {required int userId,}) async {
+  Future<http.Response> removeUserFromPrivacyPolicyById({
+    required int userId,
+  }) async {
     final url = '$removeUserFromPrivacyPolicyUrl?userId=$userId';
     final token = await getToken();
     try {
-      final res = await http.delete(Uri.parse(url),
-          headers: {'Content-Type': 'application/json', authorization: token},);
-      log('${res.body} - ${res.statusCode}',
-          name: 'removeUserFromPrivacyPolicyById response On success ',);
+      final res = await http.delete(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json', authorization: token},
+      );
+      log(
+        '${res.body} - ${res.statusCode}',
+        name: 'removeUserFromPrivacyPolicyById response On success ',
+      );
       return res;
     } catch (e) {
       log('$e', name: 'removeUserFromPrivacyPolicyById error');
@@ -437,8 +510,9 @@ class ApiCalls {
     }
   }
 
-  Future<http.Response?> checkArtistLoginDataByEmail(
-      {required String email,}) async {
+  Future<http.Response?> checkArtistLoginDataByEmail({
+    required String email,
+  }) async {
     const url = checkArtistLoginDataByIdUrl;
     final token = await getToken();
 

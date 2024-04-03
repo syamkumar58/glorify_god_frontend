@@ -12,15 +12,19 @@ class AllSongsCubit extends Cubit<AllSongsState> {
 
   final AppState appState;
 
-  Future getAllSongs() async {
+  Future getAllSongs({required List<int> selectedList}) async {
     try {
-      final allSongs = await appState.getAllArtistsWithSongs();
+      final allSongs =
+          await appState.getAllArtistsWithSongs(selectedList: selectedList);
       emit(AllSongsLoaded(songs: allSongs ?? []));
     } catch (er) {
       log('$er', name: 'getAllSongs error from cubit');
       if (er.toString().contains('Null check operator used on a null value')) {
-        emit(AllSongsHasError(
-            error: 'Null check operator used on a null value',),);
+        emit(
+          AllSongsHasError(
+            error: 'Null check operator used on a null value',
+          ),
+        );
       }
     }
   }

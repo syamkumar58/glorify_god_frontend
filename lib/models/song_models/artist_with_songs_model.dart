@@ -61,6 +61,8 @@ class Song {
   final String artist;
   final String artUri;
   final String lyricist;
+  final String credits;
+  final String otherData;
   final String ytTitle;
   final String ytUrl;
   final String ytImage;
@@ -74,6 +76,8 @@ class Song {
     required this.artist,
     required this.artUri,
     required this.lyricist,
+    required this.credits,
+    required this.otherData,
     required this.ytTitle,
     required this.ytUrl,
     required this.ytImage,
@@ -88,6 +92,8 @@ class Song {
         artist: json['artist'].toString(),
         artUri: json['artUri'].toString(),
         lyricist: json['lyricist'].toString(),
+        credits: json['credits'].toString(),
+    otherData: json['otherData'].toString(),
         ytTitle: json['ytTitle'].toString(),
         ytUrl: json['ytUrl'].toString(),
         ytImage: json['ytImage'].toString(),
@@ -102,6 +108,8 @@ class Song {
         'artist': artist,
         'artUri': artUri,
         'lyricist': lyricist,
+        'credits': credits,
+        'otherData': otherData,
         'ytTitle': ytTitle,
         'ytUrl': ytUrl,
         'ytImage': ytImage,

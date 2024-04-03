@@ -4,15 +4,13 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
-import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/search_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
+import 'package:glorify_god/provider/youtube_player_handler.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +42,8 @@ class _SearchScreenState extends State<SearchScreen>
 
   AppState appState = AppState();
 
+  YoutubePlayerHandler youtubePlayerHandler = YoutubePlayerHandler();
+
   List<Song> collectedSongs = [];
 
   Timer? _searchDelay;
@@ -63,6 +63,7 @@ class _SearchScreenState extends State<SearchScreen>
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
+    youtubePlayerHandler = Provider.of<YoutubePlayerHandler>(context);
     return Scaffold(
       appBar: customAppbar('SEARCH'),
       body: GestureDetector(
@@ -234,6 +235,7 @@ class _SearchScreenState extends State<SearchScreen>
           return Bounce(
             duration: const Duration(milliseconds: 200),
             onPressed: () async {
+              collectedSongs.clear();
               // final initialId = searchedList.indexOf(searchedList[index]);
               FocusScope.of(context).unfocus();
               for (final song in searchedList) {
@@ -245,6 +247,8 @@ class _SearchScreenState extends State<SearchScreen>
                   artist: song.artist,
                   artUri: song.artUri,
                   lyricist: song.lyricist,
+                  credits: song.credits,
+                  otherData: song.otherData,
                   createdAt: song.createdAt,
                   ytUrl: song.ytUrl,
                   ytTitle: song.ytTitle,
@@ -262,6 +266,8 @@ class _SearchScreenState extends State<SearchScreen>
                 artist: songDetails.artist,
                 artUri: songDetails.artUri,
                 lyricist: songDetails.lyricist,
+                credits: songDetails.credits,
+                otherData: songDetails.otherData,
                 ytTitle: songDetails.ytTitle,
                 ytUrl: songDetails.ytUrl,
                 ytImage: songDetails.ytImage,
@@ -269,15 +275,13 @@ class _SearchScreenState extends State<SearchScreen>
                 songId: songDetails.songId,
               );
 
-              musicScreenNavigation(context,
-                  songData: songData, songs: collectedSongs,);
+              //<-- Youtube video player direction -->/
+              youtubePlayerHandler.extendToFullScreen = true;
 
-              await BlocProvider.of<VideoPlayerCubit>(context)
-                  .setToInitialState();
-              await BlocProvider.of<VideoPlayerCubit>(context).startPlayer(
+              youtubePlayerHandler.startPlayer(
                 songData: songData,
                 songs: collectedSongs,
-                selectedSongIndex: index,
+                currentSongIndex: index,
               );
             },
             child: SongsLikesTile(

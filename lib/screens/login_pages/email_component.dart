@@ -19,8 +19,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class EmailComponent extends StatefulWidget {
-  const EmailComponent(
-      {super.key, required this.loading, required this.context,});
+  const EmailComponent({
+    super.key,
+    required this.loading,
+    required this.context,
+  });
 
   final Function(bool loading) loading;
 
@@ -263,19 +266,23 @@ class _EmailComponentState extends State<EmailComponent> {
       width: width * 0.6,
       height: 35,
       decoration: BoxDecoration(
-          color: AppColors.white, borderRadius: BorderRadius.circular(15),),
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(15),
+      ),
       child: CupertinoButton(
         padding: EdgeInsets.zero,
         onPressed: () async {
           if (!EmailValidator.validate(emailController.text)) {
             toast(messageText: AppStrings.enterAValidEmail);
           } else if (firebaseAuth.currentUser != null &&
+              firebaseAuth.currentUser!.email == emailController.text &&
               !firebaseAuth.currentUser!.emailVerified) {
             await firebaseAuth.currentUser!.reload();
             log('${firebaseAuth.currentUser}', name: 'Email is not verified');
             toast(
-                messageText:
-                    '${emailController.text} ${AppStrings.providedEmailNotVerified}',);
+              messageText:
+                  '${emailController.text} ${AppStrings.providedEmailNotVerified}',
+            );
           } else {
             await onSubmit();
           }
@@ -295,38 +302,40 @@ class _EmailComponentState extends State<EmailComponent> {
     return Padding(
       padding: EdgeInsets.only(top: height * 0.03),
       child: RichText(
-          text: TextSpan(
-        children: [
-          TextSpan(
-            text: AppStrings.dontHaveAnAccount,
-            style: GoogleFonts.manrope(
-              fontWeight: FontWeight.w400,
-              fontSize: 15,
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: AppStrings.dontHaveAnAccount,
+              style: GoogleFonts.manrope(
+                fontWeight: FontWeight.w400,
+                fontSize: 15,
+              ),
             ),
-          ),
-          TextSpan(
-            text: AppStrings.signUp,
-            style: GoogleFonts.manrope(
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-            ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                //<-- On Tap signUp open create account -->/
-                Navigator.of(widget.context).push(
-                  CupertinoPageRoute(
+            TextSpan(
+              text: AppStrings.signUp,
+              style: GoogleFonts.manrope(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  //<-- On Tap signUp open create account -->/
+                  Navigator.of(widget.context).push(
+                    CupertinoPageRoute(
                       builder: (_) => MySignUpScreen(
-                            holdEmailData: (String email, bool emailVerified) {
-                              setState(() {
-                                emailController.text = email;
-                              });
-                            },
-                          ),),
-                );
-              },
-          ),
-        ],
-      ),),
+                        holdEmailData: (String email, bool emailVerified) {
+                          setState(() {
+                            emailController.text = email;
+                          });
+                        },
+                      ),
+                    ),
+                  );
+                },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -363,7 +372,8 @@ class _EmailComponentState extends State<EmailComponent> {
       }
     } on FirebaseAuthException catch (er) {
       if (er.toString().contains(
-          'The supplied auth credential is incorrect, malformed or has expired.',)) {
+            'The supplied auth credential is incorrect, malformed or has expired.',
+          )) {
         toast(
           messageText: AppStrings.credentialsAreWrong,
         );
@@ -402,10 +412,11 @@ class _EmailComponentState extends State<EmailComponent> {
 
   void bottomTabsNavigation() {
     Navigator.pushAndRemoveUntil(
-        widget.context,
-        CupertinoPageRoute<BottomTabs>(
-          builder: (_) => const BottomTabs(),
-        ),
-        (route) => false,);
+      widget.context,
+      CupertinoPageRoute<BottomTabs>(
+        builder: (_) => const BottomTabs(),
+      ),
+      (route) => false,
+    );
   }
 }
