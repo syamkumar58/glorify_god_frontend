@@ -686,58 +686,39 @@ class _FloatingYoutubePlayerState extends State<FloatingYoutubePlayer>
                   ),
                 ),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaY: 5, sigmaX: 5),
-                  child: Container(
-                    height: 80,
-                    width: 130,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      image: DecorationImage(
-                        fit: BoxFit.contain,
-                        image: NetworkImage(
-                          songData.artUri,
+              child: Center(
+                child: youtubePlayerHandler.selectedSongData.songId ==
+                        songData.songId
+                    ? Container(
+                        height: 80,
+                        width: 130,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.7),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Lottie.asset(
+                              LottieAnimations.musicAnimation,
+                              controller: animationController,
+                              height: 30,
+                              width: 80,
+                              fit: BoxFit.fill,
+                            ),
+                          ],
+                        ),
+                      )
+                    : Container(
+                        height: 30,
+                        width: 30,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color: AppColors.dullBlack,
+                        ),
+                        child: const Icon(
+                          Icons.play_arrow_outlined,
                         ),
                       ),
-                    ),
-                    child: Center(
-                      child: youtubePlayerHandler.selectedSongData.songId ==
-                              songData.songId
-                          ? Container(
-                              height: 80,
-                              width: 130,
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.7),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Lottie.asset(
-                                    LottieAnimations.musicAnimation,
-                                    controller: animationController,
-                                    height: 30,
-                                    width: 80,
-                                    fit: BoxFit.fill,
-                                  ),
-                                ],
-                              ),
-                            )
-                          : Container(
-                              height: 30,
-                              width: 30,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                color: AppColors.dullBlack,
-                              ),
-                              child: const Icon(
-                                Icons.play_arrow_outlined,
-                              ),
-                            ),
-                    ),
-                  ),
-                ),
               ),
             ),
             SizedBox(

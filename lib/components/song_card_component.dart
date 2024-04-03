@@ -55,38 +55,19 @@ class _SongCardState extends State<SongCard> {
                 },
               ),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaY: 5, sigmaX: 5),
-                child: Container(
-                  width: 150, // 110 for non grid view
-                  height: 90, // 110 for non grid view
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        widget.image,
-                      ),
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  child: const Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Icon(
-                          Icons.play_circle,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.play_circle,
+                    size: 30,
+                    color: Colors.white,
                   ),
                 ),
-              ),
+              ],
             ),
           ),
           const SizedBox(
