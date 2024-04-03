@@ -26,6 +26,10 @@ class MinimizedScreenOverLay extends StatelessWidget {
               onPressed: () {
                 youtubePlayerHandler.extendToFullScreen =
                     !youtubePlayerHandler.extendToFullScreen;
+                if (youtubePlayerHandler.extendToFullScreen) {
+                  youtubePlayerHandler.positionXRatio = 0.45;
+                  youtubePlayerHandler.positionYRatio = 0.57;
+                }
               },
               icon: Icon(
                 Icons.north_west,
@@ -60,10 +64,8 @@ class MinimizedScreenOverLay extends StatelessWidget {
             child: IconButton(
               padding: EdgeInsets.zero,
               onPressed: () {
-                if (youtubePlayerHandler.youtubePlayerController != null) {
-                  youtubePlayerHandler.youtubePlayerController = null;
-                  youtubePlayerHandler.youtubePlayerController!.dispose();
-                }
+                youtubePlayerHandler.youtubePlayerController!.dispose();
+                youtubePlayerHandler.youtubePlayerController = null;
               },
               icon: Icon(
                 Icons.close,
