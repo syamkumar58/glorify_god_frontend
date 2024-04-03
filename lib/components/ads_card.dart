@@ -42,14 +42,8 @@ class _AdsCardState extends State<AdsCard> {
           );
         },
         onAdFailedToLoad: (ad, error) {
-          // Retry loading the ad after a delay
+          ad.dispose();
           log('$error', name: 'Ad failed to load');
-          Future.delayed(const Duration(seconds: 30), () {
-            if (!adLoaded) {
-              ad.dispose(); // Dispose the failed ad
-              initializeAd(); // Attempt to load the ad again
-            }
-          });
         },
       ),
     );
