@@ -73,9 +73,11 @@ class _BottomTabsState extends State<BottomTabs>
     LikedScreen(),
     ProfileScreen(),
   ];
+  late final ImageProvider _imageProvider;
 
   @override
   void initState() {
+    _imageProvider = AssetImage(AppImages.appIcon);
     box = Hive.box<dynamic>(HiveKeys.openBox);
     appState = context.read<AppState>();
     initialUserCall();
@@ -137,7 +139,6 @@ class _BottomTabsState extends State<BottomTabs>
     await BlocProvider.of<AllSongsCubit>(context)
         .getAllSongs(selectedList: storedList);
   }
-
 
   Future<bool> willPopScope() async {
     if (MediaQuery.of(context).orientation != Orientation.portrait) {
@@ -317,9 +318,7 @@ class _BottomTabsState extends State<BottomTabs>
           borderRadius: BorderRadius.circular(50),
           color: AppColors.darkGreyBlue,
           image: DecorationImage(
-            image: AssetImage(
-              AppImages.appIcon,
-            ),
+            image: _imageProvider,
             fit: BoxFit.contain,
           ),
         ),

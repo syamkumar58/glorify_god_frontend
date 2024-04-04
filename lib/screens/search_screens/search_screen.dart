@@ -281,7 +281,7 @@ class _SearchScreenState extends State<SearchScreen>
               youtubePlayerHandler.startPlayer(
                 songData: songData,
                 songs: collectedSongs,
-                currentSongIndex: index,
+                currentSongIndex: index, appState: appState,
               );
             },
             child: SongsLikesTile(

@@ -248,7 +248,7 @@ class _LikedScreenState extends State<LikedScreen> {
     youtubePlayerHandler.startPlayer(
       songData: songData,
       songs: collectedSongs,
-      currentSongIndex: initialId,
+      currentSongIndex: initialId, appState: appState,
     );
   }
 }

@@ -64,6 +64,7 @@ class MinimizedScreenOverLay extends StatelessWidget {
             child: IconButton(
               padding: EdgeInsets.zero,
               onPressed: () {
+                youtubePlayerHandler.clearStoredData();
                 youtubePlayerHandler.youtubePlayerController!.dispose();
                 youtubePlayerHandler.youtubePlayerController = null;
               },

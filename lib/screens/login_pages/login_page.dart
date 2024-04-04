@@ -89,6 +89,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           ),
                           child: SizedBox(
                             width: width * 0.8,
+                            height: height * 0.04,
                             child: const Row(
                               children: [
                                 AppText(

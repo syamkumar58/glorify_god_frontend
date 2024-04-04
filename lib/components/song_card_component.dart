@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:flutter/material.dart';
 import 'package:glorify_god/utils/app_colors.dart';
@@ -41,7 +42,7 @@ class _SongCardState extends State<SongCard> {
               borderRadius: BorderRadius.circular(8),
               color: AppColors.darkGreyBlue2,
               image: DecorationImage(
-                image: NetworkImage(
+                image: CachedNetworkImageProvider(
                   widget.image,
                 ),
                 fit: BoxFit.fill,

@@ -193,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       CupertinoButton(
                         color: AppColors.redAccent,
                         onPressed: () async {
-                          artistsOrderOptionsSheet(context: context);
+
                         },
                         child: const Text('Test Button'),
                       ),
@@ -340,16 +340,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               (e) => Bounce(
                 duration: const Duration(milliseconds: 50),
                 onPressed: () async {
-                  //<-- Youtube video player direction -->/
-                  final currentSongIndex = songs.indexOf(e);
+                  if (youtubePlayerHandler.selectedSongData.songId !=
+                      e.songId) {
+                    //<-- Youtube video player direction -->/
+                    final currentSongIndex = songs.indexOf(e);
 
-                  youtubePlayerHandler.extendToFullScreen = true;
+                    youtubePlayerHandler.extendToFullScreen = true;
 
-                  youtubePlayerHandler.startPlayer(
-                    songData: e,
-                    songs: songs,
-                    currentSongIndex: currentSongIndex,
-                  );
+                    youtubePlayerHandler.startPlayer(
+                      songData: e,
+                      songs: songs,
+                      currentSongIndex: currentSongIndex, appState: appState,
+                    );
+                  }
                 },
                 child: SongCard(
                   image: e.artUri,

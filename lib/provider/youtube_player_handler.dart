@@ -2,10 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
+import 'package:glorify_god/provider/app_state.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class YoutubePlayerHandler extends ChangeNotifier {
-
   //<-- Minimizing and maximizing the player -->/
   double _positionXRatio = 0.45;
   double _positionYRatio = 0.57;
@@ -23,7 +23,6 @@ class YoutubePlayerHandler extends ChangeNotifier {
     _positionYRatio = value;
     notifyListeners();
   }
-
 
   Song emptySongData = Song(
     songId: 0,
@@ -116,6 +115,7 @@ class YoutubePlayerHandler extends ChangeNotifier {
     required Song songData,
     required List<Song> songs,
     required int currentSongIndex,
+    required AppState appState,
   }) async {
     final gotSelectedSongsList = List<Song>.from(songs);
     selectedIndex = currentSongIndex;
@@ -128,11 +128,14 @@ class YoutubePlayerHandler extends ChangeNotifier {
     selectedSongData = songData;
 
     if (youtubePlayerController != null) {
+      appState.checkFavourites(songId: selectedSongData.songId);
       return loadSelectedSong(
         videoId: songData.ytUrl,
         currentSongIndex: selectedIndex,
       );
     }
+
+    appState.checkFavourites(songId: selectedSongData.songId);
 
     youtubePlayerController = YoutubePlayerController(
       initialVideoId: songData.ytUrl,
@@ -165,7 +168,8 @@ class YoutubePlayerHandler extends ChangeNotifier {
     youtubePlayerController!.pause();
   }
 
-  Future skipToNext({required List<Song> songs}) async {
+  Future skipToNext(
+      {required List<Song> songs, required AppState appState}) async {
     if (selectedIndex < songs.length - 1) {
       selectedIndex++;
     } else {
@@ -173,10 +177,12 @@ class YoutubePlayerHandler extends ChangeNotifier {
     }
     selectedSongData = emptySongData;
     selectedSongData = songs[selectedIndex];
+    appState.checkFavourites(songId: selectedSongData.songId);
     youtubePlayerController!.load(songs[selectedIndex].ytUrl);
   }
 
-  Future skipToPrevious({required List<Song> songs}) async {
+  Future skipToPrevious(
+      {required List<Song> songs, required AppState appState}) async {
     if (selectedIndex > 0) {
       selectedIndex--;
     } else {
@@ -184,6 +190,11 @@ class YoutubePlayerHandler extends ChangeNotifier {
     }
     selectedSongData = emptySongData;
     selectedSongData = songs[selectedIndex];
+    appState.checkFavourites(songId: selectedSongData.songId);
     youtubePlayerController!.load(songs[selectedIndex].ytUrl);
+  }
+
+  void clearStoredData() {
+    selectedSongData = emptySongData;
   }
 }

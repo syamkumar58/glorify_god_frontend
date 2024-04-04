@@ -391,12 +391,21 @@ class _EmailComponentState extends State<EmailComponent> {
 
   Future forgotPasswordMethod() async {
     if (emailController.text.trim().isNotEmpty) {
-      try {
-        await FirebaseAuth.instance.sendPasswordResetEmail(
-          email: emailController.text.trim(),
-        );
-      } catch (er) {
-        log('$er', name: 'Reset password not sent');
+      log(emailController.text, name: 'forgot password email address');
+      final signInMethods = await FirebaseAuth.instance
+          .fetchSignInMethodsForEmail(emailController.text.trim());
+
+      if (signInMethods.isEmpty) {
+        log('entered email is not signed in please signup and try to signin');
+        toastMessage(message: AppStrings.emailNotFound);
+      } else {
+        try {
+          await FirebaseAuth.instance.sendPasswordResetEmail(
+            email: emailController.text.trim(),
+          );
+        } catch (er) {
+          log('$er', name: 'Reset password not sent');
+        }
       }
     } else {
       toast(messageText: AppStrings.enterAValidEmail);
@@ -418,5 +427,9 @@ class _EmailComponentState extends State<EmailComponent> {
       ),
       (route) => false,
     );
+  }
+
+  void toastMessage({required String message}) {
+    flushBar(context: context, messageText: message);
   }
 }

@@ -158,14 +158,7 @@ class AppState with ChangeNotifier {
     }
   }
 
-  bool _isSongFavourite = false;
 
-  bool get isSongFavourite => _isSongFavourite;
-
-  set isSongFavourite(bool value) {
-    _isSongFavourite = value;
-    notifyListeners();
-  }
 
   Future<bool> addFavourite({
     required int songId,
@@ -195,9 +188,19 @@ class AppState with ChangeNotifier {
     }
   }
 
+  bool _isSongFavourite = false;
+
+  bool get isSongFavourite => _isSongFavourite;
+
+  set isSongFavourite(bool value) {
+    _isSongFavourite = value;
+    notifyListeners();
+  }
+
   Future<bool> checkFavourites({
     required int songId,
   }) async {
+    log('$songId',name:'checkFavourites request songId');
     final data = await ApiCalls().checkSongIdAddedOrNot(
       songId: songId,
       userId: userData.userId,

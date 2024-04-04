@@ -343,3 +343,9 @@
   - If player in extended mode then it will minimize the player
   - If the tab index is not zero then it will bring the user to home screen means first tab(0)
   - Double click to exit app implementation with toast message
+  - On landscape mode removed minimize and close options for the player
+  - Player aspect ratio changed from 21/11 to 16/9
+  - If selected video is selected again video is starting from the start (issue) - Fix
+  - Forgot password for email issue - Fix
+  - Home and player screen images cached for faster loading the images
+  - On Fav issue - fix

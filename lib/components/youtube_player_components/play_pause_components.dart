@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
+import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/youtube_player_handler.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 
 class PlayPauseControls extends StatelessWidget {
-  const PlayPauseControls(
-      {super.key, required this.youtubePlayerHandler, required this.songs});
+  const PlayPauseControls({
+    super.key,
+    required this.youtubePlayerHandler,
+    required this.songs,
+    required this.appState,
+  });
 
   final YoutubePlayerHandler youtubePlayerHandler;
+  final AppState appState;
 
   final List<Song> songs;
 
@@ -28,6 +34,7 @@ class PlayPauseControls extends StatelessWidget {
             onPressed: () async {
               youtubePlayerHandler.skipToPrevious(
                 songs: songs,
+                appState: appState,
               );
             },
             icon: Icon(
@@ -78,6 +85,7 @@ class PlayPauseControls extends StatelessWidget {
               // await skipNext();
               youtubePlayerHandler.skipToNext(
                 songs: songs,
+                appState: appState,
               );
             },
             icon: Icon(

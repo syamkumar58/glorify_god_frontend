@@ -81,4 +81,5 @@ class AppStrings {
   static const lyricist = 'Lyricist:';
   static const credits = 'Credits:';
   static const close = 'Close';
+  static const emailNotFound = 'Email address not found. Please sign up.';
 }
