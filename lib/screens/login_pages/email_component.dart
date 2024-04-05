@@ -356,35 +356,43 @@ class _EmailComponentState extends State<EmailComponent> {
   Future onSubmitEmailLogin() async {
     widget.loading(true);
 
-    try {
-      final userLogin = await emailLogin(
-        context: widget.context,
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+    final signInMethods = await FirebaseAuth.instance
+        .fetchSignInMethodsForEmail(emailController.text.trim());
 
-      if (userLogin != null) {
-        widget.loading(false);
-        bottomTabsNavigation();
-      } else {
-        widget.loading(false);
-        log('something went wrong on logIn with email');
-      }
-    } on FirebaseAuthException catch (er) {
-      if (er.toString().contains(
-            'The supplied auth credential is incorrect, malformed or has expired.',
-          )) {
-        toast(
-          messageText: AppStrings.credentialsAreWrong,
+    if (signInMethods.isNotEmpty) {
+      try {
+        final userLogin = await emailLogin(
+          context: widget.context,
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
         );
-      } else if (er.message.toString().contains(''
-          'INVALID_LOGIN_CREDENTIALS')) {
-        toast(
-          messageText: AppStrings.provideAValidDetails,
-        );
+
+        if (userLogin != null) {
+          widget.loading(false);
+          bottomTabsNavigation();
+        } else {
+          widget.loading(false);
+          log('something went wrong on logIn with email');
+        }
+      } on FirebaseAuthException catch (er) {
+        if (er.toString().contains(
+              'The supplied auth credential is incorrect, malformed or has expired.',
+            )) {
+          toast(
+            messageText: AppStrings.credentialsAreWrong,
+          );
+        } else if (er.message.toString().contains(''
+            'INVALID_LOGIN_CREDENTIALS')) {
+          toast(
+            messageText: AppStrings.provideAValidDetails,
+          );
+        }
+        log('$er and  ${er.runtimeType}', name: 'Email login failed');
+        // if(){}
+        widget.loading(false);
       }
-      log('$er and  ${er.runtimeType}', name: 'Email login failed');
-      // if(){}
+    } else {
+      toast(messageText: AppStrings.emailNotFound);
       widget.loading(false);
     }
   }
@@ -397,7 +405,7 @@ class _EmailComponentState extends State<EmailComponent> {
 
       if (signInMethods.isEmpty) {
         log('entered email is not signed in please signup and try to signin');
-        toastMessage(message: AppStrings.emailNotFound);
+        toast(messageText: AppStrings.emailNotFound);
       } else {
         try {
           await FirebaseAuth.instance.sendPasswordResetEmail(
@@ -427,9 +435,5 @@ class _EmailComponentState extends State<EmailComponent> {
       ),
       (route) => false,
     );
-  }
-
-  void toastMessage({required String message}) {
-    flushBar(context: context, messageText: message);
   }
 }

@@ -369,7 +369,7 @@ class _BottomTabsState extends State<BottomTabs>
       if (presentTime.isAfter(
         convertStoredValueToDateTime.add(
           Duration(
-            seconds: remoteConfigData.interstitialAdTime,
+            seconds: kDebugMode ? 18000 : remoteConfigData.interstitialAdTime,
           ),
         ),
       )) {

@@ -295,3 +295,124 @@
 //
 // }
 //
+
+import 'package:flutter/material.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
+class YoutubePlayerWidget extends StatefulWidget {
+  const YoutubePlayerWidget({super.key});
+
+  @override
+  State<YoutubePlayerWidget> createState() => _YoutubePlayerWidgetState();
+}
+
+class _YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
+  late YoutubePlayerController youtubePlayerController;
+  bool show = true;
+
+  @override
+  void initState() {
+    youtubePlayerController = YoutubePlayerController(
+      initialVideoId: 'V2Paod2vmSU',
+    );
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: YoutubePlayerBuilder(
+        player: YoutubePlayer(
+          // aspectRatio: 16 / 9,
+          controller: youtubePlayerController,
+          bottomActions: [
+            Column(
+              children: [
+                Container(
+                  height: 20,
+                  width: MediaQuery.of(context).size.width -
+                      MediaQuery.of(context).size.width * 0.9,
+                  color: Colors.green,
+                ),
+                Container(
+                  height: 20,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  color: Colors.red,
+                ),
+              ],
+            ),
+          ],
+        ),
+        builder: (context, player) {
+          return player;
+        },
+      ),
+    );
+  }
+
+  // Column(
+  // children: [
+  // AspectRatio(
+  // aspectRatio: 16 / 9,
+  // child: Stack(
+  // children: [
+  // ,
+  // Positioned.fill(
+  // top: 50,
+  // left: 50,
+  // child: IconButton(
+  // onPressed: () {
+  // log('is tapped ');
+  // changeOrientation();
+  // },
+  // icon: const Icon(
+  // Icons.play_arrow,
+  // size: 40,
+  // color: Colors.red,
+  // ),
+  // ),
+  // ),
+  // ],
+  // ),
+  // ),
+  // if (MediaQuery.of(context).orientation ==
+  // Orientation.portrait)
+  // Container(
+  // width: MediaQuery.of(context).size.width,
+  // height: remainingHeight,
+  // color: Colors.green,
+  // child: IconButton(
+  // onPressed: () {},
+  // icon: const Icon(
+  // Icons.abc,
+  // size: 40,
+  // color: Colors.white,
+  // ),
+  // ),
+  // ),
+  // ],
+  // )
+
+  Future changeOrientation() async {
+    if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      // youtubePlayerHandler.fullScreenEnabled = false;
+      youtubePlayerController.toggleFullScreenMode();
+      // SystemChrome.setPreferredOrientations(
+      //   [
+      //     DeviceOrientation.landscapeRight,
+      //     DeviceOrientation.landscapeLeft,
+      //   ],
+      // );
+    } else {
+      // youtubePlayerHandler.fullScreenEnabled = true;
+      youtubePlayerController.toggleFullScreenMode();
+      // SystemChrome.setPreferredOrientations(
+      //   [
+      //     DeviceOrientation.portraitUp,
+      //     DeviceOrientation.portraitDown,
+      //   ],
+      // );
+    }
+  }
+}

@@ -20,6 +20,7 @@ import 'package:glorify_god/provider/app_state.dart' as app;
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
 import 'package:glorify_god/provider/youtube_player_handler.dart';
+import 'package:glorify_god/screens/video_player_screen/youtube_player.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -193,7 +194,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       CupertinoButton(
                         color: AppColors.redAccent,
                         onPressed: () async {
-
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (_) => const YoutubePlayerWidget(),
+                            ),
+                          );
                         },
                         child: const Text('Test Button'),
                       ),
@@ -350,7 +356,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     youtubePlayerHandler.startPlayer(
                       songData: e,
                       songs: songs,
-                      currentSongIndex: currentSongIndex, appState: appState,
+                      currentSongIndex: currentSongIndex,
+                      appState: appState,
                     );
                   }
                 },

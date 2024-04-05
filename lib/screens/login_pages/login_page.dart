@@ -141,12 +141,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             top: height * 0.08,
                           ),
                           child: EmailComponent(
+                            context: context,
                             loading: (isLoading) {
                               setState(() {
                                 loading = isLoading;
                               });
                             },
-                            context: context,
                           ),
                         ),
                         orWidget(),

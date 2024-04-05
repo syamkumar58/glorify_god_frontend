@@ -349,3 +349,8 @@
   - Forgot password for email issue - Fix
   - Home and player screen images cached for faster loading the images
   - On Fav issue - fix
+
+- 04/04/2024 - 05/04/2024
+  - Email login with unKnown email and password login issue - fix
+  - Player Landscape issues with fitting to the screen - fix
+  - version increment

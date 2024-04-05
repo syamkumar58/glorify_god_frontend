@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
@@ -128,7 +129,7 @@ class YoutubePlayerHandler extends ChangeNotifier {
     selectedSongData = songData;
 
     if (youtubePlayerController != null) {
-      appState.checkFavourites(songId: selectedSongData.songId);
+      unawaited(appState.checkFavourites(songId: selectedSongData.songId));
       return loadSelectedSong(
         videoId: songData.ytUrl,
         currentSongIndex: selectedIndex,

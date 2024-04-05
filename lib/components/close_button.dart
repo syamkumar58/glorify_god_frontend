@@ -19,13 +19,13 @@ class CloseOption extends StatelessWidget {
         height: 30,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50),
-          color: AppColors.grey.withOpacity(0.5),
+          color: AppColors.black.withOpacity(0.5),
         ),
         child: Center(
           child: Icon(
             Icons.close,
             color: AppColors.white,
-            size: 20,
+            size: 22,
           ),
         ),
       ),
