@@ -10,6 +10,8 @@ class AppColors {
   static Color orange = Colors.orange;
   static Color purple = Colors.purple;
   static Color blue = Colors.blue;
+  static Color green = Colors.green;
+  static Color greenAccent = Colors.greenAccent;
   static Color blueAccent = Colors.blueAccent;
   static const violet = Color(0xFF643E94);
   static Color deepPurple = Colors.deepPurple;

@@ -355,65 +355,63 @@ class _EmailComponentState extends State<EmailComponent> {
 
   Future onSubmitEmailLogin() async {
     widget.loading(true);
+    try {
+      final userLogin = await emailLogin(
+        context: widget.context,
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
 
-    final signInMethods = await FirebaseAuth.instance
-        .fetchSignInMethodsForEmail(emailController.text.trim());
-
-    if (signInMethods.isNotEmpty) {
-      try {
-        final userLogin = await emailLogin(
-          context: widget.context,
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
-        );
-
-        if (userLogin != null) {
-          widget.loading(false);
-          bottomTabsNavigation();
-        } else {
-          widget.loading(false);
-          log('something went wrong on logIn with email');
-        }
-      } on FirebaseAuthException catch (er) {
-        if (er.toString().contains(
-              'The supplied auth credential is incorrect, malformed or has expired.',
-            )) {
-          toast(
-            messageText: AppStrings.credentialsAreWrong,
-          );
-        } else if (er.message.toString().contains(''
-            'INVALID_LOGIN_CREDENTIALS')) {
-          toast(
-            messageText: AppStrings.provideAValidDetails,
-          );
-        }
-        log('$er and  ${er.runtimeType}', name: 'Email login failed');
-        // if(){}
+      if (userLogin != null) {
         widget.loading(false);
+        bottomTabsNavigation();
+      } else {
+        widget.loading(false);
+        log('something went wrong on logIn with email');
       }
-    } else {
-      toast(messageText: AppStrings.emailNotFound);
+    } on FirebaseAuthException catch (er) {
+      if (er.toString().contains(
+            'The supplied auth credential is incorrect, malformed or has expired.',
+          )) {
+        toast(
+          messageText: AppStrings.credentialsAreWrong,
+        );
+      } else if (er.message.toString().contains(''
+          'INVALID_LOGIN_CREDENTIALS')) {
+        toast(
+          messageText: AppStrings.provideAValidDetails,
+        );
+      }
+      log('$er and  ${er.runtimeType}', name: 'Email login failed');
       widget.loading(false);
     }
   }
 
   Future forgotPasswordMethod() async {
-    if (emailController.text.trim().isNotEmpty) {
-      log(emailController.text, name: 'forgot password email address');
-      final signInMethods = await FirebaseAuth.instance
-          .fetchSignInMethodsForEmail(emailController.text.trim());
-
-      if (signInMethods.isEmpty) {
-        log('entered email is not signed in please signup and try to signin');
-        toast(messageText: AppStrings.emailNotFound);
-      } else {
-        try {
-          await FirebaseAuth.instance.sendPasswordResetEmail(
-            email: emailController.text.trim(),
-          );
-        } catch (er) {
-          log('$er', name: 'Reset password not sent');
-        }
+    passwordController.clear();
+    final auth = FirebaseAuth.instance;
+    if (!EmailValidator.validate(emailController.text)) {
+      toast(messageText: AppStrings.enterAValidEmail);
+    } else if (emailController.text.trim().isNotEmpty) {
+      try {
+        await auth
+            .sendPasswordResetEmail(
+          email: emailController.text.trim(),
+        )
+            .then((value) {
+          sentRestLink();
+        }).catchError((dynamic onError) {
+          if (onError.toString().contains(
+                'There is no user record corresponding to this identifier',
+              )) {
+            toastMessage(
+              message: AppStrings.noUserRecorded,
+            );
+          }
+          log('$onError', name: 'FirebaseException failed catch err');
+        });
+      } catch (er) {
+        log('$er', name: 'Reset password not sent');
       }
     } else {
       toast(messageText: AppStrings.enterAValidEmail);
@@ -434,6 +432,79 @@ class _EmailComponentState extends State<EmailComponent> {
         builder: (_) => const BottomTabs(),
       ),
       (route) => false,
+    );
+  }
+
+  Future sentRestLink() async {
+    showModalBottomSheet<dynamic>(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(20),
+          topLeft: Radius.circular(20),
+        ),
+      ),
+      context: context,
+      backgroundColor: AppColors.violet,
+      builder: (ctx) {
+        return Container(
+          height: 300,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(30),
+              topLeft: Radius.circular(30),
+            ),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 13, right: 13),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Icon(
+                      Icons.close,
+                      size: 25,
+                      color: AppColors.black,
+                    ),
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.check_circle,
+                size: 40,
+                color: AppColors.green,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: AppText(
+                  text: AppStrings.checkYourEmail,
+                  styles: GoogleFonts.manrope(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 24,
+                    color: AppColors.black,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 25),
+                child: AppText(
+                  text: AppStrings.instructions,
+                  styles: GoogleFonts.manrope(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                    color: AppColors.black,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

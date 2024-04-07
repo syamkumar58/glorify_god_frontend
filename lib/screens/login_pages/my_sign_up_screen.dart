@@ -474,6 +474,8 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
   }
 
   Future signUp() async {
+    final validate = EmailValidator.validate(emailController.text);
+    log('$validate',name:'email validate in signup');
     if (!EmailValidator.validate(emailController.text)) {
       flushBar(context: context, messageText: AppStrings.enterAValidEmail);
     } else if (password.isEmpty || reEnteredPassword.isEmpty) {

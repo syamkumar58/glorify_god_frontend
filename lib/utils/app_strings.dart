@@ -82,4 +82,10 @@ class AppStrings {
   static const credits = 'Credits:';
   static const close = 'Close';
   static const emailNotFound = 'Email address not found. Please sign up.';
+  static const instructions =
+      'We have sent instructions to your \n  email to reset your password.';
+  static const checkYourEmail = 'Check your email';
+  static const noUserRecorded =
+      'There is no user record corresponding to this identifier';
+  static const sentInstructions = 'We’ve emailed you the instructions.';
 }

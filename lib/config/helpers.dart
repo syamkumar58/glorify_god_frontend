@@ -139,10 +139,12 @@ void flushBar({
   required String messageText,
 }) {
   Flushbar(
+    backgroundColor: AppColors.white,
     messageText: AppText(
       text: messageText,
       maxLines: 5,
       styles: GoogleFonts.manrope(
+        color: AppColors.black,
         fontWeight: FontWeight.w600,
         fontSize: 18,
       ),

@@ -354,3 +354,8 @@
   - Email login with unKnown email and password login issue - fix
   - Player Landscape issues with fitting to the screen - fix
   - version increment
+
+- 07/04/2024
+  - Added valid messages to user for intimation on email login flow
+  - Small UI and colors changes
+  - version increment
