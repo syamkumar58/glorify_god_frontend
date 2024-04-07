@@ -359,4 +359,6 @@
   - Added valid messages to user for intimation on email login flow
   - Small UI and colors changes
   - Forgot password intimation pop up
+  - Login page UI changes
+  - Sign Up screen please verify your account screen added
   - version increment

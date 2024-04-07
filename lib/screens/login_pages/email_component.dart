@@ -278,7 +278,7 @@ class _EmailComponentState extends State<EmailComponent> {
               firebaseAuth.currentUser!.email == emailController.text &&
               !firebaseAuth.currentUser!.emailVerified) {
             await firebaseAuth.currentUser!.reload();
-            log('${firebaseAuth.currentUser}', name: 'Email is not verified');
+            log('${firebaseAuth.currentUser}', name: 'Anot verified');
             toast(
               messageText:
                   '${emailController.text} ${AppStrings.providedEmailNotVerified}',
@@ -290,8 +290,9 @@ class _EmailComponentState extends State<EmailComponent> {
         child: AppText(
           text: AppStrings.signIn,
           styles: GoogleFonts.manrope(
+            fontSize: 16,
             color: AppColors.appColor2,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

@@ -89,7 +89,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           ),
                           child: SizedBox(
                             width: width * 0.8,
-                            height: height * 0.04,
                             child: const Row(
                               children: [
                                 AppText(
@@ -134,23 +133,21 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             ],
                           ),
                         ),
-                        // appTitle(),
-                        // const MobileNumberScreen(),
                         Padding(
                           padding: EdgeInsets.only(
                             top: height * 0.08,
                           ),
-                          child: EmailComponent(
-                            context: context,
-                            loading: (isLoading) {
-                              setState(() {
-                                loading = isLoading;
-                              });
-                            },
-                          ),
+                          child: googleLoginWidget(),
                         ),
                         orWidget(),
-                        googleLoginWidget(),
+                        EmailComponent(
+                          context: context,
+                          loading: (isLoading) {
+                            setState(() {
+                              loading = isLoading;
+                            });
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -186,29 +183,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 
   Widget googleLoginWidget() {
-    return Column(
-      children: [
-        loginButtonComponent(
-          onPressed: () async {
-            setState(() {
-              loading = true;
-            });
-            await login();
-          },
-          image: AppImages.googleImage,
-        ),
-        const SizedBox(
-          height: 12,
-        ),
-        AppText(
-          text: AppStrings.signInWithGoogle,
-          styles: GoogleFonts.manrope(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.white,
-          ),
-        ),
-      ],
+    return loginButtonComponent(
+      onPressed: () async {
+        setState(() {
+          loading = true;
+        });
+        await login();
+      },
+      image: AppImages.googleImage,
     );
   }
 
@@ -222,15 +204,33 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         onPressed();
       },
       child: Container(
-        width: 50,
-        height: 50,
+        width: width * 0.8,
+        height: 40,
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: BorderRadius.circular(15),
         ),
-        child: Image.asset(
-          image,
-          fit: BoxFit.cover,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              image,
+              fit: BoxFit.cover,
+              width: 50,
+              height: 40,
+            ),
+            const SizedBox(
+              height: 12,
+            ),
+            AppText(
+              text: AppStrings.signInWithGoogle,
+              styles: GoogleFonts.manrope(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.appColor2,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -252,7 +252,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   Widget orWidget() {
     return Padding(
-      padding: EdgeInsets.only(top: height * 0.05, bottom: height * 0.05),
+      padding: EdgeInsets.only(top: height * 0.04, bottom: height * 0.03),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
