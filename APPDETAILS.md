@@ -361,4 +361,5 @@
   - Forgot password intimation pop up
   - Login page UI changes
   - Sign Up screen please verify your account screen added
+  - Text fields heights changed to height: height * 0.065, from 50
   - version increment

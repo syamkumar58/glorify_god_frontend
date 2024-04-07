@@ -277,7 +277,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 12),
             child: SizedBox(
-              height: 50,
+              height: height * 0.065,
               child: TextFormField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -373,7 +373,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: SizedBox(
-                height: 50,
+                height: height * 0.065,
                 child: TextFormField(
                   controller: passwordController,
                   scrollPadding: const EdgeInsets.only(bottom: 50),
@@ -455,7 +455,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
         child: Padding(
           padding: const EdgeInsets.only(top: 12),
           child: SizedBox(
-            height: 50,
+            height: height * 0.065,
             child: TextFormField(
               controller: reEnterPasswordController,
               scrollPadding: const EdgeInsets.only(bottom: 50),

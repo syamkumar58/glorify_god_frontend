@@ -78,7 +78,7 @@ class _EmailComponentState extends State<EmailComponent> {
           Padding(
             padding: const EdgeInsets.only(top: 12),
             child: SizedBox(
-              height: 50,
+              height: height * 0.065,
               child: TextFormField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -168,8 +168,9 @@ class _EmailComponentState extends State<EmailComponent> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 12),
-              child: SizedBox(
-                height: 50,
+              child: Container(
+                color: Colors.transparent,
+                height: height * 0.065,
                 child: TextFormField(
                   controller: passwordController,
                   scrollPadding: const EdgeInsets.only(bottom: 50),
