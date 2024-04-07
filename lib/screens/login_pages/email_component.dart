@@ -481,13 +481,25 @@ class _EmailComponentState extends State<EmailComponent> {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 20),
-                child: AppText(
-                  text: AppStrings.checkYourEmail,
-                  styles: GoogleFonts.manrope(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 24,
-                    color: AppColors.black,
-                  ),
+                child: Column(
+                  children: [
+                    AppText(
+                      text: AppStrings.checkYourEmail,
+                      styles: GoogleFonts.manrope(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 24,
+                        color: AppColors.black,
+                      ),
+                    ),
+                    AppText(
+                      text: emailController.text,
+                      styles: GoogleFonts.manrope(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18,
+                        color: AppColors.black,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Padding(

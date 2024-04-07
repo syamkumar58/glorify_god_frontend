@@ -358,4 +358,5 @@
 - 07/04/2024
   - Added valid messages to user for intimation on email login flow
   - Small UI and colors changes
+  - Forgot password intimation pop up
   - version increment
