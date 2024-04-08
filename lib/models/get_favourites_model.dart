@@ -19,6 +19,8 @@ class GetFavouritesModel {
     required this.videoUrl,
     required this.artist,
     required this.lyricist,
+    required this.credits,
+    required this.otherData,
     required this.userId,
     required this.id,
     required this.title,
@@ -36,6 +38,8 @@ class GetFavouritesModel {
         videoUrl: json['videoUrl'].toString(),
         artist: json['artist'].toString(),
         lyricist: json['lyricist'].toString(),
+        credits: json['credits'].toString(),
+        otherData: json['otherData'].toString(),
         userId: int.parse(json['userId'].toString()),
         id: int.parse(json['id'].toString()),
         title: json['title'].toString(),
@@ -50,6 +54,8 @@ class GetFavouritesModel {
   final String videoUrl;
   final String artist;
   final String lyricist;
+  final String credits;
+  final String otherData;
   final int userId;
   final int id;
   final String title;
@@ -65,6 +71,8 @@ class GetFavouritesModel {
         'videoUrl': videoUrl,
         'artist': artist,
         'lyricist': lyricist,
+        'credits': credits,
+        'otherData': otherData,
         'userId': userId,
         'id': id,
         'title': title,

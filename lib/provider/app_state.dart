@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/profile_models/user_reported_isses_model.dart';
 import 'package:glorify_god/models/search_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
@@ -39,6 +38,8 @@ class AppState with ChangeNotifier {
     artist: '',
     artUri: '',
     lyricist: '',
+    credits: '',
+    otherData: '',
     ytTitle: '',
     ytUrl: '',
     ytImage: '',
@@ -53,6 +54,8 @@ class AppState with ChangeNotifier {
     artist: '',
     artUri: '',
     lyricist: '',
+    credits: '',
+    otherData: '',
     ytTitle: '',
     ytUrl: '',
     ytImage: '',
@@ -126,7 +129,7 @@ class AppState with ChangeNotifier {
       }
     } catch (er) {
       log('$er', name: 'The error while loading data');
-      toastMessage(message: 'Connection error. Server is under maintenance');
+      // toastMessage(message: 'Connection error. Server is under maintenance');
     }
   }
 
@@ -140,8 +143,10 @@ class AppState with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<List<GetArtistsWithSongs>?> getAllArtistsWithSongs() async {
-    final data = await ApiCalls().getAllArtistsWithSongs();
+  Future<List<GetArtistsWithSongs>?> getAllArtistsWithSongs(
+      {required List<int> selectedList}) async {
+    final data =
+        await ApiCalls().getArtistWithSongsOnChoice(selectedList: selectedList);
 
     if (data != null && data.statusCode == 200) {
       final allSongs = getArtistsWithSongsFromJson(data.body);
@@ -153,14 +158,7 @@ class AppState with ChangeNotifier {
     }
   }
 
-  bool _isSongFavourite = false;
 
-  bool get isSongFavourite => _isSongFavourite;
-
-  set isSongFavourite(bool value) {
-    _isSongFavourite = value;
-    notifyListeners();
-  }
 
   Future<bool> addFavourite({
     required int songId,
@@ -190,9 +188,19 @@ class AppState with ChangeNotifier {
     }
   }
 
+  bool _isSongFavourite = false;
+
+  bool get isSongFavourite => _isSongFavourite;
+
+  set isSongFavourite(bool value) {
+    _isSongFavourite = value;
+    notifyListeners();
+  }
+
   Future<bool> checkFavourites({
     required int songId,
   }) async {
+    log('$songId',name:'checkFavourites request songId');
     final data = await ApiCalls().checkSongIdAddedOrNot(
       songId: songId,
       userId: userData.userId,

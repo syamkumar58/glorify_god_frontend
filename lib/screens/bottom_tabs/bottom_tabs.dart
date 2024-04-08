@@ -1,32 +1,32 @@
 // ignore_for_file: strict_raw_type
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'package:chewie/chewie.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:glorify_god/bloc/all_songs/all_songs_cubit.dart';
-import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
+import 'package:flutter_bounce/flutter_bounce.dart';
+import 'package:glorify_god/bloc/all_songs_cubit/all_songs_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
-import 'package:glorify_god/components/noisey_text.dart';
+import 'package:glorify_god/components/home_components/users_choice_component.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/config/remote_config.dart';
-import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
+import 'package:glorify_god/provider/youtube_player_handler.dart';
 import 'package:glorify_god/screens/favourites_screen/liked_screen.dart';
 import 'package:glorify_god/screens/home_screens/home_screen.dart';
 import 'package:glorify_god/screens/profile_screens/profile_screen.dart';
 import 'package:glorify_god/screens/search_screens/search_screen.dart';
-import 'package:glorify_god/screens/video_player_screen/video_player_screen.dart';
+import 'package:glorify_god/screens/video_player_screen/floating_youtube_player.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:glorify_god/utils/asset_images.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart' as ad;
 import 'package:hive/hive.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -48,10 +48,20 @@ class _BottomTabsState extends State<BottomTabs>
   double get height => MediaQuery.of(context).size.height;
   AppState appState = AppState();
   GlobalVariables globalVariables = GlobalVariables();
+  YoutubePlayerHandler youtubePlayerHandler = YoutubePlayerHandler();
   bool isLoading = false;
-  ChewieController? chewieController;
-  late AnimationController animationController;
+  List<int> storedList = [0];
+  DateTime? onExitTapTime;
 
+  // double positionXRatio = 0.45;
+  // double positionYRatio = 0.57;
+
+  //Offset position = const Offset(170, 478); ////<-  Bottom right alignment ->//
+  //<-- const Offset(
+  //     26,
+  //     15,
+  //   );  for top left corner -->/
+  bool keyBoardCheckOnce = false;
   ad.InterstitialAd? _interstitialAd;
   bool interstitialAdClosed = false;
   int _screenIndex = 0;
@@ -63,215 +73,182 @@ class _BottomTabsState extends State<BottomTabs>
     LikedScreen(),
     ProfileScreen(),
   ];
+  late final ImageProvider _imageProvider;
 
   @override
   void initState() {
+    _imageProvider = AssetImage(AppImages.appIcon);
     box = Hive.box<dynamic>(HiveKeys.openBox);
-    animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    );
-    animationController.repeat();
     appState = context.read<AppState>();
+    initialUserCall();
     interstitialAdLogic();
     WidgetsBinding.instance.addObserver(this);
     super.initState();
-    initialUserCall();
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    final mediaQueryData = MediaQuery.of(context);
+    final keyBoardHeight = mediaQueryData.viewInsets.bottom;
 
-    if (mounted) {
-      VideoPlayerCubit videoPlayerCubit =
-          BlocProvider.of<VideoPlayerCubit>(context);
-
-      if (videoPlayerCubit.playerController != null &&
-          videoPlayerCubit
-              .playerController!.videoPlayerController.value.isInitialized) {
-        chewieController = BlocProvider.of<VideoPlayerCubit>(context)
-                .playerController!
-                .videoPlayerController
-                .value
-                .isInitialized
-            ? BlocProvider.of<VideoPlayerCubit>(context).playerController
-            : null;
-        log(
-          '$chewieController && state - $state',
-          name: 'checking the state and the controller',
-        );
-        switch (state) {
-          case AppLifecycleState.detached:
-            if (chewieController != null &&
-                chewieController!.videoPlayerController.value.isInitialized) {
-              chewieController!.dispose();
-              BlocProvider.of<VideoPlayerCubit>(context).pause();
-            }
-            break;
-          case AppLifecycleState.resumed:
-            // if (chewieController != null &&
-            //     chewieController!.videoPlayerController.value.isInitialized) {
-            //   BlocProvider.of<VideoPlayerCubit>(context).pause();
-            // }
-            break;
-          case AppLifecycleState.inactive:
-            // if (chewieController != null &&
-            //     chewieController!.videoPlayerController.value.isInitialized) {
-            //   BlocProvider.of<VideoPlayerCubit>(context).pause();
-            // }
-            break;
-          case AppLifecycleState.hidden:
-            if (chewieController != null &&
-                chewieController!.videoPlayerController.value.isInitialized) {
-              BlocProvider.of<VideoPlayerCubit>(context).pause();
-            }
-            break;
-          case AppLifecycleState.paused:
-            if (chewieController != null &&
-                chewieController!.videoPlayerController.value.isInitialized) {
-              BlocProvider.of<VideoPlayerCubit>(context).pause();
-            }
-            break;
-        }
+    if (keyBoardHeight > 0) {
+      if (!keyBoardCheckOnce) {
+        log('KeyBoard opened');
+        setState(() {
+          keyBoardCheckOnce = true;
+          // position = const Offset(181, 333);
+          youtubePlayerHandler.positionXRatio = 0.45;
+          youtubePlayerHandler.positionYRatio = 0.3;
+        });
+      }
+    } else {
+      if (keyBoardCheckOnce) {
+        log('KeyBoard closed');
+        setState(() {
+          keyBoardCheckOnce = false;
+          youtubePlayerHandler.positionXRatio = 0.45;
+          youtubePlayerHandler.positionYRatio = 0.57;
+          // position = const Offset(170, 478);
+          // position = const Offset(200, 500);
+        });
       }
     }
   }
 
   Future initialUserCall() async {
-    await BlocProvider.of<AllSongsCubit>(context).getAllSongs();
     final dynamic userLogInData = await box.get(
       HiveKeys.logInKey,
     );
-    log('$userLogInData', name: 'cached userLoginData from bottom tabs');
-
+    final dynamic getStoreSelectedArtistIds =
+        await box.get(HiveKeys.storeSelectedArtistIds);
+    if (getStoreSelectedArtistIds != null) {
+      final decodedList =
+          json.decode(getStoreSelectedArtistIds) as List<dynamic>;
+      storedList = decodedList.map((e) => int.parse(e.toString())).toList();
+    }
     await appState.initiallySetUserDataGlobally(
       userLogInData,
     );
     await appState.checkArtistLoginDataByEmail();
+    await getAllSongsCall(storedList);
     await appState.getRatings();
+  }
+
+  Future getAllSongsCall(List<int> storedList) async {
+    await BlocProvider.of<AllSongsCubit>(context)
+        .getAllSongs(selectedList: storedList);
+  }
+
+  Future<bool> willPopScope() async {
+    if (MediaQuery.of(context).orientation != Orientation.portrait) {
+      SystemChrome.setPreferredOrientations(
+        [
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ],
+      );
+      return false;
+    } else if (youtubePlayerHandler.extendToFullScreen) {
+      youtubePlayerHandler.extendToFullScreen = false;
+      return false;
+    } else if (_screenIndex != 0) {
+      setState(() {
+        _screenIndex = 0;
+      });
+      return false;
+    } else {
+      final now = DateTime.now();
+      if (onExitTapTime == null ||
+          now.difference(onExitTapTime!) > const Duration(seconds: 2)) {
+        onExitTapTime = now;
+        toastMessage(message: 'Double click to exit app');
+        return false;
+      } else {
+        return true;
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
     globalVariables = Provider.of<GlobalVariables>(context);
-    return ModalProgressHUD(
-      inAsyncCall: isLoading,
-      progressIndicator: const CupertinoActivityIndicator(),
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        body: screens[_screenIndex],
-        bottomNavigationBar: navBar(),
+    youtubePlayerHandler = Provider.of<YoutubePlayerHandler>(context);
+    return WillPopScope(
+      onWillPop: () async {
+        return await willPopScope();
+      },
+      child: ModalProgressHUD(
+        inAsyncCall: isLoading,
+        progressIndicator: const CupertinoActivityIndicator(),
+        child: Scaffold(
+          extendBodyBehindAppBar: true,
+          body: Stack(
+            children: [
+              screens[_screenIndex],
+              if (youtubePlayerHandler.youtubePlayerController != null &&
+                  youtubePlayerHandler
+                      .youtubePlayerController!.initialVideoId.isNotEmpty)
+                Positioned(
+                  left: youtubePlayerHandler.extendToFullScreen
+                      ? 0
+                      : width * youtubePlayerHandler.positionXRatio,
+                  top: youtubePlayerHandler.extendToFullScreen
+                      ? 0
+                      : height * youtubePlayerHandler.positionYRatio,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      setState(() {
+                        youtubePlayerHandler.positionXRatio +=
+                            details.delta.dx / width;
+                        youtubePlayerHandler.positionYRatio +=
+                            details.delta.dy / height;
+                        // Clamp the position within the screen bounds
+                        youtubePlayerHandler.positionXRatio =
+                            youtubePlayerHandler.positionXRatio.clamp(0.0, 1.0);
+                        youtubePlayerHandler.positionYRatio =
+                            youtubePlayerHandler.positionYRatio.clamp(0.0, 1.0);
+                        // position += details.delta;
+                        // log('${position.dx} && ${position.dy}', name: 'position');
+                      });
+                    },
+                    child: FloatingYoutubePlayer(
+                      songs: youtubePlayerHandler.selectedSongsList,
+                      songData: youtubePlayerHandler.selectedSongData,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          bottomNavigationBar: SafeArea(
+            child: MediaQuery.of(context).orientation == Orientation.portrait
+                ? navBar()
+                : const SizedBox.shrink(),
+          ),
+        ),
       ),
     );
   }
 
   Widget navBar() {
+    final android =
+        youtubePlayerHandler.extendToFullScreen ? height * 0.08 : height * 0.15;
+    final ios = youtubePlayerHandler.extendToFullScreen
+        ? height * 0.06
+        : height * 0.132;
     return Container(
-      color: Colors.transparent,
+      color: AppColors.black,
       width: width,
-      height: Platform.isIOS ? height * 0.18 : height * 0.16,
+      height: Platform.isIOS ? ios : android,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           const AdsCard(
             adSize: ad.AdSize.banner,
           ),
-          bottomBar(),
+          if (!youtubePlayerHandler.extendToFullScreen) bottomBar(),
         ],
-      ),
-    );
-  }
-
-  Widget videoBar(VideoPlayerInitialised data) {
-    return InkWell(
-      onTap: () {
-        musicScreenNavigation(
-          context,
-          songData: data.songData,
-          songs: data.songs,
-        );
-      },
-      child: Container(
-        height: 60,
-        width: width,
-        color: Colors.transparent,
-        child: Row(
-          children: [
-            Container(
-              height: 60,
-              width: width * 0.3,
-              color: Colors.transparent,
-              child: data.chewieController.videoPlayerController.value
-                      .isInitialized
-                  ? Chewie(
-                      controller: data.chewieController,
-                    )
-                  : const SizedBox(),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 3),
-              child: Container(
-                height: 60,
-                width: width * 0.4,
-                color: Colors.transparent,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      data.songData.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.manrope(
-                        fontSize: 16,
-                        color: AppColors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    AppText(
-                      text: data.songData.artist,
-                      styles: GoogleFonts.manrope(
-                        fontSize: 14,
-                        color: AppColors.white,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            IconButton(
-              padding: EdgeInsets.zero,
-              onPressed: () {
-                if (data
-                    .chewieController.videoPlayerController.value.isPlaying) {
-                  data.chewieController.pause();
-                } else {
-                  data.chewieController.play();
-                }
-              },
-              icon: Icon(
-                data.chewieController.videoPlayerController.value.isPlaying
-                    ? Icons.pause
-                    : Icons.play_arrow,
-                color: AppColors.white,
-              ),
-            ),
-            IconButton(
-              padding: EdgeInsets.zero,
-              onPressed: () async {
-                await BlocProvider.of<VideoPlayerCubit>(context)
-                    .stopVideoPlayer();
-              },
-              icon: const Icon(
-                Icons.close,
-                size: 21,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -328,70 +305,24 @@ class _BottomTabsState extends State<BottomTabs>
   }
 
   Widget centerPlayerIcon() {
-    return BlocBuilder<VideoPlayerCubit, VideoPlayerState>(
-      builder: (context, state) {
-        VideoPlayerInitialised? data;
-
-        if (state is VideoPlayerInitial) {
-        } else if (state is VideoPlayerInitialised) {
-          data = state;
-        }
-
-        final playing = data != null &&
-            data.chewieController.videoPlayerController.value.isInitialized;
-
-        return GestureDetector(
-          onTap: () {
-            if (data != null &&
-                data.chewieController.videoPlayerController.value
-                    .isInitialized) {
-              musicScreenNavigation(
-                context,
-                songData: data.songData,
-                songs: data.songs,
-              );
-            }
-          },
-          child: Container(
-            width: Platform.isAndroid ? 50 : 60,
-            height: Platform.isAndroid ? 50 : 60,
-            margin: const EdgeInsets.only(top: 5, bottom: 5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              color: AppColors.dullWhite,
-              border: Border.all(
-                width: !playing ? 0 : 2,
-                color: !playing ? Colors.transparent : AppColors.dullWhite,
-              ),
-              image: !playing
-                  ? DecorationImage(
-                      image: AssetImage(
-                        AppImages.appIcon,
-                      ),
-                      fit: BoxFit.contain,
-                    )
-                  : DecorationImage(
-                      image: NetworkImage(
-                        data.songData.artUri,
-                      ),
-                      fit: BoxFit.contain,
-                      opacity: 0.8,
-                    ),
-            ),
-            child: !playing
-                ? const SizedBox.shrink()
-                : Center(
-                    child: Icon(
-                      data.chewieController.isPlaying
-                          ? Icons.pause
-                          : Icons.play_arrow,
-                      size: 34,
-                      color: AppColors.white,
-                    ),
-                  ),
-          ),
-        );
+    return Bounce(
+      duration: const Duration(milliseconds: 50),
+      onPressed: () {
+        artistsOrderOptionsSheet(context: context);
       },
+      child: Container(
+        width: Platform.isAndroid ? 50 : 60,
+        height: Platform.isAndroid ? 50 : 60,
+        margin: const EdgeInsets.only(top: 5, bottom: 5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          color: AppColors.darkGreyBlue,
+          image: DecorationImage(
+            image: _imageProvider,
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
     );
   }
 
@@ -418,35 +349,6 @@ class _BottomTabsState extends State<BottomTabs>
     );
   }
 
-  Future<void> showMusicScreen({
-    required Song songData,
-    required List<Song> songs,
-  }) async {
-    await showModalBottomSheet<dynamic>(
-      context: context,
-      isScrollControlled: true,
-      // showDragHandle: true,
-      backgroundColor: AppColors.black,
-      barrierColor: AppColors.black.withOpacity(0.5),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-        ),
-      ),
-      builder: (ctx) {
-        return SizedBox(
-          width: width,
-          height: height * 0.95,
-          child: VideoPlayerScreen(
-            songData: songData,
-            songs: songs,
-          ),
-        );
-      },
-    );
-  }
-
   Future interstitialAdLogic() async {
     final dynamic getStoredAdShownTime =
         await box.get(HiveKeys.storeInterstitialAdLoadedTime);
@@ -465,8 +367,11 @@ class _BottomTabsState extends State<BottomTabs>
           DateTime.parse(getStoredAdShownTime.toString());
 
       if (presentTime.isAfter(
-        convertStoredValueToDateTime
-            .add(Duration(seconds: remoteConfigData.interstitialAdTime)),
+        convertStoredValueToDateTime.add(
+          Duration(
+            seconds: kDebugMode ? 18000 : remoteConfigData.interstitialAdTime,
+          ),
+        ),
       )) {
         log('did ir came here after 2 mins when i launch the app');
         await box.delete(HiveKeys.storeInterstitialAdLoadedTime);
@@ -537,7 +442,10 @@ class _BottomTabsState extends State<BottomTabs>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    animationController.dispose();
+    if (youtubePlayerHandler.youtubePlayerController != null) {
+      youtubePlayerHandler.youtubePlayerController!.dispose();
+      youtubePlayerHandler.youtubePlayerController = null;
+    }
     super.dispose();
   }
 }

@@ -19,8 +19,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class EmailComponent extends StatefulWidget {
-  const EmailComponent(
-      {super.key, required this.loading, required this.context,});
+  const EmailComponent({
+    super.key,
+    required this.loading,
+    required this.context,
+  });
 
   final Function(bool loading) loading;
 
@@ -75,7 +78,7 @@ class _EmailComponentState extends State<EmailComponent> {
           Padding(
             padding: const EdgeInsets.only(top: 12),
             child: SizedBox(
-              height: 50,
+              height: height * 0.065,
               child: TextFormField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -165,8 +168,9 @@ class _EmailComponentState extends State<EmailComponent> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 12),
-              child: SizedBox(
-                height: 50,
+              child: Container(
+                color: Colors.transparent,
+                height: height * 0.065,
                 child: TextFormField(
                   controller: passwordController,
                   scrollPadding: const EdgeInsets.only(bottom: 50),
@@ -263,19 +267,23 @@ class _EmailComponentState extends State<EmailComponent> {
       width: width * 0.6,
       height: 35,
       decoration: BoxDecoration(
-          color: AppColors.white, borderRadius: BorderRadius.circular(15),),
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(15),
+      ),
       child: CupertinoButton(
         padding: EdgeInsets.zero,
         onPressed: () async {
           if (!EmailValidator.validate(emailController.text)) {
             toast(messageText: AppStrings.enterAValidEmail);
           } else if (firebaseAuth.currentUser != null &&
+              firebaseAuth.currentUser!.email == emailController.text &&
               !firebaseAuth.currentUser!.emailVerified) {
             await firebaseAuth.currentUser!.reload();
-            log('${firebaseAuth.currentUser}', name: 'Email is not verified');
+            log('${firebaseAuth.currentUser}', name: 'Anot verified');
             toast(
-                messageText:
-                    '${emailController.text} ${AppStrings.providedEmailNotVerified}',);
+              messageText:
+                  '${emailController.text} ${AppStrings.providedEmailNotVerified}',
+            );
           } else {
             await onSubmit();
           }
@@ -283,8 +291,9 @@ class _EmailComponentState extends State<EmailComponent> {
         child: AppText(
           text: AppStrings.signIn,
           styles: GoogleFonts.manrope(
+            fontSize: 16,
             color: AppColors.appColor2,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -295,38 +304,40 @@ class _EmailComponentState extends State<EmailComponent> {
     return Padding(
       padding: EdgeInsets.only(top: height * 0.03),
       child: RichText(
-          text: TextSpan(
-        children: [
-          TextSpan(
-            text: AppStrings.dontHaveAnAccount,
-            style: GoogleFonts.manrope(
-              fontWeight: FontWeight.w400,
-              fontSize: 15,
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: AppStrings.dontHaveAnAccount,
+              style: GoogleFonts.manrope(
+                fontWeight: FontWeight.w400,
+                fontSize: 15,
+              ),
             ),
-          ),
-          TextSpan(
-            text: AppStrings.signUp,
-            style: GoogleFonts.manrope(
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-            ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                //<-- On Tap signUp open create account -->/
-                Navigator.of(widget.context).push(
-                  CupertinoPageRoute(
+            TextSpan(
+              text: AppStrings.signUp,
+              style: GoogleFonts.manrope(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  //<-- On Tap signUp open create account -->/
+                  Navigator.of(widget.context).push(
+                    CupertinoPageRoute(
                       builder: (_) => MySignUpScreen(
-                            holdEmailData: (String email, bool emailVerified) {
-                              setState(() {
-                                emailController.text = email;
-                              });
-                            },
-                          ),),
-                );
-              },
-          ),
-        ],
-      ),),
+                        holdEmailData: (String email, bool emailVerified) {
+                          setState(() {
+                            emailController.text = email;
+                          });
+                        },
+                      ),
+                    ),
+                  );
+                },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -346,7 +357,6 @@ class _EmailComponentState extends State<EmailComponent> {
 
   Future onSubmitEmailLogin() async {
     widget.loading(true);
-
     try {
       final userLogin = await emailLogin(
         context: widget.context,
@@ -363,7 +373,8 @@ class _EmailComponentState extends State<EmailComponent> {
       }
     } on FirebaseAuthException catch (er) {
       if (er.toString().contains(
-          'The supplied auth credential is incorrect, malformed or has expired.',)) {
+            'The supplied auth credential is incorrect, malformed or has expired.',
+          )) {
         toast(
           messageText: AppStrings.credentialsAreWrong,
         );
@@ -374,17 +385,33 @@ class _EmailComponentState extends State<EmailComponent> {
         );
       }
       log('$er and  ${er.runtimeType}', name: 'Email login failed');
-      // if(){}
       widget.loading(false);
     }
   }
 
   Future forgotPasswordMethod() async {
-    if (emailController.text.trim().isNotEmpty) {
+    passwordController.clear();
+    final auth = FirebaseAuth.instance;
+    if (!EmailValidator.validate(emailController.text)) {
+      toast(messageText: AppStrings.enterAValidEmail);
+    } else if (emailController.text.trim().isNotEmpty) {
       try {
-        await FirebaseAuth.instance.sendPasswordResetEmail(
+        await auth
+            .sendPasswordResetEmail(
           email: emailController.text.trim(),
-        );
+        )
+            .then((value) {
+          sentRestLink();
+        }).catchError((dynamic onError) {
+          if (onError.toString().contains(
+                'There is no user record corresponding to this identifier',
+              )) {
+            toastMessage(
+              message: AppStrings.noUserRecorded,
+            );
+          }
+          log('$onError', name: 'FirebaseException failed catch err');
+        });
       } catch (er) {
         log('$er', name: 'Reset password not sent');
       }
@@ -402,10 +429,96 @@ class _EmailComponentState extends State<EmailComponent> {
 
   void bottomTabsNavigation() {
     Navigator.pushAndRemoveUntil(
-        widget.context,
-        CupertinoPageRoute<BottomTabs>(
-          builder: (_) => const BottomTabs(),
+      widget.context,
+      CupertinoPageRoute<BottomTabs>(
+        builder: (_) => const BottomTabs(),
+      ),
+      (route) => false,
+    );
+  }
+
+  Future sentRestLink() async {
+    showModalBottomSheet<dynamic>(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(20),
+          topLeft: Radius.circular(20),
         ),
-        (route) => false,);
+      ),
+      context: context,
+      backgroundColor: AppColors.violet,
+      builder: (ctx) {
+        return Container(
+          height: 300,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(30),
+              topLeft: Radius.circular(30),
+            ),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 13, right: 13),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Icon(
+                      Icons.close,
+                      size: 25,
+                      color: AppColors.black,
+                    ),
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.check_circle,
+                size: 40,
+                color: AppColors.green,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Column(
+                  children: [
+                    AppText(
+                      text: AppStrings.checkYourEmail,
+                      styles: GoogleFonts.manrope(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 24,
+                        color: AppColors.black,
+                      ),
+                    ),
+                    AppText(
+                      text: emailController.text,
+                      styles: GoogleFonts.manrope(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18,
+                        color: AppColors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 25),
+                child: AppText(
+                  text: AppStrings.instructions,
+                  styles: GoogleFonts.manrope(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                    color: AppColors.black,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

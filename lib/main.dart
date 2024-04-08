@@ -4,12 +4,12 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:glorify_god/bloc/all_songs/all_songs_cubit.dart';
-import 'package:glorify_god/bloc/profile_bloc/liked_cubit/liked_cubit.dart';
-import 'package:glorify_god/bloc/profile_bloc/songs_info_cubit/songs_data_info_cubit.dart';
-import 'package:glorify_god/bloc/video_player_bloc/video_player_cubit.dart';
+import 'package:glorify_god/bloc/all_songs_cubit/all_songs_cubit.dart';
+import 'package:glorify_god/bloc/profile_cubit/liked_cubit/liked_cubit.dart';
+import 'package:glorify_god/bloc/profile_cubit/songs_info_cubit/songs_data_info_cubit.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
+import 'package:glorify_god/provider/youtube_player_handler.dart';
 import 'package:glorify_god/screens/splash_screen.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
@@ -56,6 +56,9 @@ class _GlorifyGodState extends State<GlorifyGod> {
     return p.MultiProvider(
       providers: [
         p.ChangeNotifierProvider(
+          create: (_) => YoutubePlayerHandler(),
+        ),
+        p.ChangeNotifierProvider(
           create: (_) => AppState(),
         ),
         p.ChangeNotifierProvider(
@@ -89,18 +92,8 @@ class _MainState extends State<Main> {
           create: (_) => SongsDataInfoCubit(),
         ),
         BlocProvider(
-          create: (context) => VideoPlayerCubit(
-            appState: appState,
-            songsDataInfoCubit: BlocProvider.of<SongsDataInfoCubit>(context),
-          ),
-        ),
-        BlocProvider(
           create: (_) => LikedCubit(),
         ),
-        //<-- In future if moved to YT player enable this -->/
-        // BlocProvider(
-        //   create: (_) => YoutubePlayerCubit(),
-        // ),
       ],
       child: MaterialApp(
         title: AppStrings.appName,

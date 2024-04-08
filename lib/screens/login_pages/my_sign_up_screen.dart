@@ -79,39 +79,50 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
             ),
           ),
         ),
-        body: Container(
-          height: double.infinity,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                AppImages.cross,
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Container(
+            height: double.infinity,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                  AppImages.cross,
+                ),
+                fit: BoxFit.fill,
               ),
-              fit: BoxFit.fill,
             ),
-          ),
-          child: ClipRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
-              child: SafeArea(
-                child: !emailVerified
-                    ? Column(
-                        children: [
-                          SizedBox(
-                            height: height * 0.1,
-                          ),
-                          emailField(),
-                          passwordField(),
-                          reEnterPasswordField(),
-                          signUpButton(),
-                        ],
-                      )
-                    : emailVerifiedWidget(),
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+                child: SafeArea(
+                  child: !emailVerified
+                      ? loading
+                          ? waitForVerification()
+                          : entryWidgets()
+                      : emailVerifiedWidget(),
+                ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget entryWidgets() {
+    return Column(
+      children: [
+        SizedBox(
+          height: height * 0.1,
+        ),
+        emailField(),
+        passwordField(),
+        reEnterPasswordField(),
+        signUpButton(),
+      ],
     );
   }
 
@@ -121,18 +132,92 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Icon(
-          Icons.check_circle,
+          Icons.verified,
           color: AppColors.white,
           size: 50,
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 21, bottom: 21),
+          padding: const EdgeInsets.only(top: 30, bottom: 25),
           child: AppText(
             text: AppStrings.accountVerified,
             styles: GoogleFonts.manrope(
               fontSize: 21,
               color: AppColors.white,
               fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Bounce(
+          duration: const Duration(milliseconds: 50),
+          onPressed: () {
+            setState(() {
+              loading = false;
+            });
+            widget.holdEmailData(email, true);
+            Navigator.pop(context);
+          },
+          child: Container(
+            width: width * 0.4,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.keyboard_arrow_left,
+                  size: 25,
+                  color: AppColors.black,
+                ),
+                AppText(
+                  text: AppStrings.goBack,
+                  styles: GoogleFonts.manrope(
+                    fontSize: 18,
+                    color: AppColors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget waitForVerification() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.hourglass_top_rounded,
+          color: AppColors.white,
+          size: 50,
+        ),
+        Padding(
+          padding:
+              const EdgeInsets.only(top: 30, bottom: 5, left: 15, right: 15),
+          child: AppText(
+            text: '${AppStrings.sentVerificationLink}\n${emailController.text}',
+            styles: GoogleFonts.manrope(
+              fontSize: 18,
+              color: AppColors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Padding(
+          padding:
+              const EdgeInsets.only(top: 5, bottom: 25, left: 15, right: 15),
+          child: AppText(
+            text: AppStrings.pleaseVerifyYourAccount,
+            styles: GoogleFonts.manrope(
+              fontSize: 16,
+              color: AppColors.white,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ),
@@ -192,7 +277,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 12),
             child: SizedBox(
-              height: 50,
+              height: height * 0.065,
               child: TextFormField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -288,7 +373,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: SizedBox(
-                height: 50,
+                height: height * 0.065,
                 child: TextFormField(
                   controller: passwordController,
                   scrollPadding: const EdgeInsets.only(bottom: 50),
@@ -370,7 +455,7 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
         child: Padding(
           padding: const EdgeInsets.only(top: 12),
           child: SizedBox(
-            height: 50,
+            height: height * 0.065,
             child: TextFormField(
               controller: reEnterPasswordController,
               scrollPadding: const EdgeInsets.only(bottom: 50),
@@ -459,8 +544,9 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
               ? AppText(
                   text: AppStrings.signUp,
                   styles: GoogleFonts.manrope(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.appColor2,
-                    fontWeight: FontWeight.bold,
                   ),
                 )
               : Center(
@@ -474,6 +560,8 @@ class _MySignUpScreenState extends State<MySignUpScreen> {
   }
 
   Future signUp() async {
+    final validate = EmailValidator.validate(emailController.text);
+    log('$validate', name: 'email validate in signup');
     if (!EmailValidator.validate(emailController.text)) {
       flushBar(context: context, messageText: AppStrings.enterAValidEmail);
     } else if (password.isEmpty || reEnteredPassword.isEmpty) {

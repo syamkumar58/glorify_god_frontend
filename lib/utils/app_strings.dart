@@ -3,7 +3,8 @@ class AppStrings {
   static const appName2 = 'Glorify\nGod';
   static const hello = 'HELLO!';
   static const welcomeTo = 'Welcome to';
-  static const signInWithGoogle = 'Sign In with\nGoogle';
+  static const signInWithGoogle = 'Sign In with Google';
+  static const signInWithGoogle2 = 'Sign In with\nGoogle';
   static const jyothirajSongs = 'Jyothi Raj Songs';
   static const favoritesTitle = 'Liked';
   static const homeBannerText =
@@ -80,4 +81,14 @@ class AppStrings {
   static const singer = 'Singer:';
   static const lyricist = 'Lyricist:';
   static const credits = 'Credits:';
+  static const close = 'Close';
+  static const emailNotFound = 'Email address not found. Please sign up.';
+  static const instructions =
+      'We have sent instructions to your \n  email to reset your password.';
+  static const checkYourEmail = 'Check your email';
+  static const noUserRecorded =
+      'There is no user record corresponding to this identifier';
+  static const sentInstructions = 'We’ve emailed you the instructions.';
+  static const sentVerificationLink = 'We have sent a Verification link to the provided email address ';
+  static const pleaseVerifyYourAccount = 'Please verify your account before you try to Sign in';
 }

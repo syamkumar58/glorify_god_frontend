@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:glorify_god/config/remote_config.dart';
@@ -43,8 +42,14 @@ class _AdsCardState extends State<AdsCard> {
           );
         },
         onAdFailedToLoad: (ad, error) {
-          ad.dispose();
+          // Retry loading the ad after a delay
           log('$error', name: 'Ad failed to load');
+          Future.delayed(const Duration(seconds: 30), () {
+            if (!adLoaded) {
+              ad.dispose(); // Dispose the failed ad
+              initializeAd(); // Attempt to load the ad again
+            }
+          });
         },
       ),
     );

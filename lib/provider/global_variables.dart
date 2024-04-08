@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 
@@ -38,11 +36,11 @@ class GlobalVariables extends ChangeNotifier {
 class ControllerWithSongData {
   ControllerWithSongData({
     required this.songs,
-    required this.chewieController,
+    // required this.chewieController,
     required this.songData,
   });
 
-  final ChewieController chewieController;
+  // final ChewieController chewieController;
   final Song songData;
   final List<Song> songs;
 }
