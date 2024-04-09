@@ -1,10 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
-
 import 'package:glorify_god/models/user_models/user_login_response_model.dart';
 import 'package:glorify_god/src/api/end_points.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
@@ -35,34 +32,9 @@ class ApiCalls {
     String passportNumber = '',
     String fcmToken = '',
     String timeZone = '',
+    String gender = 'UNKNOWN',
+    String provider = 'GOOGLE',
   }) async {
-    var uuId = '';
-    var platform = '';
-    var deviceName = '';
-    var versionBaseOs = '';
-    var manufacture = '';
-    var model = '';
-
-    final deviceInfo = DeviceInfoPlugin();
-
-    if (Platform.isIOS) {
-      final iosInfo = await deviceInfo.iosInfo;
-      uuId = iosInfo.identifierForVendor!;
-      platform = 'iOS';
-      deviceName = iosInfo.name;
-      versionBaseOs = iosInfo.systemVersion;
-      manufacture = iosInfo.model;
-      model = iosInfo.model;
-    } else if (Platform.isAndroid) {
-      final androidInfo = await deviceInfo.androidInfo;
-      uuId = androidInfo.id;
-      platform = 'Android';
-      deviceName = androidInfo.device;
-      versionBaseOs = androidInfo.version.release;
-      manufacture = androidInfo.manufacturer;
-      model = androidInfo.device;
-    }
-
     try {
       final body = {
         'email': email,
@@ -80,17 +52,12 @@ class ApiCalls {
         'passport_number': passportNumber,
         'fcmToken': fcmToken,
         'timeZone': timeZone,
-        'device_request': {
-          'UUID': uuId,
-          'platform': platform,
-          'device_name': deviceName,
-          'version_base_os': versionBaseOs,
-          'manufacture': manufacture,
-          'model': model,
-          'is_physical_device': true,
-        },
+        'provider': provider,
       };
-      const loginEndpoint = '$loginUrl?gender=MALE';
+
+      log(json.encode(body), name: 'Login request');
+
+      final loginEndpoint = '$loginUrl?gender=$gender';
 
       final loginResponse = await http.post(
         Uri.parse(loginEndpoint),
@@ -100,11 +67,12 @@ class ApiCalls {
 
       if (loginResponse.statusCode == 200) {
         final response = userLoginResponseModelFromJson(loginResponse.body);
+        log(loginResponse.body, name: 'User login response from api calls');
         return response;
       } else {
         log(
           '${loginResponse.statusCode}\n'
-          '${loginResponse.body}',
+              '${loginResponse.body}',
           name: 'login call res status',
         );
         return null;

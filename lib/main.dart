@@ -4,6 +4,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
+import 'package:glorify_god/screens/bottom_tabs/bottom_tabs.dart';
 import 'package:glorify_god/screens/splash_screen.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
@@ -59,7 +60,7 @@ class _GlorifyGodState extends State<GlorifyGod> {
         title: AppStrings.appName,
         theme: FlexThemeData.dark(),
         debugShowCheckedModeBanner: false,
-        home: const SplashScreen(),
+        home: const BottomTabs(),
       ),
     );
   }
