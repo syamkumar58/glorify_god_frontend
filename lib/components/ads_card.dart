@@ -1,13 +1,17 @@
 import 'dart:developer';
-
-import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdsCard extends StatefulWidget {
   const AdsCard({
     super.key,
+    this.adSize = AdSize.banner,
   });
+
+  final AdSize adSize;
 
   @override
   State<AdsCard> createState() => _AdsCardState();
@@ -18,9 +22,14 @@ class _AdsCardState extends State<AdsCard> {
   bool adLoaded = false;
 
   Future<void> initializeAd() async {
-    final adUnitId = remoteConfigData.adUnitId;
+    final adUnitId = kDebugMode
+        ? remoteConfigData.testAdUnitId
+        : Platform.isAndroid
+            ? remoteConfigData.androidAdUnitId
+            : remoteConfigData.iosAdUniId;
+    log(adUnitId, name: 'The ad unit id');
     bannerAd = BannerAd(
-      size: AdSize.banner,
+      size: widget.adSize,
       adUnitId: adUnitId,
       request: const AdRequest(),
       listener: BannerAdListener(
@@ -33,8 +42,14 @@ class _AdsCardState extends State<AdsCard> {
           );
         },
         onAdFailedToLoad: (ad, error) {
-          ad.dispose();
+          // Retry loading the ad after a delay
           log('$error', name: 'Ad failed to load');
+          Future.delayed(const Duration(seconds: 30), () {
+            if (!adLoaded) {
+              ad.dispose(); // Dispose the failed ad
+              initializeAd(); // Attempt to load the ad again
+            }
+          });
         },
       ),
     );
@@ -54,7 +69,7 @@ class _AdsCardState extends State<AdsCard> {
       child: Container(
         width: bannerAd.size.width.toDouble(),
         height: bannerAd.size.height.toDouble(),
-        margin: const EdgeInsets.only(top: 20),
+        // margin: const EdgeInsets.only(top: 20),
         decoration: BoxDecoration(
           // color: Colors.white,
           borderRadius: BorderRadius.circular(8),
@@ -63,7 +78,9 @@ class _AdsCardState extends State<AdsCard> {
             ? AdWidget(
                 ad: bannerAd,
               )
-            : const SizedBox(),
+            : const Center(
+                child: CupertinoActivityIndicator(),
+              ),
       ),
     );
   }

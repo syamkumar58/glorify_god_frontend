@@ -4,7 +4,7 @@ import 'dart:convert';
 
 List<UserReportedIssuesModel> userReportedIssuesModelFromJson(String str) =>
     List<UserReportedIssuesModel>.from(json.decode(str).map(
-        (x) => UserReportedIssuesModel.fromJson(x as Map<String, dynamic>)));
+        (x) => UserReportedIssuesModel.fromJson(x as Map<String, dynamic>),),);
 
 String userReportedIssuesModelToJson(List<UserReportedIssuesModel> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));

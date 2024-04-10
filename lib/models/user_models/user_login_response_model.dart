@@ -12,7 +12,6 @@ String userLoginResponseModelToJson(UserLoginResponseModel data) =>
     json.encode(data.toJson());
 
 class UserLoginResponseModel {
-
   UserLoginResponseModel({
     required this.userId,
     required this.email,
@@ -31,7 +30,8 @@ class UserLoginResponseModel {
     required this.fcmToken,
     required this.timeZone,
     required this.gender,
-    required this.device,
+    required this.provider,
+    // required this.device,
   });
 
   factory UserLoginResponseModel.fromJson(Map<String, dynamic> json) =>
@@ -53,7 +53,8 @@ class UserLoginResponseModel {
         fcmToken: json['fcmToken'].toString(),
         timeZone: json['timeZone'].toString(),
         gender: json['gender'].toString(),
-        device: Device.fromJson(json['device'] as Map<String, dynamic>),
+        provider: json['provider'].toString(),
+        // device: Device.fromJson(json['device'] as Map<String, dynamic>),
       );
   final int userId;
   final String email;
@@ -72,7 +73,8 @@ class UserLoginResponseModel {
   final String fcmToken;
   final String timeZone;
   final String gender;
-  final Device device;
+  final String provider;
+  // final Device device;
 
   Map<String, dynamic> toJson() => {
         'user_id': userId,
@@ -92,12 +94,12 @@ class UserLoginResponseModel {
         'fcmToken': fcmToken,
         'timeZone': timeZone,
         'gender': gender,
-        'device': device.toJson(),
+        'provider': provider,
+        // 'device': device.toJson(),
       };
 }
 
 class Device {
-
   Device({
     required this.uuid,
     required this.platform,

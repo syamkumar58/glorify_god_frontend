@@ -30,55 +30,53 @@ class HomeShimmerEffect extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(2),
                               ),
                             ),
-                            // const SizedBox(
-                            //   height: 4,
-                            // ),
-                            // Container(
-                            //   width: 200,
-                            //   height: 10,
-                            //   decoration: BoxDecoration(
-                            //     color: AppColors.dullBlack,
-                            //     borderRadius:
-                            //         BorderRadius.circular(2),
-                            //   ),
-                            // ),
                             const SizedBox(
                               height: 8,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  width: 110,
-                                  height: 110,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.dullBlack,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              height: 170,
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                physics: const NeverScrollableScrollPhysics(),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 120,
+                                      height: 120,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.dullBlack,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                                      child: Container(
+                                        width: 120,
+                                        height: 120,
+                                        decoration: BoxDecoration(
+                                          color: AppColors.dullBlack,
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      width: 120,
+                                      height: 120,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.dullBlack,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Container(
-                                  width: 110,
-                                  height: 110,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.dullBlack,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                Container(
-                                  width: 110,
-                                  height: 110,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.dullBlack,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ],
                         ),
-                      )).toList(),
+                      ),).toList(),
             ],
-          )),
+          ),),
     );
   }
 }

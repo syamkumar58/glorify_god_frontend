@@ -1,5 +1,5 @@
 import 'dart:developer';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:flutter/material.dart';
 import 'package:glorify_god/utils/app_colors.dart';
@@ -22,56 +22,61 @@ class _SongCardState extends State<SongCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 12, bottom: 0),
-      child: SizedBox(
-        width: 120,
-        height: 160,
-        child: Column(
-          children: [
-            Container(
-              width: 110,
-              height: 110,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: AppColors.dullBlack,
-                image: DecorationImage(
-                  image: NetworkImage(
-                    widget.image,
-                  ),
-                  fit: BoxFit.cover,
-                  onError: (error, stackTrace) {
-                    log(
-                      'er - $error\n st - $stackTrace',
-                      name: 'Error and stack trace for image',
-                    );
-                  },
+    return Container(
+      margin: const EdgeInsets.only(left: 10),
+      // Added due to grid view can remove this line when it comes to normal flow
+      width: 130,
+      // 120 for non grid view
+      height: 170,
+      // 160 for non grid view
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 120, // 110 for non grid view
+            height: 120, // 110 for non grid view
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: AppColors.darkGreyBlue2,
+              image: DecorationImage(
+                image: CachedNetworkImageProvider(
+                  widget.image,
                 ),
+                fit: BoxFit.fill,
+                onError: (error, stackTrace) {
+                  log(
+                    'er - $error\n st - $stackTrace',
+                    name: 'Error and stack trace for image',
+                  );
+                },
               ),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.play_circle,
-                      size: 30,
-                      color: Colors.white,
-                    ),
+            ),
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.play_circle,
+                    size: 30,
+                    color: Colors.white,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(
-              height: 8,
-            ),
-            AppText(
-              styles: const TextStyle(fontSize: 16),
-              text: widget.title,
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          AppText(
+            styles: const TextStyle(fontSize: 16),
+            text: widget.title,
+          ),
+        ],
       ),
     );
   }

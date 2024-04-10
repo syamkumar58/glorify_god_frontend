@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/banner_card.dart';
+import 'package:glorify_god/components/custom_nav_bar_ad.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/utils/app_colors.dart';
@@ -29,6 +29,7 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
   double get height => MediaQuery.of(context).size.height;
   AppState appState = AppState();
   Box? hiveBox;
+  String email = 'glorifygod.app@gmailcom';
 
   @override
   void initState() {
@@ -53,15 +54,17 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
         child: Column(
           children: [
             const BannerCard(),
-            helpLine(),
-            const AdsCard(),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+              child: helpLine(),
+            ),
           ],
         ),
       ),
+      bottomNavigationBar: const CustomNavBarAd(),
     );
   }
 
@@ -70,7 +73,9 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
       width: width * 0.9,
       height: 120,
       decoration: BoxDecoration(
-          color: AppColors.grey, borderRadius: BorderRadius.circular(12)),
+        color: AppColors.grey,
+        borderRadius: BorderRadius.circular(12),
+      ),
     );
   }
 
@@ -126,7 +131,7 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                       ),
                     ),
                     TextSpan(
-                      text: ' 9704263451',
+                      text: ' Will add soon',
                       style: GoogleFonts.manrope(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
@@ -151,7 +156,7 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                       ),
                     ),
                     TextSpan(
-                      text: ' k.syam7908@gmail.com',
+                      text: ' $email',
                       style: GoogleFonts.manrope(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
@@ -161,8 +166,7 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
                       recognizer: TapGestureRecognizer()
                         ..onTap = () async {
                           log('Email tapped');
-                          const url = 'k.syam7908@gmail.com';
-                          final uri = Uri.parse('mailto:$url');
+                          final uri = Uri.parse('mailto:$email');
                           if (await canLaunchUrl(uri)) {
                             await launchUrl(uri);
                           }

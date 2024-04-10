@@ -8,7 +8,7 @@ import 'package:glorify_god/components/login_button.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/screens/bottom_tabs/bottom_tabs.dart';
-// import 'package:glorify_god/screens/login_pages/email_component.dart';
+import 'package:glorify_god/screens/login_pages/email_component.dart';
 import 'package:glorify_god/src/provider/user_bloc.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
@@ -139,15 +139,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           ),
                           child: googleLoginWidget(),
                         ),
-                        // orWidget(),
-                        // EmailComponent(
-                        //   context: context,
-                        //   loading: (isLoading) {
-                        //     setState(() {
-                        //       loading = isLoading;
-                        //     });
-                        //   },
-                        // ),
+                        orWidget(),
+                        EmailComponent(
+                          context: context,
+                          loading: (isLoading) {
+                            setState(() {
+                              loading = isLoading;
+                            });
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -250,48 +250,48 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  // Widget orWidget() {
-  //   return Padding(
-  //     padding: EdgeInsets.only(top: height * 0.04, bottom: height * 0.03),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.center,
-  //       children: [
-  //         Container(
-  //           width: width * 0.08,
-  //           decoration: BoxDecoration(
-  //             border: Border.all(
-  //               width: 2,
-  //               color: AppColors.dullWhite.withOpacity(0.2),
-  //             ),
-  //           ),
-  //         ),
-  //         Padding(
-  //           padding: const EdgeInsets.only(
-  //             left: 12,
-  //             right: 12,
-  //           ),
-  //           child: AppText(
-  //             styles: GoogleFonts.manrope(
-  //               fontSize: 14,
-  //               fontWeight: FontWeight.w500,
-  //               color: AppColors.white,
-  //             ),
-  //             text: AppStrings.or,
-  //           ),
-  //         ),
-  //         Container(
-  //           width: width * 0.08,
-  //           decoration: BoxDecoration(
-  //             border: Border.all(
-  //               width: 2,
-  //               color: AppColors.dullWhite.withOpacity(0.2),
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  Widget orWidget() {
+    return Padding(
+      padding: EdgeInsets.only(top: height * 0.04, bottom: height * 0.03),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: width * 0.08,
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 2,
+                color: AppColors.dullWhite.withOpacity(0.2),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 12,
+              right: 12,
+            ),
+            child: AppText(
+              styles: GoogleFonts.manrope(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.white,
+              ),
+              text: AppStrings.or,
+            ),
+          ),
+          Container(
+            width: width * 0.08,
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 2,
+                color: AppColors.dullWhite.withOpacity(0.2),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Future<dynamic> login() async {
     try {
@@ -305,7 +305,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           CupertinoPageRoute<BottomTabs>(
             builder: (_) => const BottomTabs(),
           ),
-              (route) => false,
+          (route) => false,
         );
       } else {
         setState(() {

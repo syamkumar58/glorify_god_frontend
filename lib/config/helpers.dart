@@ -1,4 +1,5 @@
 import 'package:another_flushbar/flushbar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:glorify_god/components/noisey_text.dart';
@@ -16,6 +17,7 @@ String convertDurations(Duration duration) {
 void toastMessage({required String message}) {
   Fluttertoast.showToast(
     msg: message,
+    fontSize: 16,
     backgroundColor: AppColors.white,
     textColor: AppColors.black,
     gravity: ToastGravity.SNACKBAR,

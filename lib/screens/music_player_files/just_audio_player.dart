@@ -2,10 +2,8 @@
 
 import 'dart:developer';
 import 'dart:ui';
-import 'package:audio_service/audio_service.dart';
-import 'package:glorify_god/components/ads_card.dart';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
-import 'package:glorify_god/components/youtube_link_button.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +12,7 @@ import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -86,17 +85,42 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
       appBar: AppBar(
         elevation: 0,
         leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(
-              Icons.keyboard_arrow_down,
-              color: AppColors.white,
-              size: 30,
-            )),
+          onPressed: () {
+            appState.extended = false;
+          },
+          icon: Icon(
+            Icons.keyboard_arrow_down,
+            color: AppColors.white,
+            size: 30,
+          ),
+        ),
         backgroundColor: Colors.transparent,
       ),
       body: mainBody(),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(
+          bottom: height * 0.04,
+          right: width * 0.02,
+        ),
+        child: !favLoading
+            ? IconButton(
+                onPressed: () async {
+                  final favourite = await onFav();
+                  // await appState.likedSongs();
+                  setState(() {
+                    appState.isSongFavourite = favourite;
+                  });
+                },
+                icon: Icon(
+                  appState.isSongFavourite
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color: appState.isSongFavourite ? Colors.red : Colors.grey,
+                  size: 29,
+                ),
+              )
+            : const CupertinoActivityIndicator(),
+      ),
     );
   }
 
@@ -127,8 +151,10 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                 stream: appState.audioPlayer.playerStateStream,
                 builder: (context, snapShot) {
                   if (snapShot.hasError) {
-                    log('${snapShot.error}',
-                        name: 'The playerStream snap Error');
+                    log(
+                      '${snapShot.error}',
+                      name: 'The playerStream snap Error',
+                    );
                   }
 
                   final playerState = snapShot.data;
@@ -140,14 +166,15 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                     height: height,
                     width: width,
                     decoration: BoxDecoration(
-                        color: AppColors.black,
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          opacity: 0.2,
-                          image: NetworkImage(
-                            trackData.artUri.toString(),
-                          ),
-                        )),
+                      color: AppColors.black,
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        opacity: 0.2,
+                        image: NetworkImage(
+                          trackData.artUri.toString(),
+                        ),
+                      ),
+                    ),
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
                       child: Padding(
@@ -169,21 +196,21 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                               processingState:
                                   processingState ?? ProcessingState.buffering,
                             ),
-                            if (trackData.extras!['ytUrl']
-                                .toString()
-                                .isNotEmpty)
-                              YoutubeLinkButton(
-                                ytImage:
-                                    trackData.extras!['ytImage'].toString(),
-                                ytTitle:
-                                    trackData.extras!['ytTitle'].toString(),
-                                ytUrl: trackData.extras!['ytUrl'].toString(),
-                              ),
-
-                            const Padding(
-                              padding: EdgeInsets.only(top: 40),
-                              child: AdsCard(),
-                            ),
+                            // if (trackData.extras!['ytUrl']
+                            //     .toString()
+                            //     .isNotEmpty)
+                            //   YoutubeLinkButton(
+                            //     ytImage:
+                            //         trackData.extras!['ytImage'].toString(),
+                            //     ytTitle:
+                            //         trackData.extras!['ytTitle'].toString(),
+                            //     ytUrl: trackData.extras!['ytUrl'].toString(),
+                            //   ),
+                            //
+                            // const Padding(
+                            //   padding: EdgeInsets.only(top: 40),
+                            //   child: AdsCard(),
+                            // ),
                           ],
                         ),
                       ),
@@ -210,12 +237,12 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Container(
-                width: 100,
-                height: 100,
+                width: 200,
+                height: 200,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   image: DecorationImage(
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fill,
                     image: NetworkImage(
                       artUri,
                     ),
@@ -253,7 +280,7 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
     ProcessingState processingState = ProcessingState.buffering,
   }) {
     return Container(
-      width: width * 0.9,
+      width: width * 0.85,
       padding: const EdgeInsets.symmetric(vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -373,8 +400,8 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
   Widget seekBar() {
     return Padding(
       padding: const EdgeInsets.only(
-        top: 10,
-        bottom: 20,
+        top: 30,
+        bottom: 30,
         right: 20,
         left: 20,
       ),
@@ -388,89 +415,31 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
 
           return Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: !favLoading
-                      ? IconButton(
-                          onPressed: () async {
-                            final favourite = await onFav();
-                            await appState.likedSongs();
-                            setState(() {
-                              appState.isSongFavourite = favourite;
-                            });
-                          },
-                          icon: Icon(
-                            appState.isSongFavourite
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: appState.isSongFavourite
-                                ? Colors.red
-                                : Colors.grey,
-                            size: 29,
-                          ),
-                        )
-                      : const CupertinoActivityIndicator(),
-                ),
-              ),
-              SliderTheme(
-                data: SliderThemeData(
-                  trackHeight: 6,
-                  thumbShape: SliderComponentShape.noOverlay,
-                  thumbColor: Colors.transparent,
-                ),
-                child: Slider(
-                  min: 0,
-                  max: position.inSeconds.toDouble() >=
+              SizedBox(
+                width: width * 0.85,
+                child: ProgressBar(
+                  bufferedBarColor: AppColors.dullWhite,
+                  thumbCanPaintOutsideBar: false,
+                  progressBarColor: AppColors.white,
+                  thumbColor: AppColors.white.withOpacity(0.6),
+                  barCapShape: BarCapShape.square,
+                  thumbRadius: 8,
+                  thumbGlowRadius: 10,
+                  progress: position.inSeconds.toDouble() >=
                           duration.inSeconds.toDouble()
-                      ? 0
-                      : (duration.inSeconds.toDouble() ?? 0) as double,
-                  value: position.inSeconds.toDouble() >=
-                          duration.inSeconds.toDouble()
-                      ? 0
-                      : (position.inSeconds.toDouble() ?? 0) as double,
-                  inactiveColor: Colors.grey[600],
-                  activeColor: Colors.white,
-                  onChanged: (value) {
-                    // setState(() {
-                    //   position = Duration(seconds: value.toInt());
-                    // });
+                      ? const Duration(seconds: 0)
+                      : (Duration(seconds: position.inSeconds)),
+                  total: Duration(seconds: duration.inSeconds),
+                  onSeek: (updatedPosition) {
+                    // Debugging: Print the seek position
+                    log('Seeking to: $updatedPosition seconds');
+
+                    // Seek when the user finishes sliding
+                    appState.audioPlayer.seek(updatedPosition);
+
+                    // Debugging: Print the current audio position after seeking
+                    appState.audioPlayer.positionStream.listen((position) {});
                   },
-                  // onChangeEnd: (value) {
-                  //   // Debugging: Print the seek position
-                  //   log('Seeking to: $value seconds');
-                  //
-                  //   // Seek when the user finishes sliding
-                  //   final finalPosition = Duration(seconds: value.toInt());
-                  //   appState.audioPlayer.seek(finalPosition);
-                  //
-                  //   // Debugging: Print the current audio position after seeking
-                  //   appState.audioPlayer.positionStream.listen((position) {});
-                  // },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 12,
-                  right: 12,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    AppText(
-                      text: convertDurations(position as Duration),
-                      styles: GoogleFonts.manrope(
-                        color: Colors.white,
-                      ),
-                    ),
-                    AppText(
-                      text: convertDurations(duration as Duration),
-                      styles: GoogleFonts.manrope(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ],

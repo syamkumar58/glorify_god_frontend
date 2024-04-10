@@ -112,7 +112,7 @@ class _WalletScreenState extends State<WalletScreen> {
                   padding: const EdgeInsets.only(left: 12, right: 12),
                   decoration: BoxDecoration(
                       color: AppColors.blueAccent,
-                      borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(8),),
                   child: CupertinoButton(
                     padding: EdgeInsets.zero,
                     child: AppText(
@@ -125,7 +125,7 @@ class _WalletScreenState extends State<WalletScreen> {
                     onPressed: () {},
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

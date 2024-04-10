@@ -1,8 +1,8 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/banner_card.dart';
+import 'package:glorify_god/components/custom_nav_bar_ad.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/provider/app_state.dart';
@@ -60,73 +60,75 @@ class _ReportAProblemState extends State<ReportAProblem> {
             FocusScope.of(context).unfocus();
           },
           child: SingleChildScrollView(
-            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
             child: Column(
               children: [
                 const BannerCard(),
                 const SizedBox(
                   height: 20,
                 ),
-                Column(
-                  children: [
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: AppText(
-                        text: AppStrings.reportIssue,
-                        styles: GoogleFonts.manrope(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 18,
-                          color: AppColors.white,
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20,),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: AppText(
+                          text: AppStrings.reportIssue,
+                          styles: GoogleFonts.manrope(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 18,
+                            color: AppColors.white,
+                          ),
                         ),
-                      ),
-                      trailing: CupertinoButton(
-                        onPressed: reportedIssue.trim().isNotEmpty
-                            ? () async {
-                                setState(() {
-                                  isLoading = true;
-                                });
-                                FocusScope.of(context).unfocus();
-                                final res = await appState.updateFeedback(
-                                    message: reportedIssue.trim());
+                        trailing: CupertinoButton(
+                          onPressed: reportedIssue.trim().isNotEmpty
+                              ? () async {
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+                                  FocusScope.of(context).unfocus();
+                                  final res = await appState.updateFeedback(
+                                      message: reportedIssue.trim(),);
 
-                                if (res) {
-                                  issueController.clear();
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                  toastMessage(
-                                      message: 'Feedback sent successfully');
-                                  // Navigator.pop(context);
-                                } else {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
+                                  if (res) {
+                                    issueController.clear();
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                    toastMessage(
+                                        message: 'Feedback sent successfully',);
+                                    // Navigator.pop(context);
+                                  } else {
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                  }
                                 }
-                              }
-                            : null,
-                        child: AppText(
-                          text: AppStrings.send,
-                          styles: GoogleFonts.manrope(),
+                              : null,
+                          child: AppText(
+                            text: AppStrings.send,
+                            styles: GoogleFonts.manrope(),
+                          ),
                         ),
                       ),
-                    ),
-                    TextFormField(
-                      maxLines: 5,
-                      maxLength: 500,
-                      controller: issueController,
-                      scrollPadding: const EdgeInsets.only(bottom: 120),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                      TextFormField(
+                        maxLines: 5,
+                        maxLength: 500,
+                        controller: issueController,
+                        scrollPadding: const EdgeInsets.only(bottom: 120),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
+                        onChanged: (text) {
+                          setState(() {
+                            reportedIssue = text;
+                          });
+                        },
                       ),
-                      onChanged: (text) {
-                        setState(() {
-                          reportedIssue = text;
-                        });
-                      },
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(
                   height: 40,
@@ -191,14 +193,11 @@ class _ReportAProblemState extends State<ReportAProblem> {
                 const SizedBox(
                   height: 40,
                 ),
-                const Align(
-                  alignment: Alignment.bottomCenter,
-                  child: AdsCard(),
-                ),
               ],
             ),
           ),
         ),
+        bottomNavigationBar: const CustomNavBarAd(),
       ),
     );
   }

@@ -4,7 +4,7 @@ import 'package:glorify_god/utils/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 AppBar customAppbar(String text,
-        {bool showBackButton = false, BuildContext? context}) =>
+        {bool showBackButton = false, BuildContext? context,}) =>
     AppBar(
       leading: showBackButton
           ? IconButton(
@@ -15,7 +15,7 @@ AppBar customAppbar(String text,
                 Icons.keyboard_arrow_left,
                 size: 24,
                 color: AppColors.white,
-              ))
+              ),)
           : const SizedBox(),
       centerTitle: true,
       title: AppText(

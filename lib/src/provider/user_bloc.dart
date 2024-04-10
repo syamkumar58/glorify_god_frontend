@@ -50,7 +50,7 @@ Future<UserCredential> signInWithGoogle() async {
     await googleSignIn.signOut();
 
     final userDetails =
-    await FirebaseAuth.instance.signInWithCredential(credentials);
+        await FirebaseAuth.instance.signInWithCredential(credentials);
     log('$userDetails', name: 'from the if con');
     // storeLogInDetailsInHive(userDetails);
     return userDetails;
@@ -59,7 +59,7 @@ Future<UserCredential> signInWithGoogle() async {
     // Simply create a new user details
     // -->/
     final userDetails =
-    await FirebaseAuth.instance.signInWithCredential(credentials);
+        await FirebaseAuth.instance.signInWithCredential(credentials);
     log('$userDetails', name: 'from the else con');
     // storeLogInDetailsInHive(userDetails);
     return userDetails;
@@ -88,7 +88,7 @@ Future<UserLoginResponseModel?> userLoginCall(
       provider: provider,
     );
     log('\n\n $userLogin -- ${LoginProviders.GOOGLE.toString().split('.')[1]} \n\n',
-      name: 'userLogin!.body from user bloc',);
+        name: 'userLogin!.body from user bloc',);
     await storeLogInDetailsInHive(userLogin!);
     return userLogin;
   } catch (er) {
@@ -131,8 +131,8 @@ Future<dynamic> storeLogInDetailsInHive(
 
     log(
       'the user created details from hive\n'
-          '$existingData'
-          '\n\n',
+      '$existingData'
+      '\n\n',
     );
   } catch (err) {
     log('$err', name: 'while storing the error');
@@ -206,7 +206,7 @@ Future<UserLoginResponseModel?> phoneNumberUserLogin({
       provider: LoginProviders.PHONENUMBER.toString().split('.')[1],
     );
     log('\n\n ${userLogin!.mobileNumber} \n\n',
-      name: 'userLogin!.body from user bloc',);
+        name: 'userLogin!.body from user bloc',);
     await storeLogInDetailsInHive(userLogin);
     return userLogin;
   } catch (er) {

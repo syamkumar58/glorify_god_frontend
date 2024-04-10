@@ -149,6 +149,217 @@
 - 16/1/2024
   - Added a new wallet screen (Not clearly Done)
 
+- 17/03/2024
+  - Working on No Internet Connection
+  - Code formation
+
 - 21/1/2024
   - Done with song completion tracker
-  - Added required API calls for collecting song data on each track with artist U-ID 
+  - Added required API calls for collecting song data on each track with artist U-ID
+
+- 30/1/2024
+  - Removed unused animation and added new music animations
+  - Enabled wakelock
+  - Video player set-up is done
+  - Removed the music player set-up
+  - Added flutter bloc for better state management
+  - Added AppLifecycleState
+    While playing audio if user locks the screen, or he puts the app in background the audio stops playing
+  - Changed the ad portion to show in the home screen now came to on top of nav bar in place of video player section
+    If video is playing that will goes off and when disposed it will  show again in that place
+
+- 31/1/2024
+  - Video player Controls UI changes and fixes
+  - Added close option in the video player screen for user can stop the audio from there
+
+- 1/2/2024
+  - Implemented artists songs data per month how many songs are playing
+    BackEnd api calls with frond end implementation is done
+  - UI need to be refined in songs info
+  - Condition to show Songs info tile to the artist
+
+- 2/2/2024
+  - Changed ad floating height adjustment and added loading while ad loads
+  - Changed favourites screen ui and added text for user to understand
+  - Search screen field added border for users intimation
+  - Video player cubit added null check while disposing the video player on logout and removal
+  - End point changed to server
+
+- 3/2/2024
+  - Interstitial ad added to home screen which comes for every 2 hours of closing it
+  - Search screen render issue fixes
+
+- 5/2/2024
+  - Fixing video player and tested bugs
+  - testing is undergoing
+
+- 7/2/2024
+  - Banner card Design changes
+  - Removed adCard from top of search and liked screens
+  - Added bannerCard in liked screen
+  - Songs information now added more a=information about monetization and total songs played after monetization
+
+- 8/2/2024
+  -Songs information monetization logic moved to backend from front end
+
+- 9/2/2024
+  - Removed slider on change method for sliding the song
+  - Added video player navigation screen to search and liked on tap songs
+
+- 20/2/2024
+  - Added real ad unit ids and conditions
+  - Bug fixes
+  - Home screen UI changes with comments added 
+
+- 22/2/2024
+  - Bug fixes
+
+- 24/2/2024
+  - Bug fixes
+  - Updated google service.json files for both android and ios
+  - Removed unused animation assets
+  - Commented on resume and InActive app life cycle to pause the audio
+  - Video player screen only bottom of the screen will scroll not the video
+
+- 26/2/2024
+  - Bug fixes from search screen are fixed from both back-end and front-end
+  - Build.gradle file edited with release and debug configurations
+  - GoogleService.json file got changed with new sha-1 and sha256 config & variant release keys added to the firebase
+  - Need to Upload release appbundle for test mode in playstore
+
+- 27/2/2024
+  - Changed my app package name in both android and IOS along with firebase signing system from com.example.appname to app.appname.prod
+
+- 04/03/2024
+  - Implemented Email login flow with LOGIN page screen UI design
+  - Implemented youtube player demo for future purpose and changes
+
+- 05/03/2024
+  - Mobile number and otp login was implemented
+
+- 06/03/2024
+  - Email login guest user flow
+  - Email Forgot password
+  - Sign up new account
+  - New account email verification
+  - Login screen Ui changes
+  - Logical changes in user bloc
+
+- 07/03/2024
+  - Bug fixes on new email implementation
+  - Moved Strings from files to common file
+
+- 08/03/2024
+    - Version increment for play store upload
+    - Added email conditional check for user login
+
+- 18/03/2024
+  - Merged with main
+  - Working on YouTube video player for YouTube implementation
+  - Need to fix bugs i player screen
+
+- 11/03/2024
+  - Changed the interstitial ad time from 30 to 10 minutes
+  - Home screen UI changed
+  - Stick Golden Old songs on top with whereas artistUi is 2   logics written
+  - Added version number to the profile screen
+  - Added Update popup in home screen for each latest update user will get the popup to update
+  - Logical changes
+  - Bug fixes
+  - Ui changes
+
+- 13/03/2024
+  - Added trailing comma separation analysis
+  - Video player seek bar changes with onSeek added
+    and also added see more with drop down icon for song details regarding the song playing
+  - In Banner card added background color to the text for separation to BG image
+  - Fetching all songs api call moved to home_tabs from home screen initial call and also changed from app_state provider to cubit system for better and speed loading
+  - Contact number removed and changed the gmail to app's mail from Help and Support screen
+
+- 14/03/2024
+  - Login Page UI changed now
+
+- 16/03/2024
+  - Added new AdMob Account and ad App id changed in both android and IOS
+  - Login Page small UI changes
+
+- 18/03/2024
+  - Bug fixed in video player screen on device back button screen orientation logic change
+  - Interstitial Ad isAfter changed from minutes to seconds
+  - Changed Interstitial Ad loading delay time from 2sec to 5sec - tested in release mode working
+  - Removed Artist ID 2 as first section condition
+  - youtube_player(branch) Working on YouTube player
+    implementation
+
+- 21/03/2024
+  -( YouTube player Branch) testing phase not completed with good output  
+
+- 22/03/2024 - 26/3/2024
+  - YouTube player implementation
+  - Minimizing player with floating and adjustable player on top of the bottom tabs for all tabs it will work
+  - Custom Controls for both the main player and minimized player
+  - Home screen Card increased in size width and height for better looking UI
+  - Remote config data of UniAdIds changed from test ads to actual adIds (Bug fix case sometimes in some mobiles it is showing test ad in the real devices may be fetching from the firebase is issue there or slow)
+  - Still work pending on testing part
+  - Need to implement Users choice of selecting the artists according to there choice the list shows (Major change)
+
+- 27/03/2024 - 28/3/2024
+  - Added users choice UI with api call implementation
+  - Added credits text and otherData for more information
+  - Player fixes and Ui fixes
+  - Version increment
+
+- 29/03/2024
+  - Player Ui fixes
+  - On center app icon on tap for selection of artists for choice
+  - Ui fixes for player (10:20pm below 3)
+  - Banner ad, ad failed to show a failed text at center
+  - user choice component changed to gridview instead of wrap for better experience
+  - Version increment
+
+- 31/03/2024
+  - Ui fixes for player
+  - Test Release ready
+  - Minimized screen the controls moved to right align from left align Ui change
+  - Issue - On full screen drag enabled - fixed
+  - Issue - Went to full screen and back to portrait the system overlay of top and bottom are getting vanished - fixed
+  - Issue - On logOut the YouTube player is not disposed and while re-login it is autoplaying from the leftover place
+  - Version increment
+
+- 02/04/2024
+  - Created a new branch from 31/3/24 commit due to player lag and slow response screen
+  - Home screen and player other songs info images fitting changed
+  - ad card failed to load again after 30sec
+  - Removed unUsed packages and code from the project
+  - On close On exit and in bottom tabs to clear the player data
+  - Testing build to be given
+  - Version increment 
+
+- 03/04/2024
+  - Player seek bar thumb pointer enabled for user experience
+  - Added gesture button to the player for user intimation
+  - on device back button navigation
+  - If in landscape mode on back turns to portrait mode
+  - If player in extended mode then it will minimize the player
+  - If the tab index is not zero then it will bring the user to home screen means first tab(0)
+  - Double click to exit app implementation with toast message
+  - On landscape mode removed minimize and close options for the player
+  - Player aspect ratio changed from 21/11 to 16/9
+  - If selected video is selected again video is starting from the start (issue) - Fix
+  - Forgot password for email issue - Fix
+  - Home and player screen images cached for faster loading the images
+  - On Fav issue - fix
+
+- 04/04/2024 - 05/04/2024
+  - Email login with unKnown email and password login issue - fix
+  - Player Landscape issues with fitting to the screen - fix
+  - version increment
+
+- 07/04/2024
+  - Added valid messages to user for intimation on email login flow
+  - Small UI and colors changes
+  - Forgot password intimation pop up
+  - Login page UI changes
+  - Sign Up screen please verify your account screen added
+  - Text fields heights changed to height: height * 0.065, from 50
+  - version increment
