@@ -3,14 +3,13 @@
 import 'dart:developer';
 import 'dart:ui';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:glorify_god/components/custom_nav_bar_ad.dart';
 import 'package:glorify_god/components/noisey_text.dart';
-import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/utils/app_colors.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
@@ -82,19 +81,71 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
     appState = Provider.of<AppState>(context);
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () {
-            appState.extended = false;
-          },
-          icon: Icon(
-            Icons.keyboard_arrow_down,
-            color: AppColors.white,
-            size: 30,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight + 20),
+        child: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.keyboard_arrow_down,
+              color: AppColors.white,
+              size: 30,
+            ),
           ),
+          actions: [
+            StreamBuilder(
+              stream: appState.audioPlayer.playerStateStream,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  log(
+                    '${snapshot.error}',
+                    name: 'The snapshot error from stream builder',
+                  );
+                }
+
+                final playerState = snapshot.data;
+                final processingState = playerState?.processingState;
+
+                return Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Bounce(
+                        duration: const Duration(milliseconds: 50),
+                        onPressed: () {
+                          if (processingState != ProcessingState.idle) {
+                            appState.audioPlayer.stop();
+                          }
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          width: 35,
+                          height: 35,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: AppColors.black.withOpacity(0.5),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.close,
+                              color: AppColors.white,
+                              size: 22,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
         ),
-        backgroundColor: Colors.transparent,
       ),
       body: mainBody(),
       floatingActionButton: Padding(
@@ -121,6 +172,9 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
               )
             : const CupertinoActivityIndicator(),
       ),
+      bottomNavigationBar: const SafeArea(
+        child: CustomNavBarAd(),
+      ),
     );
   }
 
@@ -128,98 +182,92 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
     return SizedBox(
       width: width,
       height: height,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 50),
-        child: StreamBuilder(
-          stream: appState.audioPlayer.sequenceStateStream,
-          builder: (context, snapShot) {
-            final state = snapShot.data;
+      child: ScrollConfiguration(
+        behavior: const ScrollBehavior(
+          androidOverscrollIndicator: AndroidOverscrollIndicator.stretch,
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 50),
+          child: StreamBuilder(
+            stream: appState.audioPlayer.sequenceStateStream,
+            builder: (context, snapShot) {
+              final state = snapShot.data;
 
-            if (state?.sequence.isEmpty ?? true) {
-              return const SizedBox();
-            }
+              if (state?.sequence.isEmpty ?? true) {
+                return const SizedBox();
+              }
 
-            final trackData = state?.currentSource!.tag as MediaItem;
+              final trackData = state?.currentSource!.tag as MediaItem;
 
-            return Container(
-              decoration: BoxDecoration(
-                color: AppColors.black,
-              ),
-              width: width,
-              height: height,
-              child: StreamBuilder(
-                stream: appState.audioPlayer.playerStateStream,
-                builder: (context, snapShot) {
-                  if (snapShot.hasError) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: AppColors.black,
+                ),
+                width: width,
+                height: height,
+                child: StreamBuilder(
+                  stream: appState.audioPlayer.playerStateStream,
+                  builder: (context, snapShot) {
+                    if (snapShot.hasError) {
+                      log(
+                        '${snapShot.error}',
+                        name: 'The playerStream snap Error',
+                      );
+                    }
+
+                    final playerState = snapShot.data;
+                    final processingState = playerState?.processingState;
                     log(
-                      '${snapShot.error}',
-                      name: 'The playerStream snap Error',
+                      '$processingState',
+                      name: 'processingState from stream',
                     );
-                  }
+                    final playing = playerState?.playing;
 
-                  final playerState = snapShot.data;
-                  final processingState = playerState?.processingState;
-                  log('$processingState', name: 'processingState from stream');
-                  final playing = playerState?.playing;
-
-                  return Container(
-                    height: height,
-                    width: width,
-                    decoration: BoxDecoration(
-                      color: AppColors.black,
-                      image: DecorationImage(
-                        fit: BoxFit.fill,
-                        opacity: 0.2,
-                        image: NetworkImage(
-                          trackData.artUri.toString(),
+                    return Container(
+                      height: height,
+                      width: width,
+                      decoration: BoxDecoration(
+                        color: AppColors.black,
+                        image: DecorationImage(
+                          fit: BoxFit.fill,
+                          opacity: 0.2,
+                          image: NetworkImage(
+                            trackData.artUri.toString(),
+                          ),
                         ),
                       ),
-                    ),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 100),
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 12,
-                            ),
-                            // appBar(),
-                            playerUi(
-                              title: trackData.title,
-                              artist: trackData.artist ?? '',
-                              artUri: trackData.artUri.toString(),
-                            ),
-                            seekBar(),
-                            controlBackgroundWithControls(
-                              isPlaying: playing ?? false,
-                              processingState:
-                                  processingState ?? ProcessingState.buffering,
-                            ),
-                            // if (trackData.extras!['ytUrl']
-                            //     .toString()
-                            //     .isNotEmpty)
-                            //   YoutubeLinkButton(
-                            //     ytImage:
-                            //         trackData.extras!['ytImage'].toString(),
-                            //     ytTitle:
-                            //         trackData.extras!['ytTitle'].toString(),
-                            //     ytUrl: trackData.extras!['ytUrl'].toString(),
-                            //   ),
-                            //
-                            // const Padding(
-                            //   padding: EdgeInsets.only(top: 40),
-                            //   child: AdsCard(),
-                            // ),
-                          ],
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 100),
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              // appBar(),
+                              playerUi(
+                                title: trackData.title,
+                                artist: trackData.artist ?? '',
+                                artUri: trackData.artUri.toString(),
+                              ),
+                              seekBar(),
+                              controlBackgroundWithControls(
+                                isPlaying: playing ?? false,
+                                processingState: processingState ??
+                                    ProcessingState.buffering,
+                              ),
+                              // const MoreDetails(),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            );
-          },
+                    );
+                  },
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -237,8 +285,8 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Container(
-                width: 200,
-                height: 200,
+                width: 150,
+                height: 150,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   image: DecorationImage(

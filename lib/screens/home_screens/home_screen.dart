@@ -3,23 +3,22 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/all_songs_cubit/all_songs_cubit.dart';
 import 'package:glorify_god/components/banner_card.dart';
+import 'package:glorify_god/components/home_components/choose_artists_flow_component.dart';
 import 'package:glorify_god/components/home_components/copy_right_text.dart';
 import 'package:glorify_god/components/home_components/home_loading_shimmer_effect.dart';
 import 'package:glorify_god/components/home_components/users_choice_component.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/song_card_component.dart';
 import 'package:glorify_god/components/title_tile_component.dart';
+import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart' as app;
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
-import 'package:glorify_god/screens/video_player_screen/youtube_player.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -159,12 +158,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               log('$state', name: 'all songs widget state');
 
               if (state is AllSongsHasError) {
-                return ListView(
-                  children: [
-                    errorMessage(),
-                    commonWidget(),
-                    const HomeShimmerEffect(),
-                  ],
+                return ScrollConfiguration(
+                  behavior: const ScrollBehavior(
+                    androidOverscrollIndicator:
+                        AndroidOverscrollIndicator.stretch,
+                  ),
+                  child: ListView(
+                    children: [
+                      errorMessage(),
+                      commonWidget(),
+                      const HomeShimmerEffect(),
+                    ],
+                  ),
                 );
               }
 
@@ -180,58 +185,65 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               final allSongs = state.songs;
               log('$allSongs', name: 'all songs');
 
-              return SingleChildScrollView(
-                physics: allSongs.isNotEmpty
-                    ? const AlwaysScrollableScrollPhysics()
-                    : const NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.only(bottom: 50),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    commonWidget(),
-                    if (kDebugMode)
-                      CupertinoButton(
-                        color: AppColors.redAccent,
-                        onPressed: () async {
-                          Navigator.push(
-                            context,
-                            CupertinoPageRoute(
-                              builder: (_) => const YoutubePlayerWidget(),
+              return ScrollConfiguration(
+                behavior: const ScrollBehavior(
+                  androidOverscrollIndicator:
+                      AndroidOverscrollIndicator.stretch,
+                ),
+                child: SingleChildScrollView(
+                  physics: allSongs.isNotEmpty
+                      ? const AlwaysScrollableScrollPhysics()
+                      : const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(bottom: 50),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      commonWidget(),
+                      // if (kDebugMode)
+                      //   CupertinoButton(
+                      //     color: AppColors.redAccent,
+                      //     onPressed: () async {
+                      //       Navigator.push(
+                      //         context,
+                      //         CupertinoPageRoute(
+                      //           builder: (_) => const YoutubePlayerWidget(),
+                      //         ),
+                      //       );
+                      //     },
+                      //     child: const Text('Test Button'),
+                      //   ),
+                      const ChooseArtists(),
+                      if (allSongs.isNotEmpty)
+                        ...allSongs.map((e) {
+                          return Container(
+                            color: Colors.transparent,
+                            margin: const EdgeInsets.only(bottom: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (e.songs.isNotEmpty)
+                                  TitleTile(
+                                    title: e.artistName,
+                                    showViewAll: false,
+                                    onPressViewAll: () {},
+                                    pastorImage: e.artistImage,
+                                  ),
+                                if (e.songs.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 12,
+                                      left: 5,
+                                      right: 5,
+                                    ),
+                                    child: songCard(e.songs),
+                                  ),
+                              ],
                             ),
                           );
-                        },
-                        child: const Text('Test Button'),
-                      ),
-                    if (allSongs.isNotEmpty)
-                      ...allSongs.map((e) {
-                        return Container(
-                          color: Colors.transparent,
-                          margin: const EdgeInsets.only(bottom: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (e.songs.isNotEmpty)
-                                TitleTile(
-                                  title: e.artistName,
-                                  showViewAll: false,
-                                  onPressViewAll: () {},
-                                  pastorImage: e.artistImage,
-                                ),
-                              if (e.songs.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 12,
-                                    left: 5,
-                                    right: 5,
-                                  ),
-                                  child: songCard(e.songs),
-                                ),
-                            ],
-                          ),
-                        );
-                      }),
-                    const CopyRightText(),
-                  ],
+                        }),
+                      const CopyRightText(),
+                    ],
+                  ),
                 ),
               );
             },
@@ -337,32 +349,40 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget songCard(List<Song> songs) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: songs
-            .map(
-              (e) => Bounce(
-                duration: const Duration(milliseconds: 50),
-                onPressed: () async {
-                  final initialId = songs.indexOf(e);
-                  log('${e.songId} , $initialId', name: 'on tap songId');
-                  if (appState.audioPlayer.playing) {
-                    await appState.audioPlayer.pause();
-                  }
-                  await startAudio(
-                    appState: appState,
-                    audioSource: songs,
-                    initialId: initialId,
-                  );
-                },
-                child: SongCard(
-                  image: e.artUri,
-                  title: e.title,
+    return ScrollConfiguration(
+      behavior: const ScrollBehavior(
+        androidOverscrollIndicator: AndroidOverscrollIndicator.stretch,
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: songs
+              .map(
+                (e) => Bounce(
+                  duration: const Duration(milliseconds: 50),
+                  onPressed: () async {
+                    final initialId = songs.indexOf(e);
+                    log('${e.songId} , $initialId', name: 'on tap songId');
+                    if (appState.audioPlayer.playing) {
+                      await appState.audioPlayer.pause();
+                    }
+
+                    moveToMusicScreen(context, initialId);
+
+                    await startAudio(
+                      appState: appState,
+                      audioSource: songs,
+                      initialId: initialId,
+                    );
+                  },
+                  child: SongCard(
+                    image: e.artUri,
+                    title: e.title,
+                  ),
                 ),
-              ),
-            )
-            .toList(),
+              )
+              .toList(),
+        ),
       ),
     );
   }
@@ -373,8 +393,6 @@ Future startAudio({
   required List<Song> audioSource,
   required int initialId,
 }) async {
-  appState.extended = true;
-
   log('$initialId', name: 'The initial index');
   final playList = ConcatenatingAudioSource(
     children: [
@@ -387,15 +405,16 @@ Future startAudio({
         final audioSource = AudioSource.uri(
           Uri.parse(e.videoUrl),
           tag: MediaItem(
-              id: e.songId.toString(),
-              title: e.title,
-              artist: e.artist,
-              artUri: Uri.parse(e.artUri),
-              extras: {
-                'ytTitle': e.ytTitle,
-                'ytImage': e.ytImage,
-                'ytUrl': e.ytUrl,
-              }),
+            id: e.songId.toString(),
+            title: e.title,
+            artist: e.artist,
+            artUri: Uri.parse(e.artUri),
+            extras: {
+              'ytTitle': e.ytTitle,
+              'ytImage': e.ytImage,
+              'ytUrl': e.ytUrl,
+            },
+          ),
         );
         return audioSource;
       }),
@@ -431,8 +450,10 @@ Future startAudio({
       final res =
           await appState.checkFavourites(songId: audioSource[index].songId);
       appState.isSongFavourite = res;
-      log('$currentSongId - $res - ${appState.isSongFavourite}',
-          name: 'The song changed');
+      log(
+        '$currentSongId - $res - ${appState.isSongFavourite}',
+        name: 'The song changed',
+      );
       // Perform your API call for the current song here using currentSongId
       // ...
     }

@@ -5,24 +5,19 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/bloc/all_songs_cubit/all_songs_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/center_play_icon.dart';
-import 'package:glorify_god/components/home_components/users_choice_component.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
-import 'package:glorify_god/provider/youtube_player_handler.dart';
 import 'package:glorify_god/screens/favourites_screen/liked_screen.dart';
 import 'package:glorify_god/screens/home_screens/home_screen.dart';
-import 'package:glorify_god/screens/music_player_files/just_audio_player.dart';
 import 'package:glorify_god/screens/profile_screens/profile_screen.dart';
 import 'package:glorify_god/screens/search_screens/search_screen.dart';
-import 'package:glorify_god/screens/video_player_screen/floating_youtube_player.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:glorify_god/utils/asset_images.dart';
@@ -136,25 +131,7 @@ class _BottomTabsState extends State<BottomTabs>
         progressIndicator: const CupertinoActivityIndicator(),
         child: Scaffold(
           extendBodyBehindAppBar: true,
-          body: StreamBuilder(
-            stream: appState.audioPlayer.sequenceStateStream,
-            builder: (context, snapshot) {
-              final state = snapshot.data;
-              if (state?.sequence.isEmpty ?? true) {
-                return screens[_screenIndex];
-              }
-
-              final trackData = state?.currentSource!.tag as MediaItem;
-
-              final songId = int.parse(trackData.id);
-              return Stack(
-                children: [
-                  screens[_screenIndex],
-                  if (appState.extended) JustAudioPlayer(songId: songId),
-                ],
-              );
-            },
-          ),
+          body: screens[_screenIndex],
           bottomNavigationBar: SafeArea(
             child: navBar(),
           ),
@@ -235,41 +212,49 @@ class _BottomTabsState extends State<BottomTabs>
 
   Widget centerPlayerIcon() {
     return StreamBuilder(
-      stream: appState.audioPlayer.sequenceStateStream,
+      stream: appState.audioPlayer.playerStateStream,
       builder: (context, snapshot) {
-        final state = snapshot.data;
-        if (state?.sequence.isEmpty ?? true) {
-          log('did this came here');
+        if (snapshot.hasError) {
+          log('${snapshot.error}', name: 'Snap has error from home tabs');
           return CenterPlayIcon(
             imageProvider: AssetImage(AppImages.appIcon),
           );
         }
 
-        final trackData = state?.currentSource!.tag as MediaItem;
+        final processingState = snapshot.data!.processingState;
 
-        // final songId = int.parse(trackData.id);
+        if (processingState == ProcessingState.idle) {
+          return CenterPlayIcon(
+            imageProvider: AssetImage(AppImages.appIcon),
+          );
+        }
 
-        return Bounce(
-          duration: const Duration(milliseconds: 50),
-          onPressed: () {
-            log(
-              '${appState.audioPlayer.playerState.processingState}',
-              name: 'appState.audioPlayer.playerState.processingState',
-            );
-            if (appState.audioPlayer.playerState.processingState !=
-                    ProcessingState.idle &&
-                !appState.extended) {
-              appState.extended = true;
-            } else if (appState.audioPlayer.playerState.processingState !=
-                    ProcessingState.idle &&
-                appState.extended) {
-              appState.extended = false;
+        return StreamBuilder(
+          stream: appState.audioPlayer.sequenceStateStream,
+          builder: (context, snapshot) {
+            final state = snapshot.data;
+            if (state?.sequence.isEmpty ?? true) {
+              log('did this came here');
+              return CenterPlayIcon(
+                imageProvider: AssetImage(AppImages.appIcon),
+              );
             }
+
+            final trackData = state?.currentSource!.tag as MediaItem;
+
+            final songId = int.parse(trackData.id);
+
+            return Bounce(
+              duration: const Duration(milliseconds: 50),
+              onPressed: () {
+                moveToMusicScreen(context, songId);
+              },
+              child: CenterPlayIcon(
+                audioStarted: true,
+                imageProvider: NetworkImage(trackData.artUri.toString()),
+              ),
+            );
           },
-          child: CenterPlayIcon(
-            audioStarted: true,
-            imageProvider: NetworkImage(trackData.artUri.toString()),
-          ),
         );
       },
     );

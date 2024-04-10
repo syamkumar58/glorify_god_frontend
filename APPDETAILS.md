@@ -363,3 +363,9 @@
   - Sign Up screen please verify your account screen added
   - Text fields heights changed to height: height * 0.065, from 50
   - version increment
+
+- 10/04/2024
+  - Converted to Audio Player from YouTube Player Due to view count issue
+  - Added all required data for audio player
+  - Testing build
+  - Version increment

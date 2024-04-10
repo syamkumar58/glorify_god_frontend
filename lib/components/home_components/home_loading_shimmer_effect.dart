@@ -42,8 +42,8 @@ class HomeShimmerEffect extends StatelessWidget {
                                 child: Row(
                                   children: [
                                     Container(
-                                      width: 120,
-                                      height: 120,
+                                      width: 110,
+                                      height: 110,
                                       decoration: BoxDecoration(
                                         color: AppColors.dullBlack,
                                         borderRadius: BorderRadius.circular(8),
@@ -52,8 +52,8 @@ class HomeShimmerEffect extends StatelessWidget {
                                     Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 12),
                                       child: Container(
-                                        width: 120,
-                                        height: 120,
+                                        width: 110,
+                                        height: 110,
                                         decoration: BoxDecoration(
                                           color: AppColors.dullBlack,
                                           borderRadius: BorderRadius.circular(8),
@@ -61,8 +61,8 @@ class HomeShimmerEffect extends StatelessWidget {
                                       ),
                                     ),
                                     Container(
-                                      width: 120,
-                                      height: 120,
+                                      width: 110,
+                                      height: 110,
                                       decoration: BoxDecoration(
                                         color: AppColors.dullBlack,
                                         borderRadius: BorderRadius.circular(8),

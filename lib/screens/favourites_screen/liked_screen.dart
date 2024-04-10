@@ -6,6 +6,7 @@ import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
+import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/get_favourites_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
@@ -224,6 +225,8 @@ class _LikedScreenState extends State<LikedScreen> {
       );
       collectedSongs.add(eachSong);
     }
+
+    moveToMusicScreen(context, initialId);
 
     await startAudio(
       appState: appState,

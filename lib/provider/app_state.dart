@@ -30,14 +30,14 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  bool _extended = false;
-
-  bool get extended => _extended;
-
-  set extended(bool value) {
-    _extended = value;
-    notifyListeners();
-  }
+  // bool _extended = false;
+  //
+  // bool get extended => _extended;
+  //
+  // set extended(bool value) {
+  //   _extended = value;
+  //   notifyListeners();
+  // }
 
   Song emptySongData = Song(
     songId: 0,

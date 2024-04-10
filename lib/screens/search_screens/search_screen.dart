@@ -7,10 +7,10 @@ import 'package:flutter/foundation.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
+import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/search_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
-import 'package:glorify_god/provider/youtube_player_handler.dart';
 import 'package:glorify_god/screens/home_screens/home_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
@@ -256,6 +256,8 @@ class _SearchScreenState extends State<SearchScreen>
               }
 
               await cancelTimer();
+
+              moveToMusicScreen(context, initialId);
 
               await startAudio(
                 appState: appState,

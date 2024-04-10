@@ -91,4 +91,5 @@ class AppStrings {
   static const sentInstructions = 'We’ve emailed you the instructions.';
   static const sentVerificationLink = 'We have sent a Verification link to the provided email address ';
   static const pleaseVerifyYourAccount = 'Please verify your account before you try to Sign in';
+  static const chooseArtistYouLike = 'Choose Artists as in order';
 }
