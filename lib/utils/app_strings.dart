@@ -1,6 +1,7 @@
 class AppStrings {
   static const appName = 'Glorify God';
   static const appName2 = 'Glorify\nGod';
+  static const withSongs = 'with Songs';
   static const hello = 'HELLO!';
   static const welcomeTo = 'Welcome to';
   static const signInWithGoogle = 'Sign In with Google';
@@ -92,4 +93,9 @@ class AppStrings {
   static const sentVerificationLink = 'We have sent a Verification link to the provided email address ';
   static const pleaseVerifyYourAccount = 'Please verify your account before you try to Sign in';
   static const chooseArtistYouLike = 'Choose Artists as in order';
+  static const ca = 'CA';
+  static const needToComplete = 'Need to complete';
+  static const needToComplete2 = 'songs to complete monetization'
+      '\nOnce the monetization completes will start the revenue based on the songs that are played on top of monetization count'
+      '\nAfter Monetization is started your total stream count wil start from 0, Which means from here revenue will starts for each song/stream';
 }

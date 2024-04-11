@@ -30,7 +30,7 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
   TrackerModel? trackerDetails;
 
   // int monetizationCount = 10;
-  String monetizationCountString = '10,000';
+  String monetizationCountString = '6,000';
 
   //<-- In Video player cubit these times for getData are set manually
   // if need to change check tha places to -->/
@@ -83,14 +83,15 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
             Padding(
               padding: const EdgeInsets.only(right: 12),
               child: IconButton(
-                  onPressed: () async {
-                    await initialCall();
-                  },
-                  icon: Icon(
-                    Icons.sync,
-                    size: 25,
-                    color: AppColors.white,
-                  ),),
+                onPressed: () async {
+                  await initialCall();
+                },
+                icon: Icon(
+                  Icons.sync,
+                  size: 25,
+                  color: AppColors.white,
+                ),
+              ),
             ),
           ],
         ),
@@ -134,13 +135,11 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
                           ),
                         ),
                         trailing: Icon(
-                          monetization
-                              ? Icons.check_circle
-                              : Icons.radio_button_off,
+                          monetization ? Icons.check_circle : Icons.minimize,
                           color: monetization
                               ? AppColors.red
                               : AppColors.dullBlack,
-                          size: 22,
+                          size: 24,
                         ),
                       ),
                     ),
@@ -149,9 +148,7 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
                       child: ListTile(
                         title: AppText(
                           text:
-                              'Need to complete $monetizationCountString songs to complete monetization'
-                              '\nOnce the monetization completes will start the revenue based on the songs that are played on top of monetization count'
-                              '\nOnce monetization is started your total stream count wil start from 0, Which means from here revenue will starts for each song/stream',
+                              '${AppStrings.needToComplete} $monetizationCountString ${AppStrings.needToComplete2}',
                           textAlign: TextAlign.start,
                           maxLines: 10,
                           styles: GoogleFonts.manrope(
@@ -178,7 +175,9 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
                                 .format(streamsCompletedAfterMonetization),
                             //'${totalStreamCount}00000000000000',
                             styles: GoogleFonts.manrope(
-                                fontSize: 16, fontWeight: FontWeight.bold,),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -215,7 +214,9 @@ class _SongsInfoScreenState extends State<SongsInfoScreen> {
                           text: NumberFormat('#,##0').format(totalStreamCount),
                           //'${totalStreamCount}00000000000000',
                           styles: GoogleFonts.manrope(
-                              fontSize: 16, fontWeight: FontWeight.bold,),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),

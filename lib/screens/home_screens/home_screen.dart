@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:glorify_god/bloc/all_songs_cubit/all_songs_cubit.dart';
 import 'package:glorify_god/components/banner_card.dart';
-import 'package:glorify_god/components/home_components/choose_artists_flow_component.dart';
 import 'package:glorify_god/components/home_components/copy_right_text.dart';
 import 'package:glorify_god/components/home_components/home_loading_shimmer_effect.dart';
 import 'package:glorify_god/components/home_components/users_choice_component.dart';
@@ -212,12 +211,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       //     },
                       //     child: const Text('Test Button'),
                       //   ),
-                      const ChooseArtists(),
                       if (allSongs.isNotEmpty)
                         ...allSongs.map((e) {
                           return Container(
                             color: Colors.transparent,
-                            margin: const EdgeInsets.only(bottom: 20),
+                            margin: const EdgeInsets.only(bottom: 10),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -255,38 +253,74 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget appBar(AppState appState) {
     return ListTile(
-      title: RichText(
-        text: TextSpan(
+      leading: SizedBox(
+        width: 160,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            TextSpan(
-              text: AppStrings.appName,
-              style: TextStyle(
-                fontSize: 20,
-                fontFamily: 'RubikGlitch-Regular',
-                // letterSpacing: 0,
-                fontWeight: FontWeight.w400,
-                color: AppColors.white,
-              ),
+            Image.asset(
+              AppImages.appWhiteIcon,
+              width: 30,
+              height: 25,
+              fit: BoxFit.contain,
             ),
-            TextSpan(
-              text: '  with Songs',
-              style: TextStyle(
-                fontSize: 10,
-                color: AppColors.white,
-                fontWeight: FontWeight.w800,
-                fontFamily: 'Memphis-Light',
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AppText(
+                    text: AppStrings.appName,
+                    styles: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'RubikGlitch-Regular',
+                      // letterSpacing: 0,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.white,
+                    ),
+                  ),
+                  AppText(
+                    text: AppStrings.withSongs,
+                    styles: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.white,
+                      fontWeight: FontWeight.w800,
+                      fontFamily: 'Memphis-Light',
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
-      trailing: Padding(
-        padding: const EdgeInsets.only(right: 12),
-        child: Image.asset(
-          AppImages.appWhiteIcon,
-          width: 25,
-          height: 20,
-          fit: BoxFit.contain,
+      trailing: Bounce(
+        duration: const Duration(milliseconds: 50),
+        onPressed: () {
+          artistsOrderOptionsSheet(context: context);
+        },
+        child: Container(
+          margin: const EdgeInsets.only(right: 12),
+          height: 30,
+          width: 30,
+          decoration: BoxDecoration(
+            // color: Colors.red,
+            borderRadius: BorderRadius.circular(50),
+            border: Border.all(
+              color: AppColors.dullWhite,
+              width: 1.3,
+            ),
+          ),
+          child: Center(
+            child: AppText(
+              text: AppStrings.ca,
+              styles: GoogleFonts.manrope(
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -297,7 +331,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       children: [
         BannerCard(),
         SizedBox(
-          height: 30,
+          height: 20,
         ),
       ],
     );

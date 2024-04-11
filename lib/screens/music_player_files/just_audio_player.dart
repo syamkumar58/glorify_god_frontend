@@ -82,7 +82,7 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight + 20),
+        preferredSize: const Size.fromHeight(kToolbarHeight),
         child: AppBar(
           elevation: 0,
           backgroundColor: Colors.transparent,
@@ -148,30 +148,6 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
         ),
       ),
       body: mainBody(),
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(
-          bottom: height * 0.04,
-          right: width * 0.02,
-        ),
-        child: !favLoading
-            ? IconButton(
-                onPressed: () async {
-                  final favourite = await onFav();
-                  // await appState.likedSongs();
-                  setState(() {
-                    appState.isSongFavourite = favourite;
-                  });
-                },
-                icon: Icon(
-                  appState.isSongFavourite
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  color: appState.isSongFavourite ? Colors.red : Colors.grey,
-                  size: 29,
-                ),
-              )
-            : const CupertinoActivityIndicator(),
-      ),
       bottomNavigationBar: const SafeArea(
         child: CustomNavBarAd(),
       ),
@@ -179,33 +155,32 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
   }
 
   Widget mainBody() {
-    return SizedBox(
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.black,
+      ),
       width: width,
       height: height,
       child: ScrollConfiguration(
         behavior: const ScrollBehavior(
           androidOverscrollIndicator: AndroidOverscrollIndicator.stretch,
         ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 50),
-          child: StreamBuilder(
-            stream: appState.audioPlayer.sequenceStateStream,
-            builder: (context, snapShot) {
-              final state = snapShot.data;
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 50),
+            physics: const NeverScrollableScrollPhysics(),
+            child: StreamBuilder(
+              stream: appState.audioPlayer.sequenceStateStream,
+              builder: (context, snapShot) {
+                final state = snapShot.data;
 
-              if (state?.sequence.isEmpty ?? true) {
-                return const SizedBox();
-              }
+                if (state?.sequence.isEmpty ?? true) {
+                  return const SizedBox();
+                }
 
-              final trackData = state?.currentSource!.tag as MediaItem;
+                final trackData = state?.currentSource!.tag as MediaItem;
 
-              return Container(
-                decoration: BoxDecoration(
-                  color: AppColors.black,
-                ),
-                width: width,
-                height: height,
-                child: StreamBuilder(
+                return StreamBuilder(
                   stream: appState.audioPlayer.playerStateStream,
                   builder: (context, snapShot) {
                     if (snapShot.hasError) {
@@ -223,50 +198,29 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                     );
                     final playing = playerState?.playing;
 
-                    return Container(
-                      height: height,
-                      width: width,
-                      decoration: BoxDecoration(
-                        color: AppColors.black,
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          opacity: 0.2,
-                          image: NetworkImage(
-                            trackData.artUri.toString(),
+                    return Center(
+                      child: Column(
+                        children: [
+                          playerUi(
+                            title: trackData.title,
+                            artist: trackData.artist ?? '',
+                            artUri: trackData.artUri.toString(),
                           ),
-                        ),
-                      ),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 100),
-                          child: Column(
-                            children: [
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              // appBar(),
-                              playerUi(
-                                title: trackData.title,
-                                artist: trackData.artist ?? '',
-                                artUri: trackData.artUri.toString(),
-                              ),
-                              seekBar(),
-                              controlBackgroundWithControls(
-                                isPlaying: playing ?? false,
-                                processingState: processingState ??
-                                    ProcessingState.buffering,
-                              ),
-                              // const MoreDetails(),
-                            ],
+                          seekBar(),
+                          controlBackgroundWithControls(
+                            isPlaying: playing ?? false,
+                            processingState:
+                                processingState ?? ProcessingState.buffering,
                           ),
-                        ),
+                          volumeBar(),
+                          // const MoreDetails(),
+                        ],
                       ),
                     );
                   },
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -277,45 +231,72 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
     return Column(
       children: [
         Center(
-          child: Padding(
-            padding: EdgeInsets.only(top: height * 0.04, bottom: height * 0.04),
-            child: Card(
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+          child: Card(
+            elevation: 10,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Container(
+              width: 300,
+              height: 300,
+              constraints: const BoxConstraints(
+                maxHeight: 300,
+                maxWidth: 300,
               ),
-              child: Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: NetworkImage(
-                      artUri,
-                    ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                image: DecorationImage(
+                  fit: BoxFit.fill,
+                  image: NetworkImage(
+                    artUri,
                   ),
                 ),
               ),
             ),
           ),
         ),
-        AppText(
-          text: title,
-          styles: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Memphis-Bold',
-            color: Colors.white,
-          ),
-        ),
-        spacing(10),
-        AppText(
-          text: 'by $artist',
-          styles: const TextStyle(
-            fontSize: 16,
-            fontFamily: 'Memphis-Bold',
-            color: Colors.white,
+        SizedBox(
+          width: width * 0.9,
+          // color: Colors.greenAccent,
+          child: ListTile(
+            title: AppText(
+              text: 'Song Title - $title',
+              textAlign: TextAlign.start,
+              styles: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
+            subtitle: AppText(
+              text: 'Artist - $artist',
+              maxLines: 1,
+              textAlign: TextAlign.start,
+              styles: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
+            trailing: !favLoading
+                ? IconButton(
+                    onPressed: () async {
+                      final favourite = await onFav();
+                      // await appState.likedSongs();
+                      setState(() {
+                        appState.isSongFavourite = favourite;
+                      });
+                    },
+                    icon: Icon(
+                      appState.isSongFavourite
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color:
+                          appState.isSongFavourite ? Colors.red : Colors.grey,
+                      size: 24,
+                    ),
+                  )
+                : const CupertinoActivityIndicator(),
           ),
         ),
         spacing(10),
@@ -446,13 +427,11 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
   }
 
   Widget seekBar() {
-    return Padding(
+    return Container(
       padding: const EdgeInsets.only(
-        top: 30,
-        bottom: 30,
-        right: 20,
-        left: 20,
+        bottom: 20,
       ),
+      width: width * 0.85,
       child: StreamBuilder<PositionData>(
         stream: _positionDataStream,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -463,36 +442,93 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
 
           return Column(
             children: [
-              SizedBox(
-                width: width * 0.85,
-                child: ProgressBar(
-                  bufferedBarColor: AppColors.dullWhite,
-                  thumbCanPaintOutsideBar: false,
-                  progressBarColor: AppColors.white,
-                  thumbColor: AppColors.white.withOpacity(0.6),
-                  barCapShape: BarCapShape.square,
-                  thumbRadius: 8,
-                  thumbGlowRadius: 10,
-                  progress: position.inSeconds.toDouble() >=
-                          duration.inSeconds.toDouble()
-                      ? const Duration(seconds: 0)
-                      : (Duration(seconds: position.inSeconds)),
-                  total: Duration(seconds: duration.inSeconds),
-                  onSeek: (updatedPosition) {
-                    // Debugging: Print the seek position
-                    log('Seeking to: $updatedPosition seconds');
+              ProgressBar(
+                bufferedBarColor: AppColors.dullWhite,
+                thumbCanPaintOutsideBar: false,
+                progressBarColor: AppColors.white,
+                thumbColor: AppColors.white.withOpacity(0.6),
+                barCapShape: BarCapShape.square,
+                thumbRadius: 0,
+                thumbGlowRadius: 10,
+                progress: position.inSeconds.toDouble() >=
+                        duration.inSeconds.toDouble()
+                    ? const Duration(seconds: 0)
+                    : (Duration(seconds: position.inSeconds)),
+                total: Duration(seconds: duration.inSeconds),
+                timeLabelPadding: 10,
+                onSeek: (updatedPosition) {
+                  // Debugging: Print the seek position
+                  log('Seeking to: $updatedPosition seconds');
 
-                    // Seek when the user finishes sliding
-                    appState.audioPlayer.seek(updatedPosition);
+                  // Seek when the user finishes sliding
+                  appState.audioPlayer.seek(updatedPosition);
 
-                    // Debugging: Print the current audio position after seeking
-                    appState.audioPlayer.positionStream.listen((position) {});
-                  },
-                ),
+                  // Debugging: Print the current audio position after seeking
+                  appState.audioPlayer.positionStream.listen((position) {});
+                },
               ),
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget volumeBar() {
+    return Container(
+      // color: Colors.blueAccent,
+      margin: const EdgeInsets.only(
+        top: 30,
+      ),
+      width: width * 0.9,
+      child: Row(
+        children: [
+          IconButton(
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              appState.audioPlayer.setVolume(0);
+              setState(() {});
+            },
+            icon: Icon(
+              Icons.volume_off,
+              size: 20,
+              color: AppColors.white,
+            ),
+          ),
+          Expanded(
+            child: SliderTheme(
+              data: SliderThemeData(
+                activeTrackColor: AppColors.white,
+                thumbColor: AppColors.white.withOpacity(0.8),
+                trackHeight: 2,
+                thumbShape: const RoundSliderThumbShape(
+                  enabledThumbRadius: 5,
+                ),
+              ),
+              child: Slider(
+                min: 0.0,
+                max: 1.0,
+                value: appState.audioPlayer.volume,
+                onChanged: (volume) {
+                  appState.audioPlayer.setVolume(volume);
+                  setState(() {});
+                },
+              ),
+            ),
+          ),
+          IconButton(
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              appState.audioPlayer.setVolume(1);
+              setState(() {});
+            },
+            icon: Icon(
+              Icons.volume_up,
+              size: 20,
+              color: AppColors.white,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:glorify_god/bloc/all_songs_cubit/all_songs_cubit.dart';
+import 'package:glorify_god/bloc/profile_cubit/songs_info_cubit/songs_data_info_cubit.dart';
 import 'package:glorify_god/components/ads_card.dart';
 import 'package:glorify_god/components/center_play_icon.dart';
 import 'package:glorify_god/config/helpers.dart';
@@ -45,6 +46,7 @@ class _BottomTabsState extends State<BottomTabs>
   double get width => MediaQuery.of(context).size.width;
 
   double get height => MediaQuery.of(context).size.height;
+  StreamSubscription<Duration>? positionStreamSubscription;
   AppState appState = AppState();
   GlobalVariables globalVariables = GlobalVariables();
   bool isLoading = false;
@@ -80,6 +82,9 @@ class _BottomTabsState extends State<BottomTabs>
     interstitialAdLogic();
     WidgetsBinding.instance.addObserver(this);
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      listenSongCompletion();
+    });
   }
 
   Future initialUserCall() async {
@@ -104,6 +109,46 @@ class _BottomTabsState extends State<BottomTabs>
   Future getAllSongsCall(List<int> storedList) async {
     await BlocProvider.of<AllSongsCubit>(context)
         .getAllSongs(selectedList: storedList);
+  }
+
+  Future listenSongCompletion() async {
+    positionStreamSubscription =
+        appState.audioPlayer.positionStream.listen((songPosition) async {
+      final songDuration = appState.audioPlayer.duration ?? Duration.zero;
+      log('cross 1 $songPosition');
+      log('cross 2 $songPosition $songDuration');
+      if (!checkItOnce &&
+          songPosition > Duration.zero &&
+          songDuration > Duration.zero &&
+          songPosition.inSeconds >= songDuration.inSeconds) {
+        setState(() {
+          checkItOnce = true;
+        });
+        log('cross 3 $songPosition $songDuration');
+        //<-- If the song completed and artistUID is not Zero then update the tracker by 1
+        // That one song was completed and was added to tracker details
+        // -->/
+        if (appState.songData.artistUID != 0) {
+          log('${appState.songData.artistUID}', name: 'icyMeta data');
+          SongsDataInfoCubit songsDataInfoCubit = SongsDataInfoCubit();
+          songsDataInfoCubit.addSongStreamData(
+            artistId: appState.songData.artistUID,
+            startDate: DateTime(DateTime.now().year, 1, 1),
+            endDate: DateTime.now(),
+          );
+          // await appState.updateTrackerDetails(
+          //     artistId: appState.songData.artistUID);
+        }
+      } else if (checkItOnce &&
+          songPosition > Duration.zero &&
+          songDuration > Duration.zero &&
+          songPosition.inSeconds < songDuration.inSeconds) {
+        setState(() {
+          checkItOnce = false;
+        });
+        log('cross 4 $songPosition $songDuration');
+      }
+    });
   }
 
   Future<bool> willPopScope() async {
@@ -132,9 +177,7 @@ class _BottomTabsState extends State<BottomTabs>
         child: Scaffold(
           extendBodyBehindAppBar: true,
           body: screens[_screenIndex],
-          bottomNavigationBar: SafeArea(
-            child: navBar(),
-          ),
+          bottomNavigationBar: navBar(),
         ),
       ),
     );
@@ -142,19 +185,24 @@ class _BottomTabsState extends State<BottomTabs>
 
   Widget navBar() {
     final android = height * 0.15;
-    final ios = height * 0.132;
+    final ios = height * 0.17;
     return Container(
       color: AppColors.black,
-      width: width,
       height: Platform.isIOS ? ios : android,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          const AdsCard(
-            adSize: ad.AdSize.banner,
+      width: width,
+      child: SafeArea(
+        child: Container(
+          color: Colors.transparent,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const AdsCard(
+                adSize: ad.AdSize.banner,
+              ),
+              bottomBar(),
+            ],
           ),
-          bottomBar(),
-        ],
+        ),
       ),
     );
   }
@@ -221,7 +269,9 @@ class _BottomTabsState extends State<BottomTabs>
           );
         }
 
-        final processingState = snapshot.data!.processingState;
+        final processingState = snapshot.data != null
+            ? snapshot.data!.processingState
+            : ProcessingState.idle;
 
         if (processingState == ProcessingState.idle) {
           return CenterPlayIcon(
@@ -376,9 +426,9 @@ class _BottomTabsState extends State<BottomTabs>
   @override
   void dispose() {
     appState.audioPlayer.stop();
-    // if (positionStreamSubscription != null) {
-    //   positionStreamSubscription!.cancel();
-    // }
+    if (positionStreamSubscription != null) {
+      positionStreamSubscription!.cancel();
+    }
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

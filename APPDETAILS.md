@@ -369,3 +369,11 @@
   - Added all required data for audio player
   - Testing build
   - Version increment
+
+- 11/04/2024
+  - Major upgrades added
+  - Song noted when completed the stream to the artist ID
+  - UI changes
+  - Home screen format changes
+  - Music player UI and new features added like mute and increase sound by bar
+  - Version increment
