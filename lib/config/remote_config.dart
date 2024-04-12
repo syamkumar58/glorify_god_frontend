@@ -15,6 +15,8 @@ RemoteConfig remoteConfigData = RemoteConfig(
   iosInterstitialAdUnitId: 'ca-app-pub-1337686275359225/4169565248',
   //'ca-app-pub-3940256099942544/1033173712',
   interstitialAdTime: 10,
-  appUpdateVersions:
-      AppUpdateVersions(androidLatestVersion: '1.0.007', iosLatestVersion: '1.0.007'),
+  appUpdateVersions: AppUpdateVersions(
+      androidLatestVersion: '1.0.007', iosLatestVersion: '1.0.007'),
+  playerAndroidAdUnitId: 'ca-app-pub-1337686275359225/5448675674',
+  playerIosAdUnitId: 'ca-app-pub-1337686275359225/3560878936',
 );

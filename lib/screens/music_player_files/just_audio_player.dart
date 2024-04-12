@@ -3,6 +3,7 @@
 import 'dart:developer';
 import 'dart:ui';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:glorify_god/components/audio_player_components/player_banner_ad.dart';
 import 'package:glorify_god/components/custom_nav_bar_ad.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/provider/app_state.dart';
@@ -148,8 +149,13 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
         ),
       ),
       body: mainBody(),
-      bottomNavigationBar: const SafeArea(
-        child: CustomNavBarAd(),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          height: 70,
+          width: width,
+          color: Colors.transparent,
+          child: const PlayerBannerAd(),
+        ),
       ),
     );
   }
@@ -237,12 +243,12 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Container(
-              width: 300,
-              height: 300,
-              constraints: const BoxConstraints(
-                maxHeight: 300,
-                maxWidth: 300,
-              ),
+              width: width * 0.8, //300,
+              height: height * 0.4, //300,
+              // constraints: const BoxConstraints(
+              //   maxHeight: 300,
+              //   maxWidth: 300,
+              // ),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(

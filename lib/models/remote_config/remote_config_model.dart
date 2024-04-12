@@ -12,6 +12,8 @@ String remoteConfigToJson(RemoteConfig data) => json.encode(data.toJson());
 class RemoteConfig {
   final String testAdUnitId;
   final String androidAdUnitId;
+  final String playerAndroidAdUnitId;
+  final String playerIosAdUnitId;
   final String iosAdUniId;
   final String interstitialAdTestId;
   final String androidInterstitialAdUnitId;
@@ -25,6 +27,8 @@ class RemoteConfig {
     required this.testAdUnitId,
     required this.androidAdUnitId,
     required this.iosAdUniId,
+    required this.playerAndroidAdUnitId,
+    required this.playerIosAdUnitId,
     required this.interstitialAdTestId,
     required this.androidInterstitialAdUnitId,
     required this.iosInterstitialAdUnitId,
@@ -38,6 +42,8 @@ class RemoteConfig {
         testAdUnitId: json["testAdUnitId"].toString(),
         androidAdUnitId: json["androidAdUnitId"].toString(),
         iosAdUniId: json["iosAdUniId"].toString(),
+        playerAndroidAdUnitId: json["playerAndroidAdUnitId"].toString(),
+        playerIosAdUnitId: json["playerIosAdUnitId"].toString(),
         interstitialAdTestId: json["interstitialAdTestId"].toString(),
         androidInterstitialAdUnitId:
             json["androidInterstitialAdUnitId"].toString(),
@@ -45,7 +51,8 @@ class RemoteConfig {
         interstitialAdTime: int.parse(json["interstitialAdTime"].toString()),
         showUpdateBanner: json["showUpdateBanner"] ?? false,
         bannerMessages: List<BannerMessage>.from(
-            json["bannerMessages"].map((x) => BannerMessage.fromJson(x)),),
+          json["bannerMessages"].map((x) => BannerMessage.fromJson(x)),
+        ),
         appUpdateVersions:
             AppUpdateVersions.fromJson(json["appUpdateVersions"]),
       );
@@ -54,6 +61,8 @@ class RemoteConfig {
         "testAdUnitId": testAdUnitId,
         "androidAdUnitId": androidAdUnitId,
         "iosAdUniId": iosAdUniId,
+        "playerAndroidAdUnitId": playerAndroidAdUnitId,
+        "playerIosAdUnitId": playerIosAdUnitId,
         "interstitialAdTestId": interstitialAdTestId,
         "androidInterstitialAdUnitId": androidInterstitialAdUnitId,
         "iosInterstitialAdUnitId": iosInterstitialAdUnitId,
