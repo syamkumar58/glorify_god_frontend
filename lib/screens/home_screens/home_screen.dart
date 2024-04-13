@@ -401,7 +401,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       await appState.audioPlayer.pause();
                     }
 
-                    moveToMusicScreen(context, initialId);
+                    moveToMusicScreen(context, e.songId);
 
                     await startAudio(
                       appState: appState,

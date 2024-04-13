@@ -377,3 +377,9 @@
   - Home screen format changes
   - Music player UI and new features added like mute and increase sound by bar
   - Version increment
+
+- 13/04/2024
+  - Bug fixes
+  - 1 for fav and unFav songs
+  - 2 UI issues
+  - Testing build

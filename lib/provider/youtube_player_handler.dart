@@ -129,14 +129,14 @@ class YoutubePlayerHandler extends ChangeNotifier {
     selectedSongData = songData;
 
     if (youtubePlayerController != null) {
-      unawaited(appState.checkFavourites(songId: selectedSongData.songId));
+      // unawaited(appState.checkFavourites(songId: selectedSongData.songId));
       return loadSelectedSong(
         videoId: songData.ytUrl,
         currentSongIndex: selectedIndex,
       );
     }
 
-    appState.checkFavourites(songId: selectedSongData.songId);
+    // appState.checkFavourites(songId: selectedSongData.songId);
 
     youtubePlayerController = YoutubePlayerController(
       initialVideoId: songData.ytUrl,
@@ -178,7 +178,7 @@ class YoutubePlayerHandler extends ChangeNotifier {
     }
     selectedSongData = emptySongData;
     selectedSongData = songs[selectedIndex];
-    appState.checkFavourites(songId: selectedSongData.songId);
+    // appState.checkFavourites(songId: selectedSongData.songId);
     youtubePlayerController!.load(songs[selectedIndex].ytUrl);
   }
 
@@ -191,7 +191,7 @@ class YoutubePlayerHandler extends ChangeNotifier {
     }
     selectedSongData = emptySongData;
     selectedSongData = songs[selectedIndex];
-    appState.checkFavourites(songId: selectedSongData.songId);
+    // appState.checkFavourites(songId: selectedSongData.songId);
     youtubePlayerController!.load(songs[selectedIndex].ytUrl);
   }
 

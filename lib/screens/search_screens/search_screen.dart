@@ -257,7 +257,7 @@ class _SearchScreenState extends State<SearchScreen>
 
               await cancelTimer();
 
-              moveToMusicScreen(context, initialId);
+              moveToMusicScreen(context, searchedList[index].songId);
 
               await startAudio(
                 appState: appState,

@@ -139,7 +139,12 @@ class _LikedScreenState extends State<LikedScreen> {
         child: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () async {
-            await onPlay(likedSongsList, likedSongsList[0], 0);
+            await onPlay(
+              likedSongsList,
+              likedSongsList[0],
+              0,
+              likedSongsList[0].songId,
+            );
           },
           child: AppText(
             text: 'Play all',
@@ -187,7 +192,12 @@ class _LikedScreenState extends State<LikedScreen> {
             onPressed: () async {
               final initialId = likedSongsList.indexOf(likedSongsList[index]);
               log('$initialId', name: 'initial id in liked');
-              await onPlay(likedSongsList, songDetails, initialId);
+              await onPlay(
+                likedSongsList,
+                songDetails,
+                initialId,
+                likedSongsList[index].songId,
+              );
             },
             child: SongsLikesTile(
               index: index + 1,
@@ -205,6 +215,7 @@ class _LikedScreenState extends State<LikedScreen> {
     List<GetFavouritesModel> likedSongsList,
     GetFavouritesModel songDetails,
     int initialId,
+    int songId,
   ) async {
     collectedSongs.clear();
     for (final song in likedSongsList) {
@@ -226,13 +237,12 @@ class _LikedScreenState extends State<LikedScreen> {
       collectedSongs.add(eachSong);
     }
 
-    moveToMusicScreen(context, initialId);
+    moveToMusicScreen(context, songId);
 
     await startAudio(
       appState: appState,
       audioSource: collectedSongs,
       initialId: initialId,
     );
-
   }
 }

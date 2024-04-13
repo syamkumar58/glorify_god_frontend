@@ -1,10 +1,10 @@
 // ignore_for_file: avoid_dynamic_calls
 
 import 'dart:developer';
-import 'dart:ui';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:glorify_god/bloc/profile_cubit/liked_cubit/liked_cubit.dart';
 import 'package:glorify_god/components/audio_player_components/player_banner_ad.dart';
-import 'package:glorify_god/components/custom_nav_bar_ad.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:flutter/cupertino.dart';
@@ -56,10 +56,14 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
   Future<void> checkIsFavourite() async {
     appState = context.read<AppState>();
     final res = await appState.checkFavourites(songId: widget.songId);
+    log('$res as ${widget.songId}',
+        name: 'check fav res from init after unFav');
     setState(() {
       appState.isSongFavourite = res;
       favLoading = false;
     });
+    log('${appState.isSongFavourite}',
+        name: 'check fav res from init after unFav 2');
   }
 
   Stream<PositionData> get _positionDataStream => Rx.combineLatest2(
@@ -174,7 +178,6 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 50),
-            physics: const NeverScrollableScrollPhysics(),
             child: StreamBuilder(
               stream: appState.audioPlayer.sequenceStateStream,
               builder: (context, snapShot) {
@@ -234,6 +237,8 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
   }
 
   Widget playerUi({String title = '', String artist = '', String artUri = ''}) {
+    log('${appState.isSongFavourite}',
+        name: 'check fav res from init after unFav 3');
     return Column(
       children: [
         Center(
@@ -243,12 +248,14 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Container(
-              width: width * 0.8, //300,
-              height: height * 0.4, //300,
-              // constraints: const BoxConstraints(
-              //   maxHeight: 300,
-              //   maxWidth: 300,
-              // ),
+              // width: width * 0.7, //300,
+              // height: height * 0.3, //300,
+              constraints: BoxConstraints(
+                minHeight: height * 0.3, //300,,
+                minWidth: width * 0.65, //300,
+                maxHeight: height * 0.35, //300,
+                maxWidth: width * 0.8, //300,
+              ),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(
@@ -288,7 +295,7 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
                 ? IconButton(
                     onPressed: () async {
                       final favourite = await onFav();
-                      // await appState.likedSongs();
+                      await refreshFav();
                       setState(() {
                         appState.isSongFavourite = favourite;
                       });
@@ -551,5 +558,11 @@ class _JustAudioPlayerState extends State<JustAudioPlayer> {
       );
     }
     return favourite;
+  }
+
+  Future refreshFav() async {
+    await BlocProvider.of<LikedCubit>(context).likedSongs(
+      appState.userData.userId,
+    );
   }
 }
