@@ -11,7 +11,6 @@ import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/profile_components/version_number.dart';
 import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/provider/app_state.dart';
-import 'package:glorify_god/provider/youtube_player_handler.dart';
 import 'package:glorify_god/screens/login_pages/login_page.dart';
 import 'package:glorify_god/screens/profile_screens/songs_info_screen.dart';
 import 'package:glorify_god/screens/profile_screens/contact_support_screen.dart';
@@ -40,7 +39,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   double get height => MediaQuery.of(context).size.height;
   AppState appState = AppState();
-  YoutubePlayerHandler youtubePlayerHandler = YoutubePlayerHandler();
   Box? hiveBox;
   bool onLogout = false;
 
@@ -54,7 +52,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
-    youtubePlayerHandler = Provider.of<YoutubePlayerHandler>(context);
     return ModalProgressHUD(
       inAsyncCall: onLogout,
       progressIndicator: const CupertinoActivityIndicator(),
@@ -256,7 +253,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   });
 
                   // await appState.removeUserFromPrivacyPolicyById();
-                  await stopYoutubePlayer();
+                  await appState.audioPlayer.pause();
+                  await appState.audioPlayer.stop();
+
                   await hiveBox!.clear();
                   if (appState.userData.provider == 'GOOGLE') {
                     log('log out 1');
@@ -382,14 +381,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         },
       ),
     );
-  }
-
-  Future stopYoutubePlayer() async {
-    youtubePlayerHandler.extendToFullScreen = false;
-    if(youtubePlayerHandler.youtubePlayerController != null){
-      youtubePlayerHandler.youtubePlayerController!.dispose();
-    youtubePlayerHandler.youtubePlayerController = null;
-    }
   }
 
   Future onLogOutPushScreen() async {

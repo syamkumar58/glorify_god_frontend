@@ -30,6 +30,15 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
+  // bool _extended = false;
+  //
+  // bool get extended => _extended;
+  //
+  // set extended(bool value) {
+  //   _extended = value;
+  //   notifyListeners();
+  // }
+
   Song emptySongData = Song(
     songId: 0,
     artistUID: 0,
@@ -158,8 +167,6 @@ class AppState with ChangeNotifier {
     }
   }
 
-
-
   Future<bool> addFavourite({
     required int songId,
   }) async {
@@ -200,7 +207,7 @@ class AppState with ChangeNotifier {
   Future<bool> checkFavourites({
     required int songId,
   }) async {
-    log('$songId',name:'checkFavourites request songId');
+    log('$songId', name: 'checkFavourites request songId');
     final data = await ApiCalls().checkSongIdAddedOrNot(
       songId: songId,
       userId: userData.userId,

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:glorify_god/components/noisey_text.dart';
+import 'package:glorify_god/screens/music_player_files/just_audio_player.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -160,4 +161,28 @@ enum LoginProviders {
   GOOGLE,
   EMAIL,
   PHONENUMBER,
+}
+
+Future moveToMusicScreen(BuildContext context, int songId) async {
+  Navigator.of(context).push(
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return JustAudioPlayer(songId: songId);
+      },
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 1.0);
+        const end = Offset.zero;
+        const curve = Curves.easeInOutCubic;
+
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var offsetAnimation = animation.drive(tween);
+
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
+        );
+      },
+    ),
+  );
 }

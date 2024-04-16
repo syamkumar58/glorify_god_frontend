@@ -25,9 +25,9 @@ class _SongCardState extends State<SongCard> {
     return Container(
       margin: const EdgeInsets.only(left: 10),
       // Added due to grid view can remove this line when it comes to normal flow
-      width: 150,
+      width: 110,
       // 120 for non grid view
-      height: 140,
+      height: 160,
       // 160 for non grid view
       decoration: BoxDecoration(
         color: Colors.transparent,
@@ -36,8 +36,8 @@ class _SongCardState extends State<SongCard> {
       child: Column(
         children: [
           Container(
-            width: 150, // 110 for non grid view
-            height: 90, // 110 for non grid view
+            width: 100, // 110 for non grid view
+            height: 100, // 110 for non grid view
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               color: AppColors.darkGreyBlue2,

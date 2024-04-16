@@ -363,3 +363,23 @@
   - Sign Up screen please verify your account screen added
   - Text fields heights changed to height: height * 0.065, from 50
   - version increment
+
+- 10/04/2024
+  - Converted to Audio Player from YouTube Player Due to view count issue
+  - Added all required data for audio player
+  - Testing build
+  - Version increment
+
+- 11/04/2024
+  - Major upgrades added
+  - Song noted when completed the stream to the artist ID
+  - UI changes
+  - Home screen format changes
+  - Music player UI and new features added like mute and increase sound by bar
+  - Version increment
+
+- 13/04/2024
+  - Bug fixes
+  - 1 for fav and unFav songs
+  - 2 UI issues
+  - Testing build

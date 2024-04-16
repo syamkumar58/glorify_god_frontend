@@ -10,6 +10,7 @@ import 'package:glorify_god/bloc/artists_list_cubit/artists_list_cubit.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/models/artists_model/artists_list_model.dart';
 import 'package:glorify_god/utils/app_colors.dart';
+import 'package:glorify_god/utils/app_strings.dart';
 import 'package:glorify_god/utils/asset_images.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -150,7 +151,7 @@ class _UsersChoiceComponentState extends State<UsersChoiceComponent> {
         ),
       ),
       title: AppText(
-        text: 'Choose Artists you like',
+        text: AppStrings.chooseArtistYouLike,
         // textAlign: TextAlign.center,
         styles: GoogleFonts.manrope(
           fontSize: 16,

@@ -6,10 +6,11 @@ import 'package:glorify_god/components/banner_card.dart';
 import 'package:glorify_god/components/custom_app_bar.dart';
 import 'package:glorify_god/components/noisey_text.dart';
 import 'package:glorify_god/components/songs_tile.dart';
+import 'package:glorify_god/config/helpers.dart';
 import 'package:glorify_god/models/get_favourites_model.dart';
 import 'package:glorify_god/models/song_models/artist_with_songs_model.dart';
 import 'package:glorify_god/provider/app_state.dart';
-import 'package:glorify_god/provider/youtube_player_handler.dart';
+import 'package:glorify_god/screens/home_screens/home_screen.dart';
 import 'package:glorify_god/utils/app_colors.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,7 +30,6 @@ class LikedScreen extends StatefulWidget {
 
 class _LikedScreenState extends State<LikedScreen> {
   AppState appState = AppState();
-  YoutubePlayerHandler youtubePlayerHandler = YoutubePlayerHandler();
   bool isLoading = true;
   List<Song> collectedSongs = [];
 
@@ -65,7 +65,6 @@ class _LikedScreenState extends State<LikedScreen> {
   @override
   Widget build(BuildContext context) {
     appState = Provider.of<AppState>(context);
-    youtubePlayerHandler = Provider.of<YoutubePlayerHandler>(context);
     return Scaffold(
       appBar: customAppbar('LIKED'),
       body: BlocBuilder<LikedCubit, LikedState>(
@@ -140,7 +139,12 @@ class _LikedScreenState extends State<LikedScreen> {
         child: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () async {
-            await onPlay(likedSongsList, likedSongsList[0], 0);
+            await onPlay(
+              likedSongsList,
+              likedSongsList[0],
+              0,
+              likedSongsList[0].songId,
+            );
           },
           child: AppText(
             text: 'Play all',
@@ -188,7 +192,12 @@ class _LikedScreenState extends State<LikedScreen> {
             onPressed: () async {
               final initialId = likedSongsList.indexOf(likedSongsList[index]);
               log('$initialId', name: 'initial id in liked');
-              await onPlay(likedSongsList, songDetails, initialId);
+              await onPlay(
+                likedSongsList,
+                songDetails,
+                initialId,
+                likedSongsList[index].songId,
+              );
             },
             child: SongsLikesTile(
               index: index + 1,
@@ -206,6 +215,7 @@ class _LikedScreenState extends State<LikedScreen> {
     List<GetFavouritesModel> likedSongsList,
     GetFavouritesModel songDetails,
     int initialId,
+    int songId,
   ) async {
     collectedSongs.clear();
     for (final song in likedSongsList) {
@@ -227,28 +237,12 @@ class _LikedScreenState extends State<LikedScreen> {
       collectedSongs.add(eachSong);
     }
 
-    final songData = Song(
-      artistUID: songDetails.artistUID,
-      videoUrl: songDetails.videoUrl,
-      title: songDetails.title,
-      artist: songDetails.artist,
-      artUri: songDetails.artUri,
-      lyricist: songDetails.lyricist,
-      credits: songDetails.credits,
-      otherData: songDetails.otherData,
-      ytTitle: songDetails.ytTitle,
-      ytUrl: songDetails.ytUrl,
-      ytImage: songDetails.ytImage,
-      createdAt: songDetails.createdAt,
-      songId: songDetails.songId,
-    );
+    moveToMusicScreen(context, songId);
 
-    youtubePlayerHandler.extendToFullScreen = true;
-
-    youtubePlayerHandler.startPlayer(
-      songData: songData,
-      songs: collectedSongs,
-      currentSongIndex: initialId, appState: appState,
+    await startAudio(
+      appState: appState,
+      audioSource: collectedSongs,
+      initialId: initialId,
     );
   }
 }

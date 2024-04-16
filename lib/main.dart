@@ -9,11 +9,11 @@ import 'package:glorify_god/bloc/profile_cubit/liked_cubit/liked_cubit.dart';
 import 'package:glorify_god/bloc/profile_cubit/songs_info_cubit/songs_data_info_cubit.dart';
 import 'package:glorify_god/provider/app_state.dart';
 import 'package:glorify_god/provider/global_variables.dart';
-import 'package:glorify_god/provider/youtube_player_handler.dart';
 import 'package:glorify_god/screens/splash_screen.dart';
 import 'package:glorify_god/utils/app_strings.dart';
 import 'package:glorify_god/utils/hive_keys.dart';
 import 'package:hive/hive.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart' as ad;
 import 'package:provider/provider.dart' as p;
@@ -22,6 +22,13 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  JustAudioBackground.init(
+    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+    androidNotificationChannelName: 'Audio playback',
+    androidNotificationOngoing: true,
+  );
+
   final path = await getApplicationDocumentsDirectory();
 
   Hive.init(path.path);
@@ -55,9 +62,6 @@ class _GlorifyGodState extends State<GlorifyGod> {
   Widget build(BuildContext context) {
     return p.MultiProvider(
       providers: [
-        p.ChangeNotifierProvider(
-          create: (_) => YoutubePlayerHandler(),
-        ),
         p.ChangeNotifierProvider(
           create: (_) => AppState(),
         ),
