@@ -28,6 +28,7 @@ class YoutubePlayerHandler extends ChangeNotifier {
   Song emptySongData = Song(
     songId: 0,
     artistUID: 0,
+    songUrl: '',
     videoUrl: '',
     title: '',
     artist: '',
@@ -74,6 +75,7 @@ class YoutubePlayerHandler extends ChangeNotifier {
   Song _selectedSongData = Song(
     songId: 0,
     artistUID: 0,
+    songUrl: '',
     videoUrl: '',
     title: '',
     artist: '',

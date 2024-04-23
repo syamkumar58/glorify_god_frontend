@@ -15,6 +15,7 @@ class ApiCalls {
 
   Future<String> getToken() async {
     final jwtToken = await FirebaseAuth.instance.currentUser!.getIdToken();
+    log(jwtToken.toString(),name:'jwtToken jwtToken');
     return jwtToken!;
   }
 

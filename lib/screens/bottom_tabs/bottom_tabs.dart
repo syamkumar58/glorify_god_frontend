@@ -185,7 +185,7 @@ class _BottomTabsState extends State<BottomTabs>
 
   Widget navBar() {
     final android = height * 0.15;
-    final ios = height * 0.18;
+    final ios = height * 0.19;
     return Container(
       color: AppColors.black,
       height: Platform.isIOS ? ios : android,

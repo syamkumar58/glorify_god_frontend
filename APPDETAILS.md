@@ -383,3 +383,9 @@
   - 1 for fav and unFav songs
   - 2 UI issues
   - Testing build
+
+- 23/04/24
+  - Added a new firebase project with glorify_god official mail
+  - Created a new adMob account with glorify_god official mail.With all the required and approved data and integrated with the app
+  - Testing build for ads and new firebase integration
+  - Version increment

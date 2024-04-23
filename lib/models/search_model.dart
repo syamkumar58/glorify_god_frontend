@@ -14,6 +14,7 @@ String searchModelToJson(List<SearchModel> data) =>
 class SearchModel {
   SearchModel({
     required this.artist,
+    required this.songUrl,
     required this.videoUrl,
     required this.songId,
     required this.artistUID,
@@ -31,12 +32,13 @@ class SearchModel {
 
   factory SearchModel.fromJson(Map<String, dynamic> json) => SearchModel(
         artist: json['artist'].toString(),
+        songUrl: json['songUrl'].toString(),
         videoUrl: json['videoUrl'].toString(),
         songId: int.parse(json['songId'].toString()),
         artistUID: int.parse(json['artistUID'].toString()),
         lyricist: json['lyricist'].toString(),
         credits: json['credits'].toString(),
-    otherData: json['otherData'].toString(),
+        otherData: json['otherData'].toString(),
         artistUid: int.parse(json['artistUID'].toString()),
         title: json['title'].toString(),
         artUri: json['artUri'].toString(),
@@ -46,6 +48,7 @@ class SearchModel {
         createdAt: DateTime.parse(json['createdAt'].toString()),
       );
   final String artist;
+  final String songUrl;
   final String videoUrl;
   final int songId;
   final int artistUID;
@@ -62,6 +65,7 @@ class SearchModel {
 
   Map<String, dynamic> toJson() => {
         'artist': artist,
+        'songUrl': songUrl,
         'videoUrl': videoUrl,
         'songId': songId,
         'lyricist': lyricist,

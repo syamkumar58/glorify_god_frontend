@@ -42,6 +42,7 @@ class AppState with ChangeNotifier {
   Song emptySongData = Song(
     songId: 0,
     artistUID: 0,
+    songUrl: '',
     videoUrl: '',
     title: '',
     artist: '',
@@ -58,6 +59,7 @@ class AppState with ChangeNotifier {
   Song _songData = Song(
     songId: 0,
     artistUID: 0,
+    songUrl: '',
     videoUrl: '',
     title: '',
     artist: '',

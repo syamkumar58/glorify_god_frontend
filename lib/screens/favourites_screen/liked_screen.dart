@@ -221,6 +221,7 @@ class _LikedScreenState extends State<LikedScreen> {
     for (final song in likedSongsList) {
       final eachSong = Song(
         songId: song.songId,
+        songUrl: song.songUrl,
         videoUrl: song.videoUrl,
         title: song.title,
         artist: song.artist,

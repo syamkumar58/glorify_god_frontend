@@ -3,20 +3,20 @@ import 'package:glorify_god/models/remote_config/remote_config_model.dart';
 RemoteConfig remoteConfigData = RemoteConfig(
   bannerMessages: [],
   testAdUnitId: 'ca-app-pub-3940256099942544/6300978111',
-  androidAdUnitId: 'ca-app-pub-1337686275359225/2110324213',
+  androidAdUnitId: 'ca-app-pub-9747187444998835/2515121070',
   // Fall back test id
-  iosAdUniId: '"ca-app-pub-1337686275359225/7171079204',
+  iosAdUniId: 'ca-app-pub-9747187444998835/7970094906',
   // Fall back test id
   showUpdateBanner: false,
   interstitialAdTestId: 'ca-app-pub-3940256099942544/8691691433',
   //'ca-app-pub-3940256099942544/1033173712',
-  androidInterstitialAdUnitId: 'ca-app-pub-1337686275359225/1727180834',
+  androidInterstitialAdUnitId: 'ca-app-pub-9747187444998835/7978683822',
   //'ca-app-pub-3940256099942544/1033173712',
-  iosInterstitialAdUnitId: 'ca-app-pub-1337686275359225/4169565248',
+  iosInterstitialAdUnitId: 'ca-app-pub-9747187444998835/6198181376',
   //'ca-app-pub-3940256099942544/1033173712',
   interstitialAdTime: 10,
   appUpdateVersions: AppUpdateVersions(
       androidLatestVersion: '1.0.007', iosLatestVersion: '1.0.007'),
-  playerAndroidAdUnitId: 'ca-app-pub-1337686275359225/5448675674',
-  playerIosAdUnitId: 'ca-app-pub-1337686275359225/3560878936',
+  playerAndroidAdUnitId: 'ca-app-pub-9747187444998835/8114415198',
+  playerIosAdUnitId: 'ca-app-pub-9747187444998835/7994145639',
 );

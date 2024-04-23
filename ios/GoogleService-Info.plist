@@ -3,23 +3,21 @@
 <plist version="1.0">
 <dict>
 <key>CLIENT_ID</key>
-<string>13510448361-edepmr6mofpd38e5cl2koaoeb5e9oa2b.apps.googleusercontent.com</string>
+<string>962997421749-ldo15v1svt7nppd7irq0m3b9i1igggar.apps.googleusercontent.com</string>
 <key>REVERSED_CLIENT_ID</key>
-<string>com.googleusercontent.apps.13510448361-edepmr6mofpd38e5cl2koaoeb5e9oa2b</string>
-<key>ANDROID_CLIENT_ID</key>
-<string>13510448361-06807saf1f212gut7fu1s0blkv3an9cs.apps.googleusercontent.com</string>
+<string>com.googleusercontent.apps.962997421749-ldo15v1svt7nppd7irq0m3b9i1igggar</string>
 <key>API_KEY</key>
-<string>AIzaSyCybCHbz6Ee2l20D78jSQ_Le-fC92pxw9I</string>
+<string>AIzaSyA-GOrp_dfsp9Sm5LVozZG3SUU-o2YMefU</string>
 <key>GCM_SENDER_ID</key>
-<string>13510448361</string>
+<string>962997421749</string>
 <key>PLIST_VERSION</key>
 <string>1</string>
 <key>BUNDLE_ID</key>
 <string>app.glorifygod.prod</string>
 <key>PROJECT_ID</key>
-<string>glorifygod-57842</string>
+<string>glorify-god-b2702</string>
 <key>STORAGE_BUCKET</key>
-<string>glorifygod-57842.appspot.com</string>
+<string>glorify-god-b2702.appspot.com</string>
 <key>IS_ADS_ENABLED</key>
 <false></false>
 <key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +29,6 @@
 <key>IS_SIGNIN_ENABLED</key>
 <true></true>
 <key>GOOGLE_APP_ID</key>
-<string>1:13510448361:ios:ea7e358e7930d373b88c78</string>
+<string>1:962997421749:ios:18a2ecbc3d26315fc7a0fc</string>
 </dict>
 </plist>

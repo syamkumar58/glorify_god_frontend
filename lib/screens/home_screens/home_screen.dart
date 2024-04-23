@@ -437,7 +437,7 @@ Future startAudio({
       // -->/
       ...audioSource.map((e) {
         final audioSource = AudioSource.uri(
-          Uri.parse(e.videoUrl),
+          Uri.parse(e.videoUrl.isEmpty ? e.songUrl : e.videoUrl),
           tag: MediaItem(
             id: e.songId.toString(),
             title: e.title,
