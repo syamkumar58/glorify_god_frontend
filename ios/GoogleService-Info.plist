@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 <key>CLIENT_ID</key>
-<string>962997421749-ldo15v1svt7nppd7irq0m3b9i1igggar.apps.googleusercontent.com</string>
+<string>962997421749-5l3tr1f1cjlgib6p9ejh24mlij0mnrak.apps.googleusercontent.com</string>
 <key>REVERSED_CLIENT_ID</key>
-<string>com.googleusercontent.apps.962997421749-ldo15v1svt7nppd7irq0m3b9i1igggar</string>
+<string>com.googleusercontent.apps.962997421749-5l3tr1f1cjlgib6p9ejh24mlij0mnrak</string>
+<key>ANDROID_CLIENT_ID</key>
+<string>962997421749-b7cn9co1ioom61j5rilop13co39rkj75.apps.googleusercontent.com</string>
 <key>API_KEY</key>
 <string>AIzaSyA-GOrp_dfsp9Sm5LVozZG3SUU-o2YMefU</string>
 <key>GCM_SENDER_ID</key>
@@ -13,7 +15,7 @@
 <key>PLIST_VERSION</key>
 <string>1</string>
 <key>BUNDLE_ID</key>
-<string>app.glorifygod.prod</string>
+<string>glorifygod.music.app</string>
 <key>PROJECT_ID</key>
 <string>glorify-god-b2702</string>
 <key>STORAGE_BUCKET</key>
@@ -29,6 +31,6 @@
 <key>IS_SIGNIN_ENABLED</key>
 <true></true>
 <key>GOOGLE_APP_ID</key>
-<string>1:962997421749:ios:18a2ecbc3d26315fc7a0fc</string>
+<string>1:962997421749:ios:37f533fe0859f097c7a0fc</string>
 </dict>
 </plist>

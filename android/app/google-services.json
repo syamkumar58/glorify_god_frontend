@@ -7,12 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:962997421749:android:35b658e103413d16c7a0fc",
+        "mobilesdk_app_id": "1:962997421749:android:e97c9163d1e7f1b4c7a0fc",
         "android_client_info": {
-          "package_name": "app.glorifygod.prod"
+          "package_name": "glorifygod.music.app"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "962997421749-b7cn9co1ioom61j5rilop13co39rkj75.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "glorifygod.music.app",
+            "certificate_hash": "e053eefb0a4677b8943dfc235c080658b8982283"
+          }
+        },
         {
           "client_id": "962997421749-2q6vn6mhktuf8h8msu1bk05cjis511ka.apps.googleusercontent.com",
           "client_type": 3

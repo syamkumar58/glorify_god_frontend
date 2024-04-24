@@ -389,3 +389,11 @@
   - Created a new adMob account with glorify_god official mail.With all the required and approved data and integrated with the app
   - Testing build for ads and new firebase integration
   - Version increment
+
+- 24/04/24
+  - Major update app package name is changed to (glorifygod.music.app) from (app.glorifygod.prod)
+  - Added a new firebase project with glorify_god official mail
+  - Created a new adMob account with glorify_god official mail.With all the required and approved data and integrated with the app
+  - Testing build for ads and new firebase integration
+  - Login Issues
+  - Version increment

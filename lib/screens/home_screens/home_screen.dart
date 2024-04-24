@@ -135,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     onPressed: () async {
                       if (Platform.isAndroid) {
                         const url =
-                            'https://play.google.com/store/apps/details?id=app.glorifygod.prod';
+                            'https://play.google.com/store/apps/details?id=glorifygod.music.app';
                         if (await canLaunchUrlString(url)) {
                           await launchUrlString(url);
                         }

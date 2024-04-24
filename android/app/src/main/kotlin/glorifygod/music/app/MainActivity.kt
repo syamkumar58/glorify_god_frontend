@@ -1,4 +1,4 @@
-package app.glorifygod.prod
+package glorifygod.music.app
 
 import io.flutter.embedding.android.FlutterActivity
 
