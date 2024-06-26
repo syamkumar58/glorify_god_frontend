@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:glorify_god/models/artists_model/artists_list_model.dart';
 import 'package:glorify_god/models/user_models/user_login_response_model.dart';
 import 'package:glorify_god/src/api/end_points.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:googleapis/admob/v1.dart' as adMob;
+import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
@@ -15,7 +18,7 @@ class ApiCalls {
 
   Future<String> getToken() async {
     final jwtToken = await FirebaseAuth.instance.currentUser!.getIdToken();
-    log(jwtToken.toString(),name:'jwtToken jwtToken');
+    log(jwtToken.toString(), name: 'jwtToken jwtToken');
     return jwtToken!;
   }
 
@@ -537,6 +540,120 @@ class ApiCalls {
       }
     } catch (e) {
       log('$e', name: 'checkArtistLoginDataByEmail error');
+      rethrow;
+    }
+  }
+
+  Future fetchAdMobData() async {
+    final token = await getToken();
+    const parent = 'accounts/pub-9747187444998835';
+    const url =
+        'https://admob.googleapis.com/v1beta/$parent/networkReport:generate';
+    final body = {
+      "reportSpec": {
+        "dateRange": {
+          "startDate": {"year": 2024, "month": 1, "day": 1},
+          "endDate": {"year": 2024, "month": 4, "day": 28},
+        },
+        "dimensions": ["DATE"],
+        "metrics": ["ESTIMATED_EARNINGS"],
+      },
+    };
+
+    try {
+      final data = await http.post(
+        Uri.parse(url),
+        body: json.encode(body),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      final decodeData = json.decode(data.body);
+      log('${data.statusCode} - $decodeData', name: 'fetchAdMobData response');
+    } catch (e) {
+      log('$e', name: 'fetchAdMobData error');
+      rethrow;
+    }
+  }
+
+  Future fetchAdMobReport() async {
+    const parent = 'accounts/pub-9747187444998835';
+    const jsonKeyFilePath = 'lib/config/service_account_key.json';
+    final jsonKeyFileContent = await File(jsonKeyFilePath).readAsString();
+    final serviceAccountCredentials = ServiceAccountCredentials.fromJson(json.decode(jsonKeyFileContent));
+    try {
+      final client = await clientViaServiceAccount(
+        serviceAccountCredentials,
+        [
+          'https://www.googleapis.com/auth/admob.readonly',
+          'https://www.googleapis.com/auth/admob.report',
+        ],
+      );
+
+      final adMobApi = adMob.AdMobApi(client);
+
+      final netWorkReportRequest = adMob.GenerateNetworkReportRequest()
+        ..reportSpec = adMob.NetworkReportSpec()
+        ..reportSpec!.dateRange = adMob.DateRange()
+        ..reportSpec!.dateRange!.startDate = adMob.Date()
+        ..reportSpec!.dateRange!.startDate!.year = 2024
+        ..reportSpec!.dateRange!.startDate!.month = 1
+        ..reportSpec!.dateRange!.startDate!.day = 1
+        ..reportSpec!.dateRange!.endDate = adMob.Date()
+        ..reportSpec!.dateRange!.endDate!.year = 2024
+        ..reportSpec!.dateRange!.endDate!.month = 4
+        ..reportSpec!.dateRange!.endDate!.day = 28
+        ..reportSpec!.dimensions = ['DATE']
+        ..reportSpec!.metrics = ['ESTIMATED_EARNINGS'];
+
+      final response = await adMobApi.accounts.networkReport
+          .generate(netWorkReportRequest, parent);
+
+      log('$response', name: 'fetchAdMobReport response');
+    } catch (e) {
+      log('$e', name: 'fetchAdMobReport error');
+      rethrow;
+    }
+  }
+
+  Future fetchAdMobReport2() async {
+    const parent = 'accounts/ACCOUNT_ID';
+    try {
+      final client = await clientViaUserConsent(
+          ClientId(
+            'CLIENT_ID',
+            '',
+          ),
+          [
+            'https://www.googleapis.com/auth/admob.readonly',
+            'https://www.googleapis.com/auth/admob.report',
+          ], (uri) {
+        log(uri, name: 'Click it');
+      });
+
+      final adMobApi = adMob.AdMobApi(client);
+
+      final netWorkReportRequest = adMob.GenerateNetworkReportRequest()
+        ..reportSpec = adMob.NetworkReportSpec()
+        ..reportSpec!.dateRange = adMob.DateRange()
+        ..reportSpec!.dateRange!.startDate = adMob.Date()
+        ..reportSpec!.dateRange!.startDate!.year = 2024
+        ..reportSpec!.dateRange!.startDate!.month = 1
+        ..reportSpec!.dateRange!.startDate!.day = 1
+        ..reportSpec!.dateRange!.endDate = adMob.Date()
+        ..reportSpec!.dateRange!.endDate!.year = 2024
+        ..reportSpec!.dateRange!.endDate!.month = 4
+        ..reportSpec!.dateRange!.endDate!.day = 28
+        ..reportSpec!.dimensions = ['DATE']
+        ..reportSpec!.metrics = ['ESTIMATED_EARNINGS'];
+
+      final response = await adMobApi.accounts.networkReport
+          .generate(netWorkReportRequest, parent);
+
+      log('$response', name: 'fetchAdMobReport response');
+    } catch (e) {
+      log('$e', name: 'fetchAdMobReport error');
       rethrow;
     }
   }

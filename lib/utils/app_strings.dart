@@ -98,4 +98,5 @@ class AppStrings {
   static const needToComplete2 = 'songs to complete monetization'
       '\nOnce the monetization completes will start the revenue based on the songs that are played on top of monetization count'
       '\nAfter Monetization is started your total stream count wil start from 0, Which means from here revenue will starts for each song/stream';
+  static const adLoading = 'Ad Loading';
 }

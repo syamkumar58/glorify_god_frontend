@@ -202,12 +202,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       //   CupertinoButton(
                       //     color: AppColors.redAccent,
                       //     onPressed: () async {
-                      //       Navigator.push(
-                      //         context,
-                      //         CupertinoPageRoute(
-                      //           builder: (_) => const YoutubePlayerWidget(),
-                      //         ),
-                      //       );
+                      //       // await ApiCalls().fetchAdMobReport();
                       //     },
                       //     child: const Text('Test Button'),
                       //   ),

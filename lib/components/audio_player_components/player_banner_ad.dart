@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:glorify_god/components/ad_loading_component.dart';
 import 'package:glorify_god/config/remote_config.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -78,9 +79,7 @@ class _PlayerBannerAdState extends State<PlayerBannerAd> {
             ? AdWidget(
                 ad: bannerAd,
               )
-            : const Center(
-                child: CupertinoActivityIndicator(),
-              ),
+            : const AdLoadingComponent(),
       ),
     );
   }
